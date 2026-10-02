@@ -85,14 +85,14 @@
             grid-column: 1 / -1;
             border-top-color: #059669;
         }
-        .gps-box {
+        .interactive-box {
             background: #f0fdf4;
             border: 1px solid #bbf7d0;
             padding: 1rem;
             border-radius: 6px;
             margin-top: 1rem;
         }
-        .gps-btn {
+        .action-btn {
             background-color: #059669;
             color: white;
             border: none;
@@ -105,14 +105,41 @@
             align-items: center;
             gap: 0.5rem;
         }
-        .gps-btn:hover {
+        .action-btn:hover {
             background-color: #047857;
         }
-        #gps-result {
-            margin-top: 0.75rem;
+        .input-text {
+            padding: 0.5rem;
+            border: 1px solid #cbd5e1;
+            border-radius: 4px;
+            font-size: 0.95rem;
+            width: 60%;
+            max-width: 300px;
+            margin-right: 0.5rem;
+        }
+        #weather-results {
+            margin-top: 1rem;
             font-size: 0.95rem;
             color: #065f46;
-            font-weight: 500;
+        }
+        .forecast-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(110px, 1fr));
+            gap: 0.75rem;
+            margin-top: 1rem;
+        }
+        .forecast-day {
+            background: white;
+            padding: 0.75rem;
+            border-radius: 6px;
+            border: 1px solid #cbd5e1;
+            text-align: center;
+            font-size: 0.85rem;
+        }
+        .forecast-day strong {
+            display: block;
+            color: var(--primary-color);
+            margin-bottom: 0.25rem;
         }
         footer {
             text-align: center;
@@ -134,28 +161,25 @@
     <main>
         <div class="grid">
             
-            <!-- Módulo: Geolocalización GPS en Tiempo Real -->
+            <!-- Módulo Integrado: Clima y Pronóstico Extendido a 7 Días (GPS o Localidad) -->
             <div class="card full-width" style="border-top-color: #059669;">
-                <h3>📍 Ubicación y Alertas por GPS Satelital</h3>
-                <p>Detectá tu posición exacta en la Provincia de Córdoba para recibir diagnósticos climáticos, alertas de tormenta y riesgos de incendio específicos para tu localidad.</p>
-                <div class="gps-box">
-                    <button class="gps-btn" onclick="obtenerUbicacionGPS()">
-                        📍 Activar GPS y Detectar Mi Zona
-                    </button>
-                    <div id="gps-result">Hacé clic en el botón para activar la lectura de coordenadas de tu dispositivo.</div>
+                <h3>🌤️ Pronóstico del Tiempo a 7 Días (GPS y Localidades)</h3>
+                <p>Consultá el estado actual y el pronóstico extendido semanal mediante la geolocalización de tu dispositivo o ingresando una localidad de Córdoba.</p>
+                
+                <div class="interactive-box">
+                    <div style="margin-bottom: 1rem;">
+                        <button class="action-btn" onclick="obtenerClimaPorGPS()">
+                            📍 Usar Mi Ubicación GPS
+                        </button>
+                    </div>
+                    <div style="display: flex; flex-wrap: wrap; gap: 0.5rem; align-items: center;">
+                        <input type="text" id="localidad-input" class="input-text" placeholder="Ej: Ascochinga, Jesús María...">
+                        <button class="action-btn" style="background-color: var(--accent-color);" onclick="buscarClimaPorLocalidad()">
+                            🔍 Buscar Localidad
+                        </button>
+                    </div>
+                    <div id="weather-results">Hacé clic en el GPS o ingresá una localidad para ver el pronóstico de la semana.</div>
                 </div>
-            </div>
-
-            <!-- Módulo 1: Clima y Meteorología -->
-            <div class="card" style="border-top-color: var(--accent-color);">
-                <h3>🌤️ Clima y Pronóstico Provincial</h3>
-                <p>Monitoreo integrando referencias de fuentes oficiales (SMN, Observatorio Córdoba, Weather Channel, Windy).</p>
-                <ul>
-                    <li>Temperaturas y humedad regional.</li>
-                    <li>Presión atmosférica y zonas de baja presión.</li>
-                    <li>Vientos y alertas por tormentas severas.</li>
-                </ul>
-                <span class="status-badge">Actualización Automática</span>
             </div>
 
             <!-- Módulo 2: Riesgo de Incendios -->
@@ -223,27 +247,95 @@
         <p>SIGA Córdoba — Herramienta de Monitoreo Abierto e Inteligente.</p>
     </footer>
 
-    <!-- Script de Geolocalización GPS del Navegador -->
+    <!-- Scripts de Consulta Meteorológica en Tiempo Real -->
     <script>
-        function obtenerUbicacionGPS() {
-            const resultadoDiv = document.getElementById("gps-result");
+        function obtenerClimaPorGPS() {
+            const resDiv = document.getElementById("weather-results");
             if (!navigator.geolocation) {
-                resultadoDiv.innerHTML = "⚠️ Tu navegador no soporta geolocalización GPS.";
+                resDiv.innerHTML = "⚠️ Tu navegador no soporta geolocalización GPS.";
                 return;
             }
-            resultadoDiv.innerHTML = "📡 Buscando satélites y detectando posición precisa en Córdoba...";
+            resDiv.innerHTML = "📡 Activando GPS y consultando pronóstico de 7 días...";
             
             navigator.geolocation.getCurrentPosition(
-                (position) => {
-                    const lat = position.coords.latitude.toFixed(4);
-                    const lon = position.coords.longitude.toFixed(4);
-                    resultadoDiv.innerHTML = `✅ <strong>Ubicación detectada con éxito:</strong> Latitud: ${lat}, Longitud: ${lon}. Zona provincial bajo monitoreo activo de SIGA.`;
+                (pos) => {
+                    const lat = pos.coords.latitude;
+                    const lon = pos.coords.longitude;
+                    cargarPronostico(lat, lon, "Tu ubicación GPS actual");
                 },
-                (error) => {
-                    resultadoDiv.innerHTML = "⚠️ No se pudo obtener la ubicación. Asegurate de permitir el acceso al GPS en tu dispositivo.";
+                () => {
+                    resDiv.innerHTML = "⚠️ No se pudo obtener la ubicación GPS. Verificá los permisos de tu dispositivo.";
                 },
                 { timeout: 10000 }
             );
+        }
+
+        async function buscarClimaPorLocalidad() {
+            const input = document.getElementById("localidad-input").value.trim();
+            const resDiv = document.getElementById("weather-results");
+            if (!input) {
+                resDiv.innerHTML = "⚠️ Por favor, ingresá el nombre de una localidad.";
+                return;
+            }
+            resDiv.innerHTML = `🔍 Buscando coordenadas para "${input}" en Córdoba...`;
+
+            try {
+                // Geocodificación rápida para transformar nombre de localidad en Lat/Lon
+                const geoRes = await fetch(`https://geocoding-api.open-meteo.com/v1/search?name=${encodeURIComponent(input + ", Córdoba, Argentina")}&count=1&language=es&format=json`);
+                const geoData = await geoRes.json();
+
+                if (!geoData.results || geoData.results.length === 0) {
+                    resDiv.innerHTML = `⚠️ No se encontró la localidad "${input}". Intentá con otra cercana.`;
+                    return;
+                }
+
+                const lugar = geoData.results[0];
+                cargarPronostico(lugar.latitude, lugar.longitude, `${lugar.name} (${lugar.admin1 || 'Córdoba'})`);
+            } catch (err) {
+                resDiv.innerHTML = "⚠️ Error de conexión al buscar la localidad.";
+            }
+        }
+
+        async function cargarPronostico(lat, lon, nombreZona) {
+            const resDiv = document.getElementById("weather-results");
+            resDiv.innerHTML = `⏳ Cargando pronóstico de 7 días para: <strong>${nombreZona}</strong>...`;
+
+            try {
+                // Petición a Open-Meteo para el pronóstico diario a 7 días
+                const meteoRes = await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&daily=weathercode,temperature_2m_max,temperature_2m_min,precipitation_sum&timezone=America/Argentina/Cordoba`);
+                const data = await meteoRes.json();
+
+                if (!data.daily) {
+                    resDiv.innerHTML = "⚠️ No se pudieron obtener los datos meteorológicos en este momento.";
+                    return;
+                }
+
+                let html = `<p>📍 <strong>Zona:</strong> ${nombreZona} (Lat: ${lat.toFixed(2)}, Lon: ${lon.toFixed(2)})</p>`;
+                html += `<div class="forecast-grid">`;
+
+                const dias = data.daily.time;
+                const tMax = data.daily.temperature_2m_max;
+                const tMin = data.daily.temperature_2m_min;
+                const lluvias = data.daily.precipitation_sum;
+
+                for (let i = 0; i < dias.length; i++) {
+                    let fechaFormateada = new Date(dias[i] + "T00:00:00").toLocaleDateString('es-AR', { weekday: 'short', day: 'numeric', month: 'numeric' });
+                    html += `
+                        <div class="forecast-day">
+                            <strong>${fechaFormateada}</strong>
+                            🌡️ Máx: ${tMax[i]}°C<br>
+                            min: ${tMin[i]}°C<br>
+                            🌧️ Lluvia: ${lluvias[i]} mm
+                        </div>
+                    `;
+                }
+
+                html += `</div>`;
+                resDiv.innerHTML = html;
+
+            } catch (err) {
+                resDiv.innerHTML = "⚠️ Ocurrió un error al procesar los datos del clima.";
+            }
         }
     </script>
 

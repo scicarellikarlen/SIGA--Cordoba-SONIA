@@ -85,6 +85,35 @@
             grid-column: 1 / -1;
             border-top-color: #059669;
         }
+        .gps-box {
+            background: #f0fdf4;
+            border: 1px solid #bbf7d0;
+            padding: 1rem;
+            border-radius: 6px;
+            margin-top: 1rem;
+        }
+        .gps-btn {
+            background-color: #059669;
+            color: white;
+            border: none;
+            padding: 0.6rem 1.2rem;
+            border-radius: 5px;
+            font-weight: 600;
+            cursor: pointer;
+            font-size: 0.95rem;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        .gps-btn:hover {
+            background-color: #047857;
+        }
+        #gps-result {
+            margin-top: 0.75rem;
+            font-size: 0.95rem;
+            color: #065f46;
+            font-weight: 500;
+        }
         footer {
             text-align: center;
             padding: 2rem;
@@ -105,10 +134,22 @@
     <main>
         <div class="grid">
             
+            <!-- Módulo: Geolocalización GPS en Tiempo Real -->
+            <div class="card full-width" style="border-top-color: #059669;">
+                <h3>📍 Ubicación y Alertas por GPS Satelital</h3>
+                <p>Detectá tu posición exacta en la Provincia de Córdoba para recibir diagnósticos climáticos, alertas de tormenta y riesgos de incendio específicos para tu localidad.</p>
+                <div class="gps-box">
+                    <button class="gps-btn" onclick="obtenerUbicacionGPS()">
+                        📍 Activar GPS y Detectar Mi Zona
+                    </button>
+                    <div id="gps-result">Hacé clic en el botón para activar la lectura de coordenadas de tu dispositivo.</div>
+                </div>
+            </div>
+
             <!-- Módulo 1: Clima y Meteorología -->
             <div class="card" style="border-top-color: var(--accent-color);">
                 <h3>🌤️ Clima y Pronóstico Provincial</h3>
-                <p>Monitoreo en tiempo real de condiciones meteorológicas en todo el territorio cordobés.</p>
+                <p>Monitoreo integrando referencias de fuentes oficiales (SMN, Observatorio Córdoba, Weather Channel, Windy).</p>
                 <ul>
                     <li>Temperaturas y humedad regional.</li>
                     <li>Presión atmosférica y zonas de baja presión.</li>
@@ -167,24 +208,12 @@
             <!-- Módulo 6: Calidad del Aire -->
             <div class="card" style="border-top-color: #6366f1;">
                 <h3>💨 Calidad del Aire</h3>
-                <p>Medición de partículas en suspensión, polvo y contaminantes ambientales.</p>
+                <p>Medición de partículas en suspensión, polvo y contaminantes ambientales en la región.</p>
                 <ul>
                     <li>Índice de calidad atmosférica regional.</li>
                     <li>Impacto de vientos y arrastre de sedimentos.</li>
                 </ul>
                 <span class="status-badge" style="background-color: #e0e7ff; color: #3730a3;">Análisis Ambiental</span>
-            </div>
-
-            <!-- Módulo 7: Canales de Reporte y Enlaces Útiles (Ancho completo) -->
-            <div class="card full-width">
-                <h3>📢 Canales de Reporte y Reclamos Vecinales</h3>
-                <p>Espacio articulado para la gestión de incidencias, notas regulatorias y protocolos de defensa civil ante fallas de servicios o emergencias.</p>
-                <ul>
-                    <li><strong>Coordinación Comunitaria:</strong> Canales de comunicación directa para alertas tempranas entre vecinos.</li>
-                    <li><strong>Registro de Irregularidades:</strong> Antecedentes formales y seguimiento de notas de reclamo ante entes de control (ERSEP / servicios públicos).</li>
-                    <li><strong>Defensa Civil y Emergencias:</strong> Protocolos de acción rápida ante contingencias climáticas y cortes de suministro.</li>
-                </ul>
-                <span class="status-badge" style="background-color: #d1fae5; color: #065f46;">Gestión Activa y Transparente</span>
             </div>
 
         </div>
@@ -193,6 +222,30 @@
     <footer>
         <p>SIGA Córdoba — Herramienta de Monitoreo Abierto e Inteligente.</p>
     </footer>
+
+    <!-- Script de Geolocalización GPS del Navegador -->
+    <script>
+        function obtenerUbicacionGPS() {
+            const resultadoDiv = document.getElementById("gps-result");
+            if (!navigator.geolocation) {
+                resultadoDiv.innerHTML = "⚠️ Tu navegador no soporta geolocalización GPS.";
+                return;
+            }
+            resultadoDiv.innerHTML = "📡 Buscando satélites y detectando posición precisa en Córdoba...";
+            
+            navigator.geolocation.getCurrentPosition(
+                (position) => {
+                    const lat = position.coords.latitude.toFixed(4);
+                    const lon = position.coords.longitude.toFixed(4);
+                    resultadoDiv.innerHTML = `✅ <strong>Ubicación detectada con éxito:</strong> Latitud: ${lat}, Longitud: ${lon}. Zona provincial bajo monitoreo activo de SIGA.`;
+                },
+                (error) => {
+                    resultadoDiv.innerHTML = "⚠️ No se pudo obtener la ubicación. Asegurate de permitir el acceso al GPS en tu dispositivo.";
+                },
+                { timeout: 10000 }
+            );
+        }
+    </script>
 
 </body>
 </html>

@@ -3,25 +3,180 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sistema Inteligente de Gestión y Alertas - SIGA Córdoba</title>
+    <title>SIGA - Sistema Inteligente de Gestión y Alerta | Córdoba</title>
     <style>
-        body { font-family: Arial, sans-serif; margin: 0; padding: 20px; background: #f4f6f9; color: #333; }
-        header { background: #1b365d; color: white; padding: 20px; border-radius: 8px; text-align: center; }
-        main { margin-top: 20px; }
-        .card { background: white; padding: 20px; margin-bottom: 15px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
-        h2 { color: #1b365d; margin-top: 0; }
+        :root {
+            --primary-color: #0f172a;
+            --accent-color: #0284c7;
+            --bg-color: #f8fafc;
+            --card-bg: #ffffff;
+            --text-main: #334155;
+            --alert-yellow: #f59e0b;
+            --alert-orange: #f97316;
+            --alert-red: #ef4444;
+        }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            margin: 0;
+            padding: 0;
+            line-height: 1.6;
+        }
+        header {
+            background-color: var(--primary-color);
+            color: white;
+            padding: 2rem 1rem;
+            text-align: center;
+            border-bottom: 4px solid var(--accent-color);
+        }
+        header h1 {
+            margin: 0 0 0.5rem 0;
+            font-size: 2rem;
+            letter-spacing: 0.5px;
+        }
+        header p {
+            margin: 0;
+            color: #94a3b8;
+            font-size: 1.1rem;
+        }
+        main {
+            max-width: 1000px;
+            margin: 2rem auto;
+            padding: 0 1rem;
+        }
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1.5rem;
+        }
+        .card {
+            background-color: var(--card-bg);
+            border-radius: 8px;
+            padding: 1.5rem;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
+            border-top: 4px solid var(--accent-color);
+        }
+        .card h3 {
+            margin-top: 0;
+            color: var(--primary-color);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        ul {
+            padding-left: 1.2rem;
+            margin: 0.5rem 0;
+        }
+        li {
+            margin-bottom: 0.5rem;
+        }
+        .status-badge {
+            display: inline-block;
+            padding: 0.25rem 0.75rem;
+            border-radius: 9999px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            background-color: #e2e8f0;
+            color: #475569;
+            margin-top: 0.5rem;
+        }
+        footer {
+            text-align: center;
+            padding: 2rem;
+            color: #64748b;
+            font-size: 0.9rem;
+            border-top: 1px solid #e2e8f0;
+            margin-top: 3rem;
+        }
     </style>
 </head>
 <body>
+
     <header>
-        <h1>SIGA Córdoba</h1>
-        <p>Sistema Inteligente de Gestión y Alertas - Monitoreo en Tiempo Real</p>
+        <h1>SIGA - Córdoba</h1>
+        <p>Sistema Inteligente de Gestión y Alerta Ambiental y de Tránsito</p>
     </header>
+
     <main>
-        <div class="card">
-            <h2>Estado General de la Provincia</h2>
-            <p>Monitoreo activo de incendios, visibilidad en rutas, estado de caminos, diques y alertas meteorológicas.</p>
+        <div class="grid">
+            
+            <!-- Módulo 1: Clima y Meteorología -->
+            <div class="card" style="border-top-color: var(--accent-color);">
+                <h3>🌤️ Clima y Pronóstico Provincial</h3>
+                <p>Monitoreo en tiempo real de condiciones meteorológicas en todo el territorio cordobés.</p>
+                <ul>
+                    <li>Temperaturas y humedad regional.</li>
+                    <li>Presión atmosférica y zonas de baja presión.</li>
+                    <li>Vientos y alertas por tormentas severas.</li>
+                </ul>
+                <span class="status-badge">Actualización Automática</span>
+            </div>
+
+            <!-- Módulo 2: Riesgo de Incendios -->
+            <div class="card" style="border-top-color: var(--alert-red);">
+                <h3>🔥 Riesgo de Incendios (FIRMS / NASA)</h3>
+                <p>Seguimiento de puntos calientes y evaluación de índices de peligro crítico para vegetación y sierras.</p>
+                <ul>
+                    <li>Detección de focos activos y zonas calientes.</li>
+                    <li>Evaluación de sequía y material combustible.</li>
+                    <li>Alertas tempranas de propagación.</li>
+                </ul>
+                <span class="status-badge" style="background-color: #fee2e2; color: #991b1b;">Monitoreo Activo</span>
+            </div>
+
+            <!-- Módulo 3: Alertas Tempranas -->
+            <div class="card" style="border-top-color: var(--alert-yellow);">
+                <h3>⚠️ Sistema de Alertas</h3>
+                <p>Clasificación por niveles de advertencia para la toma de precauciones a nivel provincial.</p>
+                <ul>
+                    <li><strong style="color: var(--alert-yellow);">Amarilla:</strong> Precaución por fenómenos moderados.</li>
+                    <li><strong style="color: var(--alert-orange);">Naranja:</strong> Riesgo elevado por eventos severos.</li>
+                    <li><strong style="color: var(--alert-red);">Roja:</strong> Peligro extremo / Emergencia ambiental.</li>
+                </ul>
+                <span class="status-badge" style="background-color: #fef3c7; color: #92400e;">Sistema Vigente</span>
+            </div>
+
+            <!-- Módulo 4: Estado de Rutas y Tránsito -->
+            <div class="card" style="border-top-color: #10b981;">
+                <h3>🛣️ Estado de Rutas y Caminos</h3>
+                <p>Condiciones de transitabilidad en las principales rutas y caminos de la provincia de Córdoba.</p>
+                <ul>
+                    <li>Transitabilidad y cortes por obras o clima.</li>
+                    <li>Visibilidad reducida por vientos o polvo.</li>
+                    <li>Monitoreo de pasos y tramos críticos.</li>
+                </ul>
+                <span class="status-badge" style="background-color: #d1fae5; color: #065f46;">Rutas Provinciales</span>
+            </div>
+
+            <!-- Módulo 5: Recursos Hídricos y Diques -->
+            <div class="card" style="border-top-color: #3b82f6;">
+                <h3>💧 Nivel de Diques y Embalses</h3>
+                <p>Control del estado de reservas de agua en los principales espejos de agua de la provincia.</p>
+                <ul>
+                    <li>Niveles de referencia en diques provinciales.</li>
+                    <li>Seguimiento de caudales y reservas.</li>
+                </ul>
+                <span class="status-badge" style="background-color: #dbeafe; color: #1e40af;">Control Hídrico</span>
+            </div>
+
+            <!-- Módulo 6: Calidad del Aire -->
+            <div class="card" style="border-top-color: #6366f1;">
+                <h3>💨 Calidad del Aire</h3>
+                <p>Medición de partículas en suspensión, polvo y contaminantes ambientales.</p>
+                <ul>
+                    <li>Índice de calidad atmosférica regional.</li>
+                    <li>Impacto de vientos y arrastre de sedimentos.</li>
+                </ul>
+                <span class="status-badge" style="background-color: #e0e7ff; color: #3730a3;">Análisis Ambiental</span>
+            </div>
+
         </div>
     </main>
+
+    <footer>
+        <p>SIGA Córdoba — Herramienta de Monitoreo Abierto e Inteligente.</p>
+    </footer>
+
 </body>
 </html>

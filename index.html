@@ -1,20 +1,22 @@
-<!-- Módulo Integrado: Clima y Pronóstico Extendido a 7 Días (GPS o Localidad) -->
-            <div class="card full-width" style="border-top-color: #059669;">
-                <h3>🌤️ Pronóstico del Tiempo a 7 Días (GPS y Localidades)</h3>
-                <p>Consultá el estado actual y el pronóstico extendido semanal mediante la geolocalización de tu dispositivo o ingresando una localidad de Córdoba. <em>Parámetros, umbrales meteorológicos y criterios de análisis basados en los estándares del SMN y observatorios regionales.</em></p>
-                
-                <div class="interactive-box">
-                    <div style="margin-bottom: 1rem;">
-                        <button class="action-btn" onclick="obtenerClimaPorGPS()">
-                            📍 Usar Mi Ubicación GPS
-                        </button>
-                    </div>
-                    <div style="display: flex; flex-wrap: wrap; gap: 0.5rem; align-items: center;">
-                        <input type="text" id="localidad-input" class="input-text" placeholder="Ej: Ascochinga, Jesús María...">
-                        <button class="action-btn" style="background-color: var(--accent-color);" onclick="buscarClimaPorLocalidad()">
-                            🔍 Buscar Localidad
-                        </button>
-                    </div>
-                    <div id="weather-results">Hacé clic en el GPS o ingresá una localidad para ver el pronóstico de la semana.</div>
-                </div>
-            </div>
+<script>
+        function consultarRiesgoIncendio() {
+            const zona = document.getElementById("zona-incendio").value;
+            const resDiv = document.getElementById("incendio-results");
+            
+            // Simulación de datos paramétricos basados en condiciones reales de la región
+            const datosRiesgo = {
+                ascochinga: { nivel: "EXTREMO (ROJO)", humedad: "18%", viento: "Norte a 35 km/h", desc: "Prohibido hacer fuego. Alto riesgo de rápida propagación por pastizal seco." },
+                punilla: { nivel: "MUY ALTO (NARANJA)", humedad: "24%", viento: "Variable a 20 km/h", desc: "Condiciones de sequía severa. Extrema precaución en zonas serranas." },
+                traslasierra: { nivel: "ALTO (AMARILLO)", humedad: "32%", viento: "Leve del Sur", desc: "Riesgo moderado a alto por baja humedad ambiente." },
+                calamuchita: { nivel: "EXTREMO (ROJO)", humedad: "19%", viento: "Noreste a 40 km/h", desc: "Alerta máxima por ráfagas secas y acumulón de biomasa." }
+            };
+
+            const info = datosRiesgo[zona];
+            resDiv.innerHTML = `
+                <strong>⚠️ Índice para ${zona.toUpperCase()}:</strong><br>
+                • Peligro: <strong>${info.nivel}</strong><br>
+                • Humedad del Suelo: ${info.humedad} | Viento: ${info.viento}<br>
+                <em>${info.desc}</em>
+            `;
+        }
+    </script>

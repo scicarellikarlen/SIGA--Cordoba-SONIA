@@ -1,24 +1,19 @@
-<!-- Módulo 4: Estado de Rutas y Tránsito (Con selector interactivo) -->
-            <div class="card" style="border-top-color: #10b981;">
-                <h3>🛣️ Estado de Rutas y Caminos</h3>
-                <p>Condiciones de transitabilidad en las principales rutas y caminos de la provincia de Córdoba.</p>
-                <ul>
-                    <li>Transitabilidad y cortes por obras o clima.</li>
-                    <li>Visibilidad reducida y tramos críticos.</li>
-                </ul>
-                
-                <div class="interactive-box" style="background: #ecfdf5; border-color: #a7f3d0; margin-top: 1rem;">
-                    <div style="font-size: 0.9rem; font-weight: 600; color: #065f46; margin-bottom: 0.5rem;">🚗 Consultar Tramo Provincial:</div>
-                    <select id="ruta-select" class="input-text" style="width: 100%; max-width: 100%; margin-bottom: 0.5rem;">
-                        <option value="e66">Ruta E-66 (Ascochinga - La Cumbre)</option>
-                        <option value="r9">Ruta Nacional 9 Norte (Jesús María - Caroya)</option>
-                        <option value="r38">Ruta Nacional 38 (Punilla)</option>
-                        <option value="altas-cumbres">Camino de las Altas Cumbres (Ruta 34)</option>
-                    </select>
-                    <button class="action-btn" style="background-color: #10b981; width: 100%; justify-content: center;" onclick="consultarEstadoRuta()">
-                        🔍 Verificar Transitabilidad
-                    </button>
-                    <div id="ruta-results" style="margin-top: 0.75rem; font-size: 0.85rem; color: #047857;">Seleccioná una ruta para ver su estado actual.</div>
-                </div>
-                <span class="status-badge" style="background-color: #d1fae5; color: #065f46; margin-top: 1rem;">Rutas Provinciales</span>
-            </div>
+<script>
+        function consultarEstadoRuta() {
+            const ruta = document.getElementById("ruta-select").value;
+            const resDiv = document.getElementById("ruta-results");
+            
+            const estadoRutas = {
+                e66: { estado: "TRANSITABLE CON PRECAUCIÓN", detalle: "Precaución por polvo en banquinas y cruce de animales sueltos en zona serrana." },
+                r9: { estado: "TRANSITABLE", detalle: "Tránsito normal y fluido en ambos sentidos. Sin demoras reportadas." },
+                r38: { estado: "OBRAS EN ZONA / DEMORAS", detalle: "Calzada angosta por trabajos de mantenimiento a la altura de Molinari. Conducir a baja velocidad." },
+                "altas-cumbres": { estado: "TRANSITABLE CON PRECAUCIÓN", detalle: "Calzada húmeda en sectores de alta montaña por bancos de neblina matutina. Visibilidad reducida." }
+            };
+
+            const info = estadoRutas[ruta];
+            resDiv.innerHTML = `
+                <strong>🚦 Estado del Tramo:</strong> <span style="color: #065f46; font-weight: bold;">${info.estado}</span><br>
+                <em>${info.detalle}</em>
+            `;
+        }
+    </script>

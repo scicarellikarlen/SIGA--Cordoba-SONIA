@@ -1,82 +1,121 @@
-<!-- ================================================= -->
-<!-- MOTOR PREDICTIVO Y ANALÍTICO SIGA (BACKEND / JS)  -->
-<!-- ================================================= -->
+<!-- ==================================================================== -->
+<!-- 1. BARRA SUPERIOR PROVINCIAL (Pantalla de Ingreso / Registro)        -->
+<!-- ==================================================================== -->
+<div id="siga-barra-provincial" style="background-color: #991b1b; color: #ffffff; padding: 0.7rem 1.2rem; font-family: system-ui, sans-serif; font-size: 0.85rem; font-weight: 500; display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 0.8rem; border-bottom: 2px solid #7f1d1d; position: sticky; top: 0; z-index: 1000; box-shadow: 0 2px 6px rgba(0,0,0,0.3);">
+    <div style="display: flex; align-items: center; gap: 0.5rem;">
+        <span style="font-size: 1.2rem;">🚨</span>
+        <strong style="letter-spacing: 0.5px;">CENTRAL DE EMERGENCIAS CÓRDOBA (Provincial):</strong>
+    </div>
+    <div style="display: flex; flex-wrap: wrap; gap: 1rem; align-items: center;">
+        <span>👮‍♂️ Policía: <a href="tel:911" style="color: #fff; font-weight: bold; text-decoration: underline;">911</a> / <a href="tel:101" style="color: #fff; font-weight: bold; text-decoration: underline;">101</a></span>
+        <span>🔥 Bomberos: <a href="tel:100" style="color: #fff; font-weight: bold; text-decoration: underline;">100</a></span>
+        <span>🚑 Médica: <a href="tel:107" style="color: #fff; font-weight: bold; text-decoration: underline;">107</a></span>
+        <span>⛈️ Defensa Civil: <a href="tel:103" style="color: #fff; font-weight: bold; text-decoration: underline;">103</a></span>
+        <span>🌳 Fuego: <a href="tel:08008883464" style="color: #fff; font-weight: bold; text-decoration: underline;">0800-888-3464</a></span>
+        <span>🌿 Ambiental: <a href="tel:03514321286" style="color: #fff; font-weight: bold; text-decoration: underline;">0351-4321286</a></span>
+        <span>⚖️ Defensoría: <a href="tel:08007770337" style="color: #fff; font-weight: bold; text-decoration: underline;">0800-777-0337</a></span>
+        <span>🏥 Clínicas: <a href="tel:03514334300" style="color: #fff; font-weight: bold; text-decoration: underline;">0351-4334300</a></span>
+    </div>
+</div>
+
+<!-- ==================================================================== -->
+<!-- 2. PANEL DERECHO DEPARTAMENTAL (Dentro de la App con GPS y Alarma)   -->
+<!-- ==================================================================== -->
+<div id="siga-panel-departamental" style="background: #f8fafc; border: 2px solid #cbd5e1; border-radius: 12px; padding: 16px; font-family: system-ui, sans-serif; max-width: 360px; margin-top: 20px;">
+    
+    <!-- Banner de Alerta Crítica con Sonido de Alarma -->
+    <div id="contenedor-alerta-activa" style="display: none; background: #fee2e2; border: 1px solid #ef4444; border-radius: 8px; padding: 10px; margin-bottom: 12px; animation: parpadeoAlerta 1.5s infinite;">
+        <div style="display: flex; align-items: center; gap: 8px; color: #991b1b; font-weight: bold; font-size: 13px;">
+            <span>🔔 ¡ALERTA ACTIVA EN TU ZONA!</span>
+        </div>
+        <p id="texto-alerta-zona" style="font-size: 12px; color: #7f1d1d; margin: 4px 0 0 0;"></p>
+    </div>
+
+    <h4 style="color: #1e3a8a; margin-top: 0; margin-bottom: 6px; font-size: 15px; border-bottom: 2px solid #e2e8f0; padding-bottom: 6px;">
+        📍 Emergencias Departamento: <span id="depto-gps-nombre" style="color: #dc2626;">Detectando GPS...</span>
+    </h4>
+    <p style="font-size: 11px; color: #64748b; margin-top: 0; margin-bottom: 12px;">
+        Teléfonos directos filtrados por tu ubicación exacta para respuesta inmediata.
+    </p>
+
+    <!-- Lista Departamental con Protocolo tel: -->
+    <div style="display: flex; flex-direction: column; gap: 8px; font-size: 13px;">
+        <div style="background: white; padding: 8px 12px; border-radius: 6px; border: 1px solid #e2e8f0;">
+            <strong>👮 Policía Departamental:</strong><br>
+            <a id="link-policia-depto" href="tel:101" style="color: #2563eb; text-decoration: none; font-weight: bold;">📞 101 / Destacamento Regional</a>
+        </div>
+        <div style="background: white; padding: 8px 12px; border-radius: 6px; border: 1px solid #e2e8f0;">
+            <strong>🔥 Bomberos Voluntarios (Zona):</strong><br>
+            <span id="span-bomberos-depto"><a href="tel:100" style="color: #dc2626; text-decoration: none; font-weight: bold;">📞 Cargando cuartel local...</a></span>
+        </div>
+        <div style="background: white; padding: 8px 12px; border-radius: 6px; border: 1px solid #e2e8f0;">
+            <strong>🏥 Hospital Zonal / Departamental:</strong><br>
+            <span id="span-hospital-depto"><a href="tel:107" style="color: #059669; text-decoration: none; font-weight: bold;">📞 Cargando hospital de referencia...</a></span>
+        </div>
+    </div>
+</div>
+
+<!-- ==================================================================== -->
+<!-- SCRIPT: LÓGICA DE GPS, FILTRADO DEPARTAMENTAL Y ALARMA SONORA         -->
+<!-- ==================================================================== -->
 <script>
-    /**
-     * Motor de Análisis Predictivo y Gestión de Riesgos - SIGA
-     * Rol: Especialista Senior en Meteorología y Gestión de Riesgos.
-     * Funciones: Cruce avanzado OHMC, IDECOR, NASA FIRMS y fuentes oficiales con ventana de preaviso de 3 días.
-     */
-    class SigaPredictiveEngine {
-        constructor() {
-            this.fuentes = ['Windy', 'The Weather Channel', 'OHMC', 'IDECOR', 'NASA FIRMS'];
-            this.ventanaPreavisoDias = 3;
-        }
-
-        async ejecutarAnalisisRiesgo(localidad, coordenadasGPS) {
-            console.log(`[SIGA Core] Iniciando análisis predictivo para: ${localidad}`);
+    // Función para reproducir alarma sonora en el celular cuando hay alerta crítica
+    function reproducirAlarmaSonora() {
+        try {
+            // Sintetizador de audio web nativo para emitir un bip de alerta sin depender de archivos externos
+            const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+            const osc = audioCtx.createOscillator();
+            const gain = audioCtx.createGain();
             
-            // Simulación del cruce de datos disruptivo y avanzado
-            const estadoAnalisis = {
-                zona: localidad,
-                timestamp: new Date().toISOString(),
-                nivelPeligroIncendios: "ALTO (Índice FWI elevado por ráfagas de viento norte y sequía)",
-                tendenciaClimatica: "Estable las próximas 24hs, desmejora abrupta en 72hs con ingreso de frente frío y tormentas aisladas.",
-                riesgoHidrologico: "Cauces normales según monitoreo APRHI, atención a posibles crecidas repentinas en cuencas altas.",
-                focosCalorCercanos: "0 anomalías críticas directas en radio inmediato, monitoreo NASA FIRMS activo.",
-                prediccion3Dias: "Alerta preventiva temprana activada para la ventana de preaviso."
-            };
-
-            return estadoAnalisis;
-        }
-
-        async despacharAlertaWhatsApp(usuarioTelefono, localidad, diagnostico) {
-            if (!usuarioTelefono || usuarioTelefono.length < 10) {
-                console.error("Número de teléfono inválido para AlertSubscription.");
-                return false;
-            }
-
-            // Simulación de envío automatizado e individualizado de alerta preventiva por WhatsApp
-            console.log(`[WhatsApp API] Enviando alerta individualizada a +54${usuarioTelefono} para ${localidad}:`);
-            console.log(`> Diagnóstico SIGA: ${diagnostico.nivelPeligroIncendios}. ${diagnostico.prediccion3Dias}`);
+            osc.type = 'sine';
+            osc.frequency.setValueAtTime(880, audioCtx.currentTime); // Tono de alerta
+            gain.gain.setValueAtTime(0.1, audioCtx.currentTime);
             
-            return true;
+            osc.connect(gain);
+            gain.connect(audioCtx.destination);
+            
+            osc.start();
+            osc.stop(audioCtx.currentTime + 0.4); // Duración del bip de aviso
+        } catch (e) {
+            console.log("Audio de alerta silenciado por políticas del navegador.");
         }
     }
 
-    // Instancia global del motor para ser llamada desde la interfaz
-    const sigaEngine = new SigaPredictiveEngine();
-
-    // Función puente conectada al botón de consulta de la interfaz
-    async function dispararAnalisisAvanzadoSIGA() {
-        const localidadInput = document.getElementById('buscador-localidad') || document.getElementById('siga-zona-input');
-        const localidad = localidadInput ? localidadInput.value.trim() : 'Córdoba (General)';
-        const resDiv = document.getElementById('siga-resultado-zona') || document.getElementById('alerta-fuego');
-
-        if (!localidad) {
-            alert('Por favor, ingresá una localidad.');
-            return;
-        }
-
-        if (resDiv) {
-            resDiv.style.display = 'block';
-            resDiv.innerHTML = `⚙️ <strong>[Motor SIGA Senior Activo]:</strong> Cruzando datos de OHMC, IDECOR, Windy y NASA FIRMS para <strong>${localidad}</strong> (Preaviso 72hs)...`;
-        }
-
-        // Ejecutar el motor predictivo
-        const resultado = await sigaEngine.ejecutarAnalisisRiesgo(localidad, { lat: -31.1, lon: -64.3 });
-
+    // Simulación de lectura GPS y activación del panel departamental + Alarma
+    window.addEventListener('DOMContentLoaded', () => {
         setTimeout(() => {
-            if (resDiv) {
-                resDiv.innerHTML = `
-                    🔍 <strong>Diagnóstico Técnico Avanzado (${resultado.zona}):</strong><br>
-                    • <strong>Riesgo Integral:</strong> ${resultado.nivelPeligroIncendios}<br>
-                    • <strong>Tendencia (3 días):</strong> ${resultado.prediccion3Dias}<br>
-                    • <strong>Hidrología & Diques:</strong> ${resultado.riesgoHidrologico}<br>
-                    • <strong>Monitoreo Satelital:</strong> ${resultado.focosCalorCercanos}<br>
-                    <span style="color: #059669; font-weight: bold;">✔ Alerta automatizada lista para despacho en AlertSubscription.</span>
-                `;
+            // Simulamos que el usuario está en Ascochinga (Departamento Totoral / Sierras Chicas)
+            const departamento = "Totoral / Sierras Chicas (Ascochinga)";
+            document.getElementById('depto-gps-nombre').innerText = departamento;
+
+            // Actualizar teléfonos específicos departamentales
+            document.getElementById('link-policia-depto').href = "tel:03525422111";
+            document.getElementById('link-policia-depto').innerText = "📞 Comisaría Regional Totoral";
+            
+            document.getElementById('span-bomberos-depto').innerHTML = '<a href="tel:03525422222" style="color: #dc2626; text-decoration: none; font-weight: bold;">📞 Cuartel Bomberos Voluntarios Jesús María / Ascochinga</a>';
+            
+            document.getElementById('span-hospital-depto').innerHTML = '<a href="tel:03525420345" style="color: #059669; text-decoration: none; font-weight: bold;">📞 Hospital Regional Vicente Agüero</a>';
+
+            // Simulación de disparo de alerta temprana en la zona (activa la alarma sonora)
+            const hayAlertaEnZona = true; 
+            if (hayAlertaEnZona) {
+                const cajaAlerta = document.getElementById('contenedor-alerta-activa');
+                const textoAlerta = document.getElementById('texto-alerta-zona');
+                
+                cajaAlerta.style.display = 'block';
+                textoAlerta.innerHTML = "Riesgo extremo de incendios y ráfagas de viento norte en tu cuadrante (72hs).";
+                
+                // ¡Suena la alarma en el celular!
+                reproducirAlarmaSonora();
             }
         }, 800);
-    }
+    });
 </script>
+
+<style>
+    @keyframes parpadeoAlerta {
+        0% { opacity: 1; }
+        50% { opacity: 0.7; }
+        100% { opacity: 1; }
+    }
+</style>

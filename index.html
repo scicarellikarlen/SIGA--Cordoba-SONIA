@@ -1,24 +1,145 @@
- Actualiza el componente principal de la página de inicio (`index.html` o `App.jsx`) de la web app SIGA replicando estrictamente esta estructura visual minimalista:
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SIGA - Córdoba & Sierras</title>
+    <!-- Tailwind CSS para diseño moderno y minimalista -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        forest: {
+                            DEFAULT: '#1b4332',
+                            dark: '#081c15',
+                            light: '#2d6a4f'
+                        },
+                        dior: {
+                            bone: '#fdfbf7',
+                            cream: '#f4f1ea',
+                            accent: '#e6dfd5'
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body class="bg-dior-bone text-forest-dark font-sans antialiased pb-20">
 
-1. **Header Superior:**
-   - Ubicación actual clara: "Córdoba - Sierras" con ícono de geolocalización y etiqueta "Argentina".
-   - Iconos limpios de búsqueda y menú hamburguesa a la derecha.
+    <!-- Header Superior -->
+    <header class="bg-forest text-dior-bone px-4 py-4 flex justify-between items-center shadow-md">
+        <div class="flex items-center space-x-2">
+            <i class="fa-solid fa-location-dot text-dior-cream"></i>
+            <div>
+                <h1 class="font-bold text-lg tracking-wide leading-tight">Córdoba - Sierras</h1>
+                <span class="text-xs text-dior-cream/80 uppercase tracking-wider">Argentina</span>
+            </div>
+        </div>
+        <div class="flex items-center space-x-4 text-lg">
+            <button aria-label="Buscar" class="hover:text-dior-cream transition"><i class="fa-solid fa-magnifying-glass"></i></button>
+            <button aria-label="Menú" class="hover:text-dior-cream transition"><i class="fa-solid fa-bars"></i></button>
+        </div>
+    </header>
 
-2. **Hero de Temperatura Actual:**
-   - Número de temperatura grande y destacado (ej: 24°C) con su respectivo RealFeel debajo.
-   - Descripción breve del estado del cielo (ej: "Parcialmente nublado").
-   - Métrica rápida en una sola línea limpia: Humedad (%), Viento (velocidad/dirección) e Índice UV.
+    <main class="max-w-md mx-auto p-4 space-y-6">
 
-3. **Módulo de Alertas Activas (Prioridad Alta):**
-   - Tarjetas horizontales deslizables o limpias en la parte superior para avisos críticos geolocalizados en Córdoba y Sierras (Ej: Granizo con anticipación de 48h, Alerta Roja de Incendios, Viento fuerte).
-   - Iconografía intuitiva y códigos de color sutiles pero de impacto inmediato vinculados al verde técnico y alertas semánticas.
+        <!-- Módulo de Alertas Activas (Prioridad Alta) -->
+        <section class="space-y-2">
+            <div class="bg-amber-50 border-l-4 border-amber-500 p-3 rounded-r-lg shadow-sm flex items-start space-x-3">
+                <i class="fa-solid fa-triangle-exclamation text-amber-600 mt-1"></i>
+                <div>
+                    <h2 class="text-xs font-bold text-amber-800 uppercase">Alerta Roja - Riesgo de Incendios</h2>
+                    <p class="text-xs text-amber-700">Condiciones extremas en las Sierras Chicas. Anticipación 48h.</p>
+                </div>
+            </div>
+        </section>
 
-4. **Navegación por Solapas (Tabs):**
-   - Pestañas horizontales limpias: Pronóstico, Alertas, Mapa, Sierras.
+        <!-- Hero de Temperatura Actual -->
+        <section class="bg-dior-cream rounded-2xl p-6 shadow-sm border border-dior-accent text-center space-y-3">
+            <div class="inline-block bg-forest/10 text-forest px-3 py-1 rounded-full text-xs font-semibold">
+                Actualizado recién
+            </div>
+            <div class="flex justify-center items-baseline space-x-2">
+                <span class="text-6xl font-extrabold tracking-tighter text-forest">24°</span>
+                <span class="text-xl text-forest/70">C</span>
+            </div>
+            <p class="text-sm font-medium text-forest/80">Parcialmente nublado • RealFeel 26°</p>
+            
+            <div class="grid grid-cols-3 gap-2 pt-4 border-t border-dior-accent text-xs text-forest/80">
+                <div><i class="fa-solid fa-droplet block mb-1 text-forest"></i> 45% Humedad</div>
+                <div><i class="fa-solid fa-wind block mb-1 text-forest"></i> 14 km/h N</div>
+                <div><i class="fa-solid fa-sun block mb-1 text-forest"></i> UV Alto (6)</div>
+            </div>
+        </section>
 
-5. **Pronóstico de 7 Días:**
-   - Tira horizontal limpia y deslizable día por día (Hoy, Mié, Jue, Vie, Sáb, Dom, Lun) mostrando ícono del clima, temperatura máxima, mínima y porcentaje de probabilidad de precipitación.
+        <!-- Navegación por Solapas (Tabs) -->
+        <nav aria-label="Secciones del clima" class="flex justify-between bg-dior-cream p-1 rounded-xl text-sm font-medium border border-dior-accent">
+            <button class="flex-1 py-2 bg-forest text-dior-bone rounded-lg shadow-sm text-center">Pronóstico</button>
+            <button class="flex-1 py-2 text-forest/70 hover:text-forest text-center">Alertas</button>
+            <button class="flex-1 py-2 text-forest/70 hover:text-forest text-center">Mapa</button>
+            <button class="flex-1 py-2 text-forest/70 hover:text-forest text-center">Sierras</button>
+        </nav>
 
-6. **Bloque de Acciones Rápidas y Navegación Inferior:**
-   - Botones rápidos rectangulares y minimalistas para: Ver radar interactivo, Alertas activas detalladas y Zonas de riesgo en las Sierras.
-   - Barra de navegación inferior fija (`Bottom Nav`) con cuatro accesos limpios: Home, Alertas, Mapa y Perfil.
+        <!-- Pronóstico de 7 Días -->
+        <section class="bg-dior-cream rounded-2xl p-4 shadow-sm border border-dior-accent space-y-3">
+            <h3 class="text-xs font-bold uppercase tracking-wider text-forest/70">Pronóstico extendido</h3>
+            <div class="space-y-2">
+                <div class="flex justify-between items-center text-sm py-1 border-b border-dior-accent/50">
+                    <span class="font-semibold w-12">Hoy</span>
+                    <i class="fa-solid fa-cloud-sun text-forest"></i>
+                    <span class="text-xs text-forest/70">0%</span>
+                    <span><strong>24°</strong> / 12°</span>
+                </div>
+                <div class="flex justify-between items-center text-sm py-1 border-b border-dior-accent/50">
+                    <span class="font-semibold w-12">Mié</span>
+                    <i class="fa-solid fa-sun text-amber-600"></i>
+                    <span class="text-xs text-forest/70">10%</span>
+                    <span><strong>26°</strong> / 14°</span>
+                </div>
+                <div class="flex justify-between items-center text-sm py-1 border-b border-dior-accent/50">
+                    <span class="font-semibold w-12">Jue</span>
+                    <i class="fa-solid fa-cloud-rain text-blue-600"></i>
+                    <span class="text-xs text-blue-600 font-medium">80%</span>
+                    <span><strong>19°</strong> / 11°</span>
+                </div>
+                <div class="flex justify-between items-center text-sm py-1">
+                    <span class="font-semibold w-12">Vie</span>
+                    <i class="fa-solid fa-cloud-sun text-forest"></i>
+                    <span class="text-xs text-forest/70">20%</span>
+                    <span><strong>22°</strong> / 10°</span>
+                </div>
+            </div>
+        </section>
+
+        <!-- Bloque de Acciones Rápidas -->
+        <section class="grid grid-cols-3 gap-2">
+            <button class="bg-forest text-dior-bone p-3 rounded-xl text-xs font-semibold shadow-sm flex flex-col items-center justify-center space-y-1 hover:bg-forest-light transition">
+                <i class="fa-solid fa-radar text-base"></i>
+                <span>Radar</span>
+            </button>
+            <button class="bg-forest text-dior-bone p-3 rounded-xl text-xs font-semibold shadow-sm flex flex-col items-center justify-center space-y-1 hover:bg-forest-light transition">
+                <i class="fa-solid fa-triangle-exclamation text-base"></i>
+                <span>Alertas</span>
+            </button>
+            <button class="bg-forest text-dior-bone p-3 rounded-xl text-xs font-semibold shadow-sm flex flex-col items-center justify-center space-y-1 hover:bg-forest-light transition">
+                <i class="fa-solid fa-mountain text-base"></i>
+                <span>Sierras</span>
+            </button>
+        </section>
+
+    </main>
+
+    <!-- Barra de Navegación Inferior Fija -->
+    <nav class="fixed bottom-0 left-0 right-0 bg-dior-cream border-t border-dior-accent py-3 px-6 flex justify-around text-forest shadow-lg">
+        <button aria-label="Inicio" class="flex flex-col items-center text-forest"><i class="fa-solid fa-house text-lg"></i><span class="text-[10px] mt-1">Home</span></button>
+        <button aria-label="Alertas" class="flex flex-col items-center text-forest/60 hover:text-forest"><i class="fa-solid fa-bell text-lg"></i><span class="text-[10px] mt-1">Alertas</span></button>
+        <button aria-label="Mapa" class="flex flex-col items-center text-forest/60 hover:text-forest"><i class="fa-solid fa-map text-lg"></i><span class="text-[10px] mt-1">Mapa</span></button>
+        <button aria-label="Perfil" class="flex flex-col items-center text-forest/60 hover:text-forest"><i class="fa-solid fa-user text-lg"></i><span class="text-[10px] mt-1">Perfil</span></button>
+    </nav>
+
+</body>
+</html>

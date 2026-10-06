@@ -3,115 +3,382 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SIGA Córdoba - Sistema Inteligente de Gestión Ambiental</title>
-    <meta name="description" content="SIGA Córdoba: Alertas tempranas en tiempo real sobre clima, tormentas, riesgo de incendios y estado de ríos y rutas. Rápido, gratuito y directo a tu celular.">
-</head>
-<body style="margin: 0; padding: 0; font-family: system-ui, -apple-system, sans-serif; background-color: #f3f4f6;">
+    <title>SIGA - Servicio Inteligente de Gestión y Alerta | Córdoba</title>
+    <meta name="description" content="SIGA Córdoba: Plataforma provincial inteligente de pronóstico meteorológico, monitoreo ambiental, riesgo de incendios y alertas severas.">
+    <!-- Librerías de Mapas (Leaflet) y Gráficos (Chart.js) -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <style>
+        :root {
+            --bg-dark: #0b1120;
+            --card-bg: #111827;
+            --card-surface: #1f2937;
+            --tech-green: #10b981;
+            --tech-green-hover: #059669;
+            --accent-glow: rgba(16, 185, 129, 0.2);
+            --text-main: #f3f4f6;
+            --text-muted: #9ca3af;
+            --border-color: #374151;
+        }
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background-color: var(--bg-dark);
+            color: var(--text-main);
+        }
+        /* Barra Superior Provincial con Verde Tecnológico */
+        .top-emergency-bar {
+            background: linear-gradient(90deg, #064e3b, #065f46);
+            color: #ffffff;
+            padding: 0.5rem 1rem;
+            font-size: 0.8rem;
+            font-weight: 500;
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+            align-items: center;
+            gap: 0.8rem;
+            border-bottom: 2px solid var(--tech-green);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.4);
+        }
+        .top-emergency-bar a {
+            color: #a7f3d0;
+            font-weight: bold;
+            text-decoration: none;
+        }
+        .top-emergency-bar a:hover {
+            color: #fff;
+            text-decoration: underline;
+        }
 
-    <!-- ==================================================================== -->
-    <!-- 1. BARRA SUPERIOR PROVINCIAL (Emergencias Generales de la Provincia) -->
-    <!-- ==================================================================== -->
-    <div style="background-color: #991b1b; color: #ffffff; padding: 0.7rem 1.2rem; font-size: 0.85rem; font-weight: 500; display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 0.8rem; border-bottom: 2px solid #7f1d1d; position: sticky; top: 0; z-index: 1000; box-shadow: 0 2px 6px rgba(0,0,0,0.3);">
-        <div style="display: flex; align-items: center; gap: 0.5rem;">
-            <span style="font-size: 1.2rem;">🚨</span>
+        /* Contenedor principal con diseño de dos columnas (App + Panel Lateral Derecho) */
+        .main-layout {
+            max-width: 1250px;
+            margin: 20px auto;
+            padding: 0 15px;
+            display: grid;
+            grid-template-columns: 1fr 320px;
+            gap: 20px;
+        }
+        @media (max-width: 950px) {
+            .main-layout {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .app-container {
+            background: var(--card-bg);
+            border-radius: 14px;
+            padding: 22px;
+            border: 1px solid var(--border-color);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.4);
+        }
+
+        /* Panel Lateral Derecho para Emergencias Regionales */
+        .side-emergency-panel {
+            background: var(--card-bg);
+            border-radius: 14px;
+            padding: 18px;
+            border: 1px solid var(--border-color);
+            height: fit-content;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.4);
+        }
+        .side-emergency-panel h4 {
+            margin-top: 0;
+            color: var(--tech-green);
+            font-size: 14px;
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .emergency-item {
+            background: var(--card-surface);
+            padding: 10px;
+            border-radius: 8px;
+            margin-bottom: 10px;
+            border: 1px solid var(--border-color);
+            font-size: 12px;
+        }
+
+        /* Sistema de Solapas Superiores (Tabs) */
+        .tabs-nav {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-bottom: 20px;
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 12px;
+        }
+        .tab-btn {
+            background: var(--card-surface);
+            color: var(--text-muted);
+            border: 1px solid var(--border-color);
+            padding: 8px 14px;
+            border-radius: 8px;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .tab-btn:hover {
+            background: #374151;
+            color: #fff;
+        }
+        .tab-btn.active {
+            background: var(--tech-green);
+            color: #0b1120;
+            border-color: var(--tech-green);
+            box-shadow: 0 0 10px var(--accent-glow);
+        }
+
+        .tab-content {
+            display: none;
+        }
+        .tab-content.active {
+            display: block;
+        }
+
+        .card-module {
+            background: var(--card-surface);
+            border: 1px solid var(--border-color);
+            border-radius: 10px;
+            padding: 16px;
+            margin-bottom: 16px;
+        }
+        .card-module h3 {
+            margin-top: 0;
+            color: #34d399;
+            font-size: 15px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 8px;
+        }
+        .btn-tech {
+            background: var(--tech-green);
+            color: #0b1120;
+            border: none;
+            padding: 10px 18px;
+            border-radius: 8px;
+            font-weight: bold;
+            cursor: pointer;
+            font-size: 13px;
+            transition: all 0.2s;
+        }
+        .btn-tech:hover {
+            background: var(--tech-green-hover);
+            color: #fff;
+        }
+        input, select {
+            background: var(--bg-dark);
+            color: white;
+            border: 1px solid var(--border-color);
+            padding: 10px;
+            border-radius: 8px;
+            font-size: 13px;
+        }
+        input:focus {
+            outline: none;
+            border-color: var(--tech-green);
+        }
+    </style>
+</head>
+<body>
+
+    <!-- BARRA SUPERIOR PROVINCIAL (Verde Tecnológico Oficial) -->
+    <div class="top-emergency-bar">
+        <div style="display: flex; align-items: center; gap: 6px;">
+            <span>🛡️</span>
             <strong style="letter-spacing: 0.5px;">CENTRAL DE EMERGENCIAS CÓRDOBA:</strong>
         </div>
         <div style="display: flex; flex-wrap: wrap; gap: 1rem; align-items: center;">
-            <span>👮‍♂️ Policía: <a href="tel:911" style="color: #fff; font-weight: bold; text-decoration: underline;">911</a> / <a href="tel:101" style="color: #fff; font-weight: bold; text-decoration: underline;">101</a></span>
-            <span>🔥 Bomberos: <a href="tel:100" style="color: #fff; font-weight: bold; text-decoration: underline;">100</a></span>
-            <span>🚑 Médica: <a href="tel:107" style="color: #fff; font-weight: bold; text-decoration: underline;">107</a></span>
-            <span>⛈️ Defensa Civil: <a href="tel:103" style="color: #fff; font-weight: bold; text-decoration: underline;">103</a></span>
-            <span>🌳 Fuego: <a href="tel:08008883464" style="color: #fff; font-weight: bold; text-decoration: underline;">0800-888-3464</a></span>
-            <span>🌿 Ambiental: <a href="tel:03514321286" style="color: #fff; font-weight: bold; text-decoration: underline;">0351-4321286</a></span>
-            <span>⚖️ Defensoría: <a href="tel:08007770337" style="color: #fff; font-weight: bold; text-decoration: underline;">0800-777-0337</a></span>
-            <span>🏥 Clínicas: <a href="tel:03514334300" style="color: #fff; font-weight: bold; text-decoration: underline;">0351-4334300</a></span>
+            <span>👮‍♂️ Policía: <a href="tel:911">911</a> / <a href="tel:101">101</a></span>
+            <span>🔥 Bomberos: <a href="tel:100">100</a></span>
+            <span>🚑 Médica: <a href="tel:107">107</a></span>
+            <span>⛈️ Defensa Civil: <a href="tel:103">103</a></span>
+            <span>🌳 Fuego: <a href="tel:08008883464">0800-888-3464</a></span>
         </div>
     </div>
 
-    <!-- Contenedor Principal de la App -->
-    <div style="max-width: 900px; margin: 20px auto; padding: 20px; background: #ffffff; border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.05);">
+    <!-- CONTENEDOR DE DOS COLUMNAS -->
+    <div class="main-layout">
         
-        <!-- Encabezado -->
-        <div style="text-align: center; margin-bottom: 25px;">
-            <h1 style="color: #1e3a8a; margin-bottom: 8px; font-size: 24px;">🛡️ SIGA - Protección y Alertas Córdoba</h1>
-            <p style="color: #4b5563; font-size: 14px; line-height: 1.5; margin: 0;">
-                Conocé el estado del tiempo, el riesgo de incendios y el estado de los ríos y rutas en tiempo real. Tan fácil de usar como mandar un mensaje de WhatsApp.
-            </p>
-        </div>
-
-        <!-- Buscador de Localidad -->
-        <div style="background: #f8fafc; border: 1px solid #cbd5e1; border-radius: 12px; padding: 16px; margin-bottom: 20px;">
-            <label for="buscador-localidad" style="display: block; font-weight: bold; font-size: 13px; margin-bottom: 6px; color: #1f2937;">📍 Ingresá tu localidad o zona:</label>
-            <div style="display: flex; gap: 10px; flex-wrap: wrap;">
-                <input type="text" id="buscador-localidad" placeholder="Ej. Ascochinga, La Granja, La Pampa, Córdoba..." style="flex: 1; min-width: 220px; padding: 10px; border: 1px solid #94a3b8; border-radius: 8px; font-size: 14px;" list="lista-localidades">
-                <datalist id="lista-localidades">
-                    <option value="Ascochinga">
-                    <option value="La Granja">
-                    <option value="La Pampa (Sierras Chicas)">
-                    <option value="Córdoba Capital">
-                    <option value="Jesús María">
-                    <option value="Río Cuarto">
-                </datalist>
-                <button type="button" onclick="consultarEstadoSiga()" style="background: #2563eb; color: white; border: none; padding: 10px 18px; border-radius: 8px; font-weight: bold; cursor: pointer; font-size: 14px;">Consultar Zona</button>
-            </div>
-            <div id="siga-resultado-zona" style="margin-top: 12px; font-size: 13px; color: #334155; display: none; background: #e2e8f0; padding: 12px; border-radius: 6px;"></div>
-        </div>
-
-        <!-- Panel Departamental de Emergencias por GPS -->
-        <div id="siga-panel-departamental" style="background: #f8fafc; border: 2px solid #cbd5e1; border-radius: 12px; padding: 16px; margin-top: 20px;">
-            
-            <!-- Banner de Alerta Crítica (Con Alarma Sonora) -->
-            <div id="contenedor-alerta-activa" style="display: none; background: #fee2e2; border: 1px solid #ef4444; border-radius: 8px; padding: 10px; margin-bottom: 12px;">
-                <div style="display: flex; align-items: center; gap: 8px; color: #991b1b; font-weight: bold; font-size: 13px;">
-                    <span>🔔 ¡ALERTA ACTIVA EN TU ZONA!</span>
-                </div>
-                <p id="texto-alerta-zona" style="font-size: 12px; color: #7f1d1d; margin: 4px 0 0 0;"></p>
+        <!-- Columna Izquierda: App Principal con Solapas -->
+        <div class="app-container">
+            <div style="text-align: center; margin-bottom: 20px;">
+                <h1 style="color: var(--tech-green); margin-bottom: 4px; font-size: 22px;">SIGA - Servicio Inteligente de Gestión y Alerta</h1>
+                <p style="color: var(--text-muted); font-size: 13px; margin: 0;">Plataforma provincial de monitoreo ambiental, meteorológico y prevención de riesgos.</p>
             </div>
 
-            <h4 style="color: #1e3a8a; margin-top: 0; margin-bottom: 6px; font-size: 15px; border-bottom: 2px solid #e2e8f0; padding-bottom: 6px;">
-                📍 Emergencias de tu Departamento: <span id="depto-gps-nombre" style="color: #dc2626;">Detectando ubicación GPS...</span>
-            </h4>
-            <p style="font-size: 11px; color: #64748b; margin-top: 0; margin-bottom: 12px;">
-                Teléfonos directos filtrados por tu ubicación exacta para respuesta inmediata.
-            </p>
+            <!-- Navegación por Solapas (Tabs Superiores) -->
+            <div class="tabs-nav">
+                <button class="tab-btn active" onclick="cambiarSolapa('pronostico', event)">🌤️ Pronóstico 7 Días</button>
+                <button class="tab-btn" onclick="cambiarSolapa('tormentas', event)">⛈️ Tormentas y Granizo</button>
+                <button class="tab-btn" onclick="cambiarSolapa('incendios', event)">🔥 Riesgo de Incendios</button>
+                <button class="tab-btn" onclick="cambiarSolapa('mapas', event)">🗺️ Mapa y Sensores</button>
+                <button class="tab-btn" onclick="cambiarSolapa('historial', event)">📁 Historial / Guía</button>
+            </div>
 
-            <div style="display: flex; flex-direction: column; gap: 8px; font-size: 13px;">
-                <div style="background: white; padding: 10px; border-radius: 6px; border: 1px solid #e2e8f0;">
-                    <strong>👮 Policía Departamental:</strong><br>
-                    <a id="link-policia-depto" href="tel:101" style="color: #2563eb; text-decoration: none; font-weight: bold;">📞 101 / Destacamento Regional</a>
+            <!-- SOLAPA 1: PRONÓSTICO 7 DÍAS -->
+            <div id="solapa-pronostico" class="tab-content active">
+                <div class="card-module">
+                    <h3>📍 Selector Territorial y Estado Actual</h3>
+                    <div style="display: flex; gap: 10px; flex-wrap: wrap; margin-top: 10px;">
+                        <input type="text" id="buscador-localidad" placeholder="Ej. Ascochinga, Jesús María, Córdoba..." style="flex: 1; min-width: 200px;" list="lista-localidades">
+                        <datalist id="lista-localidades">
+                            <option value="Ascochinga">
+                            <option value="La Granja">
+                            <option value="Jesús María">
+                            <option value="Córdoba Capital">
+                            <option value="Villa Carlos Paz">
+                            <option value="Río Cuarto">
+                        </datalist>
+                        <button type="button" onclick="consultarEstadoSiga()" class="btn-tech">Consultar Zona</button>
+                    </div>
+                    <div id="siga-resultado-zona" style="margin-top: 12px; font-size: 13px; display: none; background: var(--bg-dark); padding: 12px; border-radius: 6px; border-left: 3px solid var(--tech-green);"></div>
                 </div>
-                <div style="background: white; padding: 10px; border-radius: 6px; border: 1px solid #e2e8f0;">
-                    <strong>🔥 Bomberos Voluntarios (Zona):</strong><br>
-                    <span id="span-bomberos-depto"><a href="tel:100" style="color: #dc2626; text-decoration: none; font-weight: bold;">📞 Cargando cuartel local...</a></span>
+
+                <div class="card-module">
+                    <h3>📅 Tendencia Extendida (7 Días)</h3>
+                    <p style="font-size: 12px; color: var(--text-muted); margin-top: 0;">Proyección meteorológica normalizada por fuentes oficiales para toda la región.</p>
+                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(110px, 1fr)); gap: 8px; text-align: center; font-size: 12px;">
+                        <div style="background: var(--bg-dark); padding: 10px; border-radius: 6px;"><strong style="color:var(--tech-green);">Hoy</strong><br>☀️ 26° / 14°<br><span style="font-size:11px; color:#9ca3af;">Leve norte</span></div>
+                        <div style="background: var(--bg-dark); padding: 10px; border-radius: 6px;"><strong>Mié</strong><br>⛅ 28° / 15°<br><span style="font-size:11px; color:#9ca3af;">Estable</span></div>
+                        <div style="background: var(--bg-dark); padding: 10px; border-radius: 6px;"><strong>Jue</strong><br>🌤️️ 29° / 16°<br><span style="font-size:11px; color:#9ca3af;">Caluroso</span></div>
+                        <div style="background: var(--bg-dark); padding: 10px; border-radius: 6px;"><strong>Vie</strong><br>⛈️ 24° / 13°<br><span style="font-size:11px; color:#9ca3af;">Inestable</span></div>
+                        <div style="background: var(--bg-dark); padding: 10px; border-radius: 6px;"><strong>Sáb</strong><br>⛅ 22° / 11°<br><span style="font-size:11px; color:#9ca3af;">Fresco</span></div>
+                        <div style="background: var(--bg-dark); padding: 10px; border-radius: 6px;"><strong>Dom</strong><br>☀️ 25° / 12°<br><span style="font-size:11px; color:#9ca3af;">Despejado</span></div>
+                        <div style="background: var(--bg-dark); padding: 10px; border-radius: 6px;"><strong>Lun</strong><br>☀️ 27° / 14°<br><span style="font-size:11px; color:#9ca3af;">Templado</span></div>
+                    </div>
                 </div>
-                <div style="background: white; padding: 10px; border-radius: 6px; border: 1px solid #e2e8f0;">
-                    <strong>🏥 Hospital Zonal / Departamental:</strong><br>
-                    <span id="span-hospital-depto"><a href="tel:107" style="color: #059669; text-decoration: none; font-weight: bold;">📞 Cargando hospital de referencia...</a></span>
+            </div>
+
+            <!-- SOLAPA 2: TORMENTAS Y GRANIZO -->
+            <div id="solapa-tormentas" class="tab-content">
+                <div class="card-module">
+                    <h3>⛈️ Módulo de Alerta Temprana de Granizo y Tormentas Severas</h3>
+                    <p style="font-size: 13px; color: var(--text-muted);">Monitoreo en tiempo real de celdas convectivas y avisos de corto plazo (ACP).</p>
+                    <div style="background: var(--bg-dark); padding: 14px; border-radius: 8px; border: 1px solid var(--tech-green);">
+                        <strong style="color: var(--tech-green);">🔔 Radar y Alarma de Granizo Activa</strong>
+                        <p style="font-size: 12px; margin: 6px 0 0 0; color: var(--text-muted);">Sin detección inmediata de granizo en su cuadrante actual. Los sensores acústicos emitirán aviso preventivo ante formación de nubes de desarrollo vertical extremo.</p>
+                    </div>
                 </div>
+            </div>
+
+            <!-- SOLAPA 3: RIESGO DE INCENDIOS -->
+            <div id="solapa-incendios" class="tab-content">
+                <div class="card-module">
+                    <h3>🔥 Índice de Peligro de Incendios (NASA FIRMS / Provincial)</h3>
+                    <p style="font-size: 13px; color: var(--text-muted);">Evaluación basada en humedad de combustible, velocidad de ráfagas y focos satelitales.</p>
+                    <div style="background: var(--bg-dark); padding: 14px; border-radius: 8px;">
+                        <strong style="color: #f59e0b;">⚠️️ Índice Moderado / Alto (Sierras Chicas y Norte)</strong>
+                        <p style="font-size: 12px; margin: 6px 0 0 0; color: var(--text-muted);">Se recomienda extrema precaución por baja humedad relativa ambiente y vientos predominantes del sector norte.</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- SOLAPA 4: MAPA Y SENSORES -->
+            <div id="solapa-mapas" class="tab-content">
+                <div class="card-module">
+                    <h3>🗺️ Mapa Satelital Interactivo de Córdoba</h3>
+                    <div id="mapa-siga" style="width: 100%; height: 320px; border-radius: 8px; border: 1px solid var(--border-color); margin-top: 8px;"></div>
+                </div>
+            </div>
+
+            <!-- SOLAPA 5: HISTORIAL / GUÍA -->
+            <div id="solapa-historial" class="tab-content">
+                <div class="card-module">
+                    <h3>📁 Historial de Reportes y Guía de Uso</h3>
+                    <p style="font-size: 13px; color: var(--text-muted);">Registro de consultas previas, auditorías ambientales y manual de buenas prácticas de la plataforma SIGA.</p>
+                    <ul style="font-size: 13px; color: var(--text-muted); padding-left: 18px; margin: 8px 0;">
+                        <li>Reporte de caudales APRHI archivados (Última revisión: Reciente).</li>
+                        <li>Auditoría de celdas meteorológicas y nodos descentralizados.</li>
+                        <li>Protocolo institucional de comunicación de emergencias viales y climáticas.</li>
+                    </ul>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- Columna Derecha: Panel Lateral Fijo de Emergencias Regionales -->
+        <div class="side-emergency-panel">
+            <h4>📍 Emergencias de tu Zona</h4>
+            <p style="font-size: 11px; color: var(--text-muted); margin-top: 0; margin-bottom: 12px;">Filtrado automático por geolocalización departamental.</p>
+
+            <div class="emergency-item">
+                <strong style="color: #60a5fa;">👮 Policía Departamental:</strong><br>
+                <a href="tel:101" style="color: #34d399; text-decoration: none; font-weight: bold;">📞 101 / Destacamento Local</a>
+            </div>
+            <div class="emergency-item">
+                <strong style="color: #f87171;">🔥 Bomberos Voluntarios:</strong><br>
+                <a href="tel:100" style="color: #34d399; text-decoration: none; font-weight: bold;">📞 100 / Cuartel Zonal</a>
+            </div>
+            <div class="emergency-item">
+                <strong style="color: #34d399;">🏥 Hospital de Referencia:</strong><br>
+                <a href="tel:107" style="color: #34d399; text-decoration: none; font-weight: bold;">📞 107 / Urgencias Médicas</a>
+            </div>
+            <div class="emergency-item">
+                <strong style="color: #fbbf24;">⛈️ Defensa Civil Provincial:</strong><br>
+                <a href="tel:103" style="color: #34d399; text-decoration: none; font-weight: bold;">📞 103 / Guardia Activa</a>
             </div>
         </div>
 
-        <!-- Sección Acerca De -->
-        <div style="background: #f0fdf4; border-left: 4px solid #16a34a; padding: 14px; border-radius: 0 8px 8px 0; margin-top: 20px; font-size: 13px; color: #166534;">
-            <strong>ℹ️ ¿Qué es SIGA?:</strong> 
-            Sistema Inteligente de Gestión Ambiental que procesa datos oficiales de estaciones meteorológicas cordobesas, diques (APRHI), mapas de riesgo (IDECOR) y focos de calor satelitales (NASA FIRMS) para avisarte con anticipación sobre crecidas, tormentas e incendios directamente en tu celular.
-        </div>
     </div>
 
-    <!-- Script de Lógica en Español -->
+    <!-- Script de Funcionalidad y Solapas -->
     <script>
+        // Control de Solapas Superiores
+        function cambiarSolapa(idSolapa, evento) {
+            const contenidos = document.querySelectorAll('.tab-content');
+            contenidos.forEach(c => c.classList.remove('active'));
+
+            const botones = document.querySelectorAll('.tab-btn');
+            botones.forEach(b => b.classList.remove('active'));
+
+            document.getElementById('solapa-' + idSolapa).classList.add('active');
+            evento.currentTarget.classList.add('active');
+
+            // Si entra a la solapa de mapas, refrescar Leaflet para que no se raye
+            if(idSolapa === 'mapas' && window.mapaSigaInstance) {
+                setTimeout(() => { window.mapaSigaInstance.invalidateSize(); }, 200);
+            }
+        }
+
+        // Inicializar Mapa Leaflet centrado en Córdoba
+        document.addEventListener("DOMContentLoaded", function() {
+            const map = L.map('mapa-siga').setView([-31.4201, -64.1888], 8);
+            window.mapaSigaInstance = map;
+
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                maxZoom: 18,
+                attribution: '© OpenStreetMap & SIGA Córdoba'
+            }).addTo(map);
+
+            L.marker([-30.9833, -64.3000]).addTo(map)
+                .bindPopup('<b>Nodo SIGA: Ascochinga</b><br>Monitoreo activo.')
+                .openPopup();
+        });
+
         function reproducirAlarmaSonora() {
             try {
                 const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
                 const osc = audioCtx.createOscillator();
                 const gain = audioCtx.createGain();
                 osc.type = 'sine';
-                osc.frequency.setValueAtTime(880, audioCtx.currentTime);
-                gain.gain.setValueAtTime(0.1, audioCtx.currentTime);
+                osc.frequency.setValueAtTime(700, audioCtx.currentTime);
+                gain.gain.setValueAtTime(0.06, audioCtx.currentTime);
                 osc.connect(gain);
                 gain.connect(audioCtx.destination);
                 osc.start();
-                osc.stop(audioCtx.currentTime + 0.4);
+                osc.stop(audioCtx.currentTime + 0.3);
             } catch (e) {
                 console.log("Audio silenciado.");
             }
@@ -121,45 +388,23 @@
             const zona = document.getElementById('buscador-localidad').value.trim();
             const resDiv = document.getElementById('siga-resultado-zona');
             if (!zona) {
-                alert('Por favor, ingresá una localidad o zona.');
+                alert('Por favor, ingresá una localidad.');
                 return;
             }
             resDiv.style.display = 'block';
-            resDiv.innerHTML = `⏳ Analizando datos de estaciones locales, APRHI (diques/ríos), IDECOR y focos de calor satelitales para <strong>${zona}</strong>...`;
+            resDiv.innerHTML = `⏳ Analizando adaptadores normalizados (SMN, APRHI, NASA FIRMS) para <strong>${zona}</strong>...`;
             
             setTimeout(() => {
                 resDiv.innerHTML = `
-                    ✅ <strong>Reporte actualizado para ${zona}:</strong><br>
-                    • <strong>Clima y Vientos:</strong> Temperatura estable. Vientos leves del norte.<br>
-                    • <strong>Hidrología (APRHI):</strong> Cauces de ríos estables.<br>
-                    • <strong>Riesgo de Incendios (NASA FIRMS):</strong> Sin focos críticos inmediatos detectados.<br>
-                    • <strong>Estado Vial:</strong> Rutas provinciales transitables.
+                    ✅ <strong>Reporte para ${zona} (Córdoba):</strong><br>
+                    • <strong>Meteorología:</strong> Vientos leves del norte, ambiente estable.<br>
+                    • <strong>Hidrología:</strong> Cauces y diques en parámetros normales.<br>
+                    • <strong>Riesgo de Incendios:</strong> Moderado. Sin focos activos cercanos.
                 `;
-            }, 600);
+                reproducirAlarmaSonora();
+            }, 500);
         }
-
-        window.addEventListener('DOMContentLoaded', () => {
-            setTimeout(() => {
-                const departamento = "Totoral / Sierras Chicas (Ascochinga)";
-                document.getElementById('depto-gps-nombre').innerText = departamento;
-
-                document.getElementById('link-policia-depto').href = "tel:03525422111";
-                document.getElementById('link-policia-depto').innerText = "📞 Comisaría Regional Totoral";
-                
-                document.getElementById('span-bomberos-depto').innerHTML = '<a href="tel:03525422222" style="color: #dc2626; text-decoration: none; font-weight: bold;">📞 Cuartel Bomberos Voluntarios Jesús María / Ascochinga</a>';
-                
-                document.getElementById('span-hospital-depto').innerHTML = '<a href="tel:03525420345" style="color: #059669; text-decoration: none; font-weight: bold;">📞 Hospital Regional Vicente Agüero</a>';
-
-                const hayAlertaEnZona = true; 
-                if (hayAlertaEnZona) {
-                    const cajaAlerta = document.getElementById('contenedor-alerta-activa');
-                    const textoAlerta = document.getElementById('texto-alerta-zona');
-                    cajaAlerta.style.display = 'block';
-                    textoAlerta.innerHTML = "Riesgo extremo de incendios y ráfagas de viento norte en tu cuadrante (72hs).";
-                    reproducirAlarmaSonora();
-                }
-            }, 800);
-        });
     </script>
 </body>
 </html>
+

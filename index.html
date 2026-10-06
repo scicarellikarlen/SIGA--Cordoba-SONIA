@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>SIGA - Córdoba & Sierras</title>
-    <!-- Tailwind CSS para diseño moderno y minimalista -->
+    <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
         tailwind.config = {
@@ -30,22 +30,33 @@
 </head>
 <body class="bg-dior-bone text-forest-dark font-sans antialiased pb-24">
 
-    <!-- Header Superior -->
-    <header class="bg-forest text-dior-bone px-4 py-4 flex justify-between items-center shadow-md sticky top-0 z-50">
-        <div class="flex items-center space-x-2">
-            <i class="fa-solid fa-location-dot text-dior-cream"></i>
-            <div>
-                <h1 class="font-bold text-lg tracking-wide leading-tight">SIGA Córdoba</h1>
-                <span class="text-xs text-dior-cream/80 uppercase tracking-wider">Sierras Chicas & Departamentos</span>
+    <!-- Header Superior con el primer impacto SIGA y teléfonos generales -->
+    <header class="bg-forest text-dior-bone px-4 py-3 shadow-md sticky top-0 z-50">
+        <div class="flex justify-between items-center">
+            <div class="flex items-center space-x-2">
+                <i class="fa-solid fa-shield-halved text-dior-cream text-xl"></i>
+                <div>
+                    <h1 class="font-bold text-lg tracking-wide leading-tight">SIGA</h1>
+                    <span class="text-[10px] text-dior-cream/80 uppercase tracking-wider block">Sistema de Información Geográfica y Ambiental</span>
+                </div>
             </div>
-        </div>
-        <div class="flex items-center space-x-4 text-lg">
-            <button onclick="toggleSearchModal()" aria-label="Buscar" class="hover:text-dior-cream transition"><i class="fa-solid fa-magnifying-glass"></i></button>
-            <button onclick="toggleMenuDrawer()" aria-label="Menú" class="hover:text-dior-cream transition"><i class="fa-solid fa-bars"></i></button>
+            <div class="flex items-center space-x-2 text-sm">
+                <!-- Teléfonos esenciales cortos en el banner superior -->
+                <a href="tel:101" class="bg-dior-cream text-forest px-2 py-1 rounded-md font-bold text-xs shadow-sm hover:bg-white transition" title="Policía">
+                    <i class="fa-solid fa-phone mr-1"></i> 101
+                </a>
+                <a href="tel:100" class="bg-dior-cream text-forest px-2 py-1 rounded-md font-bold text-xs shadow-sm hover:bg-white transition" title="Bomberos">
+                    <i class="fa-solid fa-fire-extinguisher mr-1"></i> 100
+                </a>
+                <a href="tel:103" class="bg-dior-cream text-forest px-2 py-1 rounded-md font-bold text-xs shadow-sm hover:bg-white transition" title="Defensa Civil">
+                    <i class="fa-solid fa-triangle-exclamation mr-1"></i> 103
+                </a>
+                <button onclick="toggleMenuDrawer()" aria-label="Menú" class="text-dior-bone hover:text-dior-cream text-lg pl-1"><i class="fa-solid fa-bars"></i></button>
+            </div>
         </div>
     </header>
 
-    <!-- Menú Desplegable Lateral (Hamburguesa) -->
+    <!-- Menú Desplegable Lateral -->
     <div id="menuDrawer" class="fixed inset-0 bg-black/50 z-50 hidden flex justify-end">
         <div class="bg-dior-bone w-72 h-full p-5 shadow-2xl flex flex-col justify-between">
             <div class="space-y-4">
@@ -54,38 +65,38 @@
                     <button onclick="toggleMenuDrawer()" class="text-forest text-lg"><i class="fa-solid fa-xmark"></i></button>
                 </div>
                 <ul class="space-y-2 text-sm text-forest">
-                    <li><button onclick="switchTab('home'); toggleMenuDrawer();" class="w-full text-left py-2 px-3 rounded hover:bg-dior-cream"><i class="fa-solid fa-house mr-2"></i> Inicio</button></li>
+                    <li><button onclick="switchTab('home'); toggleMenuDrawer();" class="w-full text-left py-2 px-3 rounded hover:bg-dior-cream"><i class="fa-solid fa-house mr-2"></i> Inicio / Pronóstico</button></li>
                     <li><button onclick="switchTab('emergencias'); toggleMenuDrawer();" class="w-full text-left py-2 px-3 rounded hover:bg-dior-cream"><i class="fa-solid fa-phone-volume mr-2"></i> Teléfonos de Emergencia</button></li>
-                    <li><button onclick="switchTab('alertas'); toggleMenuDrawer();" class="w-full text-left py-2 px-3 rounded hover:bg-dior-cream"><i class="fa-solid fa-triangle-exclamation mr-2"></i> Alertas de Incendios</button></li>
-                    <li><button onclick="switchTab('mapa'); toggleMenuDrawer();" class="w-full text-left py-2 px-3 rounded hover:bg-dior-cream"><i class="fa-solid fa-map mr-2"></i> Mapas y Zonas</button></li>
+                    <li><button onclick="switchTab('alertas'); toggleMenuDrawer();" class="w-full text-left py-2 px-3 rounded hover:bg-dior-cream"><i class="fa-solid fa-triangle-exclamation mr-2"></i> Alertas y Riesgo</button></li>
+                    <li><button onclick="switchTab('mapa'); toggleMenuDrawer();" class="w-full text-left py-2 px-3 rounded hover:bg-dior-cream"><i class="fa-solid fa-map mr-2"></i> Radar y Zonas</button></li>
                 </ul>
             </div>
             <div class="text-xs text-forest/60 text-center border-t border-dior-accent pt-3">
-                SIGA Córdoba v1.0 • Monitoreo Ambiental
+                SIGA Córdoba & Sierras Chicas
             </div>
         </div>
     </div>
 
-    <!-- Contenido Principal Dinámico -->
+    <!-- Contenido Principal -->
     <main class="max-w-md mx-auto p-4 space-y-6">
 
         <!-- VISTA 1: HOME / INICIO -->
         <div id="view-home" class="space-y-6">
-            <!-- Módulo de Alertas Activas -->
+            <!-- Alerta de Incendios -->
             <section class="space-y-2">
                 <div onclick="switchTab('alertas')" class="bg-amber-50 border-l-4 border-amber-500 p-3 rounded-r-lg shadow-sm flex items-start space-x-3 cursor-pointer hover:bg-amber-100 transition">
                     <i class="fa-solid fa-triangle-exclamation text-amber-600 mt-1"></i>
                     <div>
                         <h2 class="text-xs font-bold text-amber-800 uppercase">Alerta Roja - Riesgo de Incendios</h2>
-                        <p class="text-xs text-amber-700">Condiciones extremas en Sierras Chicas. Toca para ver detalles.</p>
+                        <p class="text-xs text-amber-700">Condiciones extremas en Sierras Chicas. Toque para ver detalles.</p>
                     </div>
                 </div>
             </section>
 
-            <!-- Hero de Temperatura Actual -->
+            <!-- Clima Actual -->
             <section class="bg-dior-cream rounded-2xl p-6 shadow-sm border border-dior-accent text-center space-y-3">
                 <div class="inline-block bg-forest/10 text-forest px-3 py-1 rounded-full text-xs font-semibold">
-                    Ascochinga / Sierras Chicas
+                    Ascochinga / Córdoba
                 </div>
                 <div class="flex justify-center items-baseline space-x-2">
                     <span class="text-6xl font-extrabold tracking-tighter text-forest">24°</span>
@@ -100,168 +111,18 @@
                 </div>
             </section>
 
-            <!-- Navegación por Solapas (Tabs) -->
+            <!-- Solapas de Navegación -->
             <nav class="flex justify-between bg-dior-cream p-1 rounded-xl text-sm font-medium border border-dior-accent">
-                <button onclick="switchTab('home')" class="flex-1 py-2 bg-forest text-dior-bone rounded-lg shadow-sm text-center transition">Pronóstico</button>
-                <button onclick="switchTab('alertas')" class="flex-1 py-2 text-forest/70 hover:text-forest text-center transition">Alertas</button>
-                <button onclick="switchTab('mapa')" class="flex-1 py-2 text-forest/70 hover:text-forest text-center transition">Mapa</button>
-                <button onclick="switchTab('emergencias')" class="flex-1 py-2 text-forest/70 hover:text-forest text-center transition">Emergencias</button>
+                <button onclick="switchTab('home')" id="tab-btn-home" class="flex-1 py-2 bg-forest text-dior-bone rounded-lg shadow-sm text-center transition">Pronóstico</button>
+                <button onclick="switchTab('alertas')" id="tab-btn-alertas" class="flex-1 py-2 text-forest/70 hover:text-forest text-center transition">Alertas</button>
+                <button onclick="switchTab('mapa')" id="tab-btn-mapa" class="flex-1 py-2 text-forest/70 hover:text-forest text-center transition">Mapa</button>
+                <button onclick="switchTab('emergencias')" id="tab-btn-emergencias" class="flex-1 py-2 text-forest/70 hover:text-forest text-center transition">Emergencia</button>
             </nav>
 
-            <!-- Pronóstico de 7 Días -->
+            <!-- Pronóstico Extendido -->
             <section class="bg-dior-cream rounded-2xl p-4 shadow-sm border border-dior-accent space-y-3">
                 <h3 class="text-xs font-bold uppercase tracking-wider text-forest/70">Pronóstico extendido</h3>
-                <div class="space-y-2">
-                    <div class="flex justify-between items-center text-sm py-1 border-b border-dior-accent/50">
-                        <span class="font-semibold w-12">Hoy</span>
-                        <i class="fa-solid fa-cloud-sun text-forest"></i>
-                        <span class="text-xs text-forest/70">0%</span>
-                        <span><strong>24°</strong> / 12°</span>
-                    </div>
-                    <div class="flex justify-between items-center text-sm py-1 border-b border-dior-accent/50">
-                        <span class="font-semibold w-12">Mié</span>
-                        <i class="fa-solid fa-sun text-amber-600"></i>
-                        <span class="text-xs text-forest/70">10%</span>
-                        <span><strong>26°</strong> / 14°</span>
-                    </div>
-                    <div class="flex justify-between items-center text-sm py-1 border-b border-dior-accent/50">
-                        <span class="font-semibold w-12">Jue</span>
-                        <i class="fa-solid fa-cloud-rain text-blue-600"></i>
-                        <span class="text-xs text-blue-600 font-medium">80%</span>
-                        <span><strong>19°</strong> / 11°</span>
-                    </div>
-                    <div class="flex justify-between items-center text-sm py-1">
-                        <span class="font-semibold w-12">Vie</span>
-                        <i class="fa-solid fa-cloud-sun text-forest"></i>
-                        <span class="text-xs text-forest/70">20%</span>
-                        <span><strong>22°</strong> / 10°</span>
-                    </div>
-                </div>
-            </section>
+                <div class="space-y-2 text-sm">
+                    <div class="flex justify-between items-center py-1 border-b border-dior-accent/50">
+                        <span class="font-semibold w-12"> 
 
-            <!-- Bloque de Accesos Rápidos -->
-            <section class="grid grid-cols-3 gap-2">
-                <button onclick="switchTab('mapa')" class="bg-forest text-dior-bone p-3 rounded-xl text-xs font-semibold shadow-sm flex flex-col items-center justify-center space-y-1 hover:bg-forest-light transition">
-                    <i class="fa-solid fa-radar text-base"></i>
-                    <span>Radar</span>
-                </button>
-                <button onclick="switchTab('alertas')" class="bg-forest text-dior-bone p-3 rounded-xl text-xs font-semibold shadow-sm flex flex-col items-center justify-center space-y-1 hover:bg-forest-light transition">
-                    <i class="fa-solid fa-triangle-exclamation text-base"></i>
-                    <span>Alertas</span>
-                </button>
-                <button onclick="switchTab('emergencias')" class="bg-forest text-dior-bone p-3 rounded-xl text-xs font-semibold shadow-sm flex flex-col items-center justify-center space-y-1 hover:bg-forest-light transition">
-                    <i class="fa-solid fa-phone-volume text-base"></i>
-                    <span>Emergencias</span>
-                </button>
-            </section>
-        </div>
-
-        <!-- VISTA 2: TELÉFONOS DE EMERGENCIA Y ZONALES -->
-        <div id="view-emergencias" class="space-y-4 hidden">
-            <div class="bg-dior-cream rounded-2xl p-5 shadow-sm border border-dior-accent space-y-4">
-                <div class="flex items-center space-x-3 border-b border-dior-accent pb-3">
-                    <i class="fa-solid fa-phone-volume text-forest text-xl"></i>
-                    <div>
-                        <h2 class="font-bold text-forest text-base">Teléfonos de Emergencia</h2>
-                        <p class="text-xs text-forest/70">Provinciales y Zonales (Córdoba)</p>
-                    </div>
-                </div>
-
-                <div class="space-y-3 text-sm">
-                    <div class="bg-dior-bone p-3 rounded-xl border border-dior-accent">
-                        <span class="text-xs font-bold text-forest uppercase tracking-wider block mb-1">Provincial / Urgencias</span>
-                        <div class="flex justify-between items-center py-1">
-                            <span class="text-forest/80">Defensa Civil Provincial</span>
-                            <a href="tel:103" class="bg-forest text-dior-bone px-3 py-1 rounded-lg text-xs font-bold">103</a>
-                        </div>
-                        <div class="flex justify-between items-center py-1 border-t border-dior-accent/40">
-                            <span class="text-forest/80">Policía de Córdoba</span>
-                            <a href="tel:911" class="bg-forest text-dior-bone px-3 py-1 rounded-lg text-xs font-bold">911</a>
-                        </div>
-                        <div class="flex justify-between items-center py-1 border-t border-dior-accent/40">
-                            <span class="text-forest/80">ETAC (Incendios Forestales)</span>
-                            <a href="tel:08008883546" class="bg-forest text-dior-bone px-3 py-1 rounded-lg text-xs font-bold">0800-888-3546</a>
-                        </div>
-                    </div>
-
-                    <div class="bg-dior-bone p-3 rounded-xl border border-dior-accent">
-                        <span class="text-xs font-bold text-forest uppercase tracking-wider block mb-1">Sierras Chicas / Ascochinga / Jesús María</span>
-                        <div class="flex justify-between items-center py-1">
-                            <span class="text-forest/80">Bomberos Voluntarios Jesús María</span>
-                            <a href="tel:03525421111" class="bg-forest text-dior-bone px-3 py-1 rounded-lg text-xs font-bold">03525-421111</a>
-                        </div>
-                        <div class="flex justify-between items-center py-1 border-t border-dior-accent/40">
-                            <span class="text-forest/80">Comisaría Ascochinga</span>
-                            <a href="tel:03525492011" class="bg-forest text-dior-bone px-3 py-1 rounded-lg text-xs font-bold">03525-492011</a>
-                        </div>
-                        <div class="flex justify-between items-center py-1 border-t border-dior-accent/40">
-                            <span class="text-forest/80">Hospital Regional Vicente Agüero</span>
-                            <a href="tel:03525420456" class="bg-forest text-dior-bone px-3 py-1 rounded-lg text-xs font-bold">03525-420456</a>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- VISTA 3: ALERTAS -->
-        <div id="view-alertas" class="space-y-4 hidden">
-            <div class="bg-dior-cream rounded-2xl p-5 shadow-sm border border-dior-accent space-y-3">
-                <h2 class="font-bold text-forest text-base flex items-center">
-                    <i class="fa-solid fa-triangle-exclamation text-amber-600 mr-2"></i> Estado de Alertas Ambientales
-                </h2>
-                <p class="text-xs text-forest/70">Monitoreo en tiempo real para el departamento Colón y Sierras Chicas.</p>
-                <div class="bg-amber-50 border border-amber-300 p-3 rounded-xl text-xs text-amber-900 space-y-1">
-                    <strong class="block font-bold">Riesgo Extremo de Incendios</strong>
-                    <span>Vientos norte superiores a 35 km/h y baja humedad relativa. Evitar encender fuego en zonas rurales o serranas.</span>
-                </div>
-            </div>
-        </div>
-
-        <!-- VISTA 4: MAPA / ZONAS -->
-        <div id="view-mapa" class="space-y-4 hidden">
-            <div class="bg-dior-cream rounded-2xl p-5 shadow-sm border border-dior-accent space-y-3 text-center">
-                <h2 class="font-bold text-forest text-base">Radar y Zonas de Cobertura</h2>
-                <p class="text-xs text-forest/70">Visualización satelital de celdas de precipitación y focos de calor.</p>
-                <div class="bg-forest/5 border border-dior-accent rounded-xl p-8 text-forest/60 text-xs">
-                    <i class="fa-solid fa-map-location-dot text-3xl mb-2 text-forest"></i>
-                    <p>Mapa interactivo de Sierras Chicas cargado correctamente.</p>
-                </div>
-            </div>
-        </div>
-
-    </main>
-
-    <!-- Barra de Navegación Inferior Fija -->
-    <nav class="fixed bottom-0 left-0 right-0 bg-dior-cream border-t border-dior-accent py-3 px-6 flex justify-around text-forest shadow-lg z-40">
-        <button onclick="switchTab('home')" class="flex flex-col items-center text-forest transition"><i class="fa-solid fa-house text-lg"></i><span class="text-[10px] mt-1">Home</span></button>
-        <button onclick="switchTab('alertas')" class="flex flex-col items-center text-forest/60 hover:text-forest transition"><i class="fa-solid fa-bell text-lg"></i><span class="text-[10px] mt-1">Alertas</span></button>
-        <button onclick="switchTab('mapa')" class="flex flex-col items-center text-forest/60 hover:text-forest transition"><i class="fa-solid fa-map text-lg"></i><span class="text-[10px] mt-1">Mapa</span></button>
-        <button onclick="switchTab('emergencias')" class="flex flex-col items-center text-forest/60 hover:text-forest transition"><i class="fa-solid fa-phone text-lg"></i><span class="text-[10px] mt-1">Emergencia</span></button>
-    </nav>
-
-    <!-- Script de Interactividad -->
-    <script>
-        function switchTab(tabName) {
-            // Ocultar todas las vistas
-            document.getElementById('view-home').classList.add('hidden');
-            document.getElementById('view-emergencias').classList.add('hidden');
-            document.getElementById('view-alertas').classList.add('hidden');
-            document.getElementById('view-mapa').classList.add('hidden');
-
-            // Mostrar la vista seleccionada
-            document.getElementById('view-' + tabName).classList.remove('hidden');
-            window.scrollTo(0, 0);
-        }
-
-        function toggleMenuDrawer() {
-            const drawer = document.getElementById('menuDrawer');
-            drawer.classList.toggle('hidden');
-        }
-
-        function toggleSearchModal() {
-            alert("Buscador de localidades de Córdoba activo. (Próximamente selección de ejidos municipales)");
-        }
-    </script>
-
-</body>
-</html>

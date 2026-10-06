@@ -124,5 +124,138 @@
                 <h3 class="text-xs font-bold uppercase tracking-wider text-forest/70">Pronóstico extendido</h3>
                 <div class="space-y-2 text-sm">
                     <div class="flex justify-between items-center py-1 border-b border-dior-accent/50">
-                        <span class="font-semibold w-12"> 
+                        <span class="font-semibold w-12">Hoy</span>
+                        <i class="fa-solid fa-cloud-sun text-forest"></i>
+                        <span class="text-xs text-forest/70">0%</span>
+                        <span><strong>24°</strong> / 12°</span>
+                    </div>
+                    <div class="flex justify-between items-center py-1 border-b border-dior-accent/50">
+                        <span class="font-semibold w-12">Mié</span>
+                        <i class="fa-solid fa-sun text-amber-600"></i>
+                        <span class="text-xs text-forest/70">10%</span>
+                        <span><strong>26°</strong> / 14°</span>
+                    </div>
+                    <div class="flex justify-between items-center py-1 border-b border-dior-accent/50">
+                        <span class="font-semibold w-12">Jue</span>
+                        <i class="fa-solid fa-cloud-rain text-blue-600"></i>
+                        <span class="text-xs text-blue-600 font-medium">80%</span>
+                        <span><strong>19°</strong> / 11°</span>
+                    </div>
+                    <div class="flex justify-between items-center py-1">
+                        <span class="font-semibold w-12">Vie</span>
+                        <i class="fa-solid fa-cloud-sun text-forest"></i>
+                        <span class="text-xs text-forest/70">20%</span>
+                        <span><strong>22°</strong> / 10°</span>
+                    </div>
+                </div>
+            </section>
+        </div>
 
+        <!-- VISTA 2: TELÉFONOS DE EMERGENCIA Y ZONALES -->
+        <div id="view-emergencias" class="space-y-4 hidden">
+            <div class="bg-dior-cream rounded-2xl p-5 shadow-sm border border-dior-accent space-y-4">
+                <div class="flex items-center space-x-3 border-b border-dior-accent pb-3">
+                    <i class="fa-solid fa-phone-volume text-forest text-xl"></i>
+                    <div>
+                        <h2 class="font-bold text-forest text-base">Teléfonos de Emergencia</h2>
+                        <p class="text-xs text-forest/70">Provinciales y Zonales (Córdoba)</p>
+                    </div>
+                </div>
+
+                <div class="space-y-3 text-sm">
+                    <div class="bg-dior-bone p-3 rounded-xl border border-dior-accent">
+                        <span class="text-xs font-bold text-forest uppercase tracking-wider block mb-1">Provincial / Urgencias</span>
+                        <div class="flex justify-between items-center py-1">
+                            <span class="text-forest/80">Defensa Civil Provincial</span>
+                            <a href="tel:103" class="bg-forest text-dior-bone px-3 py-1 rounded-lg text-xs font-bold">103</a>
+                        </div>
+                        <div class="flex justify-between items-center py-1 border-t border-dior-accent/40">
+                            <span class="text-forest/80">Policía de Córdoba</span>
+                            <a href="tel:911" class="bg-forest text-dior-bone px-3 py-1 rounded-lg text-xs font-bold">911</a>
+                        </div>
+                        <div class="flex justify-between items-center py-1 border-t border-dior-accent/40">
+                            <span class="text-forest/80">ETAC (Incendios Forestales)</span>
+                            <a href="tel:08008883546" class="bg-forest text-dior-bone px-3 py-1 rounded-lg text-xs font-bold">0800-888-3546</a>
+                        </div>
+                    </div>
+
+                    <div class="bg-dior-bone p-3 rounded-xl border border-dior-accent">
+                        <span class="text-xs font-bold text-forest uppercase tracking-wider block mb-1">Sierras Chicas / Ascochinga / Jesús María</span>
+                        <div class="flex justify-between items-center py-1">
+                            <span class="text-forest/80">Bomberos Voluntarios Jesús María</span>
+                            <a href="tel:03525421111" class="bg-forest text-dior-bone px-3 py-1 rounded-lg text-xs font-bold">03525-421111</a>
+                        </div>
+                        <div class="flex justify-between items-center py-1 border-t border-dior-accent/40">
+                            <span class="text-forest/80">Comisaría Ascochinga</span>
+                            <a href="tel:03525492011" class="bg-forest text-dior-bone px-3 py-1 rounded-lg text-xs font-bold">03525-492011</a>
+                        </div>
+                        <div class="flex justify-between items-center py-1 border-t border-dior-accent/40">
+                            <span class="text-forest/80">Hospital Regional Vicente Agüero</span>
+                            <a href="tel:03525420456" class="bg-forest text-dior-bone px-3 py-1 rounded-lg text-xs font-bold">03525-420456</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- VISTA 3: ALERTAS -->
+        <div id="view-alertas" class="space-y-4 hidden">
+            <div class="bg-dior-cream rounded-2xl p-5 shadow-sm border border-dior-accent space-y-3">
+                <h2 class="font-bold text-forest text-base flex items-center">
+                    <i class="fa-solid fa-triangle-exclamation text-amber-600 mr-2"></i> Estado de Alertas Ambientales
+                </h2>
+                <p class="text-xs text-forest/70">Monitoreo en tiempo real para el departamento Colón y Sierras Chicas.</p>
+                <div class="bg-amber-50 border border-amber-300 p-3 rounded-xl text-xs text-amber-900 space-y-1">
+                    <strong class="block font-bold">Riesgo Extremo de Incendios</strong>
+                    <span>Vientos norte superiores a 35 km/h y baja humedad relativa. Evitar encender fuego en zonas rurales o serranas.</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- VISTA 4: MAPA / ZONAS -->
+        <div id="view-mapa" class="space-y-4 hidden">
+            <div class="bg-dior-cream rounded-2xl p-5 shadow-sm border border-dior-accent space-y-3 text-center">
+                <h2 class="font-bold text-forest text-base">Radar y Zonas de Cobertura</h2>
+                <p class="text-xs text-forest/70">Visualización satelital de celdas de precipitación y focos de calor.</p>
+                <div class="bg-forest/5 border border-dior-accent rounded-xl p-8 text-forest/60 text-xs">
+                    <i class="fa-solid fa-map-location-dot text-3xl mb-2 text-forest"></i>
+                    <p>Mapa interactivo de Sierras Chicas cargado correctamente.</p>
+                </div>
+            </div>
+        </div>
+
+    </main>
+
+    <!-- Barra de Navegación Inferior Fija -->
+    <nav class="fixed bottom-0 left-0 right-0 bg-dior-cream border-t border-dior-accent py-3 px-6 flex justify-around text-forest shadow-lg z-40">
+        <button onclick="switchTab('home')" class="flex flex-col items-center text-forest transition"><i class="fa-solid fa-house text-lg"></i><span class="text-[10px] mt-1">Home</span></button>
+        <button onclick="switchTab('alertas')" class="flex flex-col items-center text-forest/60 hover:text-forest transition"><i class="fa-solid fa-bell text-lg"></i><span class="text-[10px] mt-1">Alertas</span></button>
+        <button onclick="switchTab('mapa')" class="flex flex-col items-center text-forest/60 hover:text-forest transition"><i class="fa-solid fa-map text-lg"></i><span class="text-[10px] mt-1">Mapa</span></button>
+        <button onclick="switchTab('emergencias')" class="flex flex-col items-center text-forest/60 hover:text-forest transition"><i class="fa-solid fa-phone text-lg"></i><span class="text-[10px] mt-1">Emergencia</span></button>
+    </nav>
+
+    <!-- Script de Interactividad -->
+    <script>
+        function switchTab(tabName) {
+            // Ocultar todas las vistas
+            document.getElementById('view-home').classList.add('hidden');
+            document.getElementById('view-emergencias').classList.add('hidden');
+            document.getElementById('view-alertas').classList.add('hidden');
+            document.getElementById('view-mapa').classList.add('hidden');
+
+            // Mostrar la vista seleccionada
+            document.getElementById('view-' + tabName).classList.remove('hidden');
+            window.scrollTo(0, 0);
+        }
+
+        function toggleMenuDrawer() {
+            const drawer = document.getElementById('menuDrawer');
+            drawer.classList.toggle('hidden');
+        }
+
+        function toggleSearchModal() {
+            alert("Buscador de localidades de Córdoba activo. (Próximamente selección de ejidos municipales)");
+        }
+    </script>
+</body>
+</html>

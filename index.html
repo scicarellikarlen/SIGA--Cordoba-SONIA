@@ -1,4 +1,4 @@
-   <!DOCTYPE html>
+ <!DOCTYPE html>
 <html lang="es" data-theme="dark">
 <head>
     <meta charset="UTF-8">
@@ -20,13 +20,6 @@
                             warn: '#f97316',
                             danger: '#ef4444',
                             success: '#22c55e'
-                        },
-                        dior: {
-                            bg: '#fdfbf7',       /* Manteca suave */
-                            panel: '#f5f0e6',
-                            forest: '#1b4332',   /* Verde bosque */
-                            accent: '#2d6a4f',
-                            text: '#222222'
                         }
                     }
                 }
@@ -38,23 +31,37 @@
         .panel-scroll::-webkit-scrollbar-track { background: transparent; }
         .panel-scroll::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.15); border-radius: 4px; }
         
-        /* Estilos dinámicos para cambio de Tema */
+        /* Tema Estilo Dior Corregido (Crema / Verde Bosque Profundo) */
         body.theme-dior {
-            background-color: #fdfbf7 !important;
-            color: #222222 !important;
+            background-color: #f7f4ed !important;
+            color: #1b2622 !important;
         }
         body.theme-dior header {
-            background-color: #f5f0e6 !important;
-            border-bottom: 1px solid #d8cbb8 !important;
+            background-color: #1b4332 !important; /* Verde bosque profundo */
+            border-bottom: 1px solid #143627 !important;
+            color: #ffffff !important;
         }
-        body.theme-dior .siga-card {
-            background-color: #f5f0e6 !important;
-            border-color: #d8cbb8 !important;
-            color: #222222 !important;
+        body.theme-dior header h1, body.theme-dior header p, body.theme-dior header span, body.theme-dior header i {
+            color: #ffffff !important;
+        }
+        body.theme-dior .dior-card {
+            background-color: #ffffff !important;
+            border: 1px solid #e3dcd0 !important;
+            color: #1b2622 !important;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.03);
+        }
+        body.theme-dior .dior-card h2, body.theme-dior .dior-card h3, body.theme-dior .dior-card strong {
+            color: #1b2622 !important;
+        }
+        body.theme-dior .dior-card p, body.theme-dior .dior-card span {
+            color: #4a5568 !important;
         }
         body.theme-dior nav {
-            background-color: #f5f0e6 !important;
-            border-top: 1px solid #d8cbb8 !important;
+            background-color: #ffffff !important;
+            border-top: 1px solid #e3dcd0 !important;
+        }
+        body.theme-dior nav button {
+            color: #1b4332 !important;
         }
 
         .map-card {
@@ -119,10 +126,10 @@
     <main id="main-view-container" class="max-w-4xl mx-auto p-4 space-y-6">
         
         <!-- ESTADO DE SINCRONIZACIÓN Y INDICADOR ACTIVO -->
-        <div class="bg-slate-900/80 border border-slate-800 rounded-xl px-4 py-3 flex flex-col sm:flex-row items-center justify-between text-xs gap-2 shadow-md siga-card">
+        <div class="bg-slate-900/80 border border-slate-800 rounded-xl px-4 py-3 flex flex-col sm:flex-row items-center justify-between text-xs gap-2 shadow-md siga-card dior-card">
             <div class="flex items-center gap-2.5">
                 <span class="w-3 h-3 rounded-full bg-emerald-500 animate-ping"></span>
-                <span class="font-semibold text-emerald-400">Sincronización Automática Activa (Ciclo de 1 hora)</span>
+                <span class="font-semibold text-emerald-600">Sincronización Automática Activa (Ciclo de 1 hora)</span>
             </div>
             <div class="flex items-center gap-3">
                 <span id="last-sync-badge" class="bg-slate-950 px-2.5 py-1 rounded-lg border border-slate-800 text-slate-300 font-mono">Actualizado: --:-- hs</span>
@@ -131,9 +138,9 @@
         </div>
 
         <!-- BUSCADOR PROVINCIAL -->
-        <div class="bg-slate-900/80 border border-slate-800 rounded-2xl p-5 shadow-md siga-card">
+        <div class="bg-slate-900/80 border border-slate-800 rounded-2xl p-5 shadow-md siga-card dior-card">
             <h3 class="text-sm font-bold uppercase tracking-wider text-slate-200 mb-3 flex items-center gap-2">
-                <i class="fa-solid fa-magnifying-glass text-emerald-400"></i> Consultar Localidad, Valle o Departamento (Córdoba)
+                <i class="fa-solid fa-magnifying-glass text-emerald-500"></i> Consultar Localidad, Valle o Departamento (Córdoba)
             </h3>
             <div class="flex gap-2">
                 <input type="text" id="search-locality-input" placeholder="Ej: Ascochinga, Río Cuarto, Punilla..." class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-xs text-slate-100 focus:outline-none focus:border-emerald-500">
@@ -148,16 +155,15 @@
         </div>
 
         <!-- ACCESO RÁPIDO A MAPAS INSTITUCIONALES OFICIALES -->
-        <div class="bg-slate-900/80 border border-slate-800 rounded-2xl p-5 shadow-md siga-card">
+        <div class="bg-slate-900/80 border border-slate-800 rounded-2xl p-5 shadow-md siga-card dior-card">
             <div class="flex items-center justify-between mb-4">
                 <h3 class="text-sm font-bold uppercase tracking-wider text-slate-200 flex items-center gap-2">
-                    <i class="fa-solid fa-map-location-dot text-cyan-400"></i> Capas de Monitoreo Oficial y Satelital
+                    <i class="fa-solid fa-map-location-dot text-cyan-500"></i> Capas de Monitoreo Oficial y Satelital
                 </h3>
                 <span class="text-[10px] bg-cyan-950 text-cyan-300 border border-cyan-800 px-2 py-0.5 rounded-full font-semibold">Fuentes Oficiales</span>
             </div>
             
             <div class="grid grid-cols-2 md:grid-cols-4 gap-3">
-                <!-- Radar SMN -->
                 <button class="map-card" onclick="openOfficialMap('radar', 'Radar Meteorológico Oficial (SMN)', 'https://www.smn.gob.ar/radar')">
                     <div class="map-preview radar-preview">
                         <i class="fa-solid fa-satellite text-2xl text-cyan-300"></i>
@@ -166,7 +172,6 @@
                     <div class="text-[10px] text-slate-400">Reflectividad oficial</div>
                 </button>
 
-                <!-- Viento Windy -->
                 <button class="map-card" onclick="openOfficialMap('viento', 'Modelo de Viento y FWI (Windy)', 'https://www.windy.com/')">
                     <div class="map-preview wind-preview">
                         <i class="fa-solid fa-wind text-2xl text-cyan-300"></i>
@@ -175,7 +180,6 @@
                     <div class="text-[10px] text-slate-400">Flujo atmosférico y riesgo</div>
                 </button>
 
-                <!-- Temperatura SMN -->
                 <button class="map-card" onclick="openOfficialMap('temperatura', 'Mapa Térmico Estaciones SMN', 'https://www.smn.gob.ar/')">
                     <div class="map-preview temperature-preview flex items-center justify-center text-lg font-bold text-orange-200">
                         18°C
@@ -184,7 +188,6 @@
                     <div class="text-[10px] text-slate-400">Red oficial SMN</div>
                 </button>
 
-                <!-- Weather Channel Granizo / Tormentas -->
                 <button class="map-card" onclick="openOfficialMap('storms', 'Seguimiento de Tormentas (Weather Channel)', 'https://weather.com/')">
                     <div class="map-preview storm-preview flex items-center justify-center text-xl text-orange-400">
                         <i class="fa-solid fa-cloud-bolt"></i>
@@ -196,9 +199,9 @@
         </div>
 
         <!-- VISIBILIDAD Y RUTAS -->
-        <div class="bg-slate-900/80 border border-slate-800 rounded-2xl p-5 shadow-md siga-card">
+        <div class="bg-slate-900/80 border border-slate-800 rounded-2xl p-5 shadow-md siga-card dior-card">
             <h3 class="text-sm font-bold uppercase tracking-wider text-slate-200 mb-4 flex items-center gap-2">
-                <i class="fa-solid fa-road text-amber-400"></i> Visibilidad y Estado de Rutas (Provincia de Córdoba)
+                <i class="fa-solid fa-road text-amber-500"></i> Visibilidad y Estado de Rutas (Provincia de Córdoba)
             </h3>
             <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <div class="bg-slate-950/70 border border-slate-800 p-3.5 rounded-xl flex items-center gap-3">
@@ -224,9 +227,9 @@
             </div>
         </div>
 
-        <!-- ALERTAS CRÍTICAS (Granizo e Incendios) -->
+        <!-- ALERTAS CRÍTICAS -->
         <div class="space-y-4">
-            <div class="bg-slate-900/80 border-l-4 border-orange-500 rounded-r-2xl p-5 shadow-lg siga-card">
+            <div class="bg-slate-900/80 border-l-4 border-orange-500 rounded-r-2xl p-5 shadow-lg siga-card dior-card">
                 <div class="flex items-center space-x-3">
                     <div class="bg-orange-600 text-white p-3 rounded-xl shadow">
                         <i class="fa-solid fa-cloud-bolt text-xl"></i>
@@ -239,7 +242,7 @@
                 </div>
             </div>
 
-            <div class="bg-slate-900/80 border-l-4 border-red-500 rounded-r-2xl p-5 shadow-lg siga-card">
+            <div class="bg-slate-900/80 border-l-4 border-red-500 rounded-r-2xl p-5 shadow-lg siga-card dior-card">
                 <div class="flex items-center space-x-3">
                     <div class="bg-red-600 text-white p-3 rounded-xl shadow">
                         <i class="fa-solid fa-fire-flame-curved text-xl"></i>
@@ -254,9 +257,9 @@
         </div>
 
         <!-- DIRECTORIO DE EMERGENCIA -->
-        <div class="bg-slate-900/80 border border-slate-800 rounded-2xl p-5 shadow-md space-y-3 siga-card">
+        <div class="bg-slate-900/80 border border-slate-800 rounded-2xl p-5 shadow-md space-y-3 siga-card dior-card">
             <h3 class="text-sm font-bold uppercase tracking-wider text-slate-200 flex items-center gap-2">
-                <i class="fa-solid fa-phone-volume text-rose-400"></i> Directorio de Emergencia Provincial
+                <i class="fa-solid fa-phone-volume text-rose-500"></i> Directorio de Emergencia Provincial
             </h3>
             <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
                 <div class="bg-slate-950 p-3 rounded-xl border border-slate-800 flex justify-between items-center">
@@ -277,10 +280,10 @@
         </div>
 
         <!-- REGISTRO Y GPS -->
-        <div class="bg-slate-900/80 border border-slate-800 rounded-2xl p-5 shadow-md siga-card">
+        <div class="bg-slate-900/80 border border-slate-800 rounded-2xl p-5 shadow-md siga-card dior-card">
             <div class="flex items-center justify-between mb-4">
                 <h3 class="text-sm font-bold uppercase tracking-wider text-slate-200 flex items-center gap-2">
-                    <i class="fa-solid fa-location-crosshairs text-emerald-400"></i> Registro y Geolocalización GPS
+                    <i class="fa-solid fa-location-crosshairs text-emerald-500"></i> Registro y Geolocalización GPS
                 </h3>
                 <span class="text-[10px] bg-emerald-950 text-emerald-400 border border-emerald-800 px-2 py-0.5 rounded-full">Automático</span>
             </div>
@@ -303,7 +306,7 @@
 
     </main>
 
-    <!-- ÁREA DE MAPA EXPANDIDO OFICIAL (CON VISOR INCORPORADO) -->
+    <!-- ÁREA DE MAPA EXPANDIDO OFICIAL -->
     <div id="mapInteractiveArea" class="hidden relative w-full h-[calc(100vh-4rem)] bg-slate-950 z-50">
         <div class="absolute top-4 left-4 z-20 flex items-center gap-3">
             <button onclick="closeExpandedMap()" class="bg-slate-800 hover:bg-slate-700 text-white text-xs px-4 py-2 rounded-xl border border-slate-700 shadow flex items-center gap-2 backdrop-blur">
@@ -311,7 +314,6 @@
             </button>
             <span id="expanded-map-title" class="text-emerald-400 font-bold text-xs bg-slate-900/90 px-3 py-2 rounded-xl border border-slate-800">Capa Oficial</span>
         </div>
-        <!-- Visor Oficial Incrustado -->
         <iframe id="official-map-frame" src="" class="w-full h-full border-0 pt-16"></iframe>
     </div>
 
@@ -335,7 +337,6 @@
 
     <!-- SCRIPTS DE CONTROL -->
     <script>
-        // Reloj en vivo
         function updateLiveClock() {
             const now = new Date();
             const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric', timeZone: 'America/Argentina/Cordoba' };
@@ -345,21 +346,20 @@
         updateLiveClock();
         setInterval(updateLiveClock, 60000);
 
-        // Sincronización horaria automática (Cada 1 hora)
         function refreshWeatherData() {
             const now = new Date();
             const timeString = now.toLocaleTimeString('es-AR', { hour: '2-digit', minute: '2-digit', timeZone: 'America/Argentina/Cordoba' });
             document.getElementById('last-sync-badge').textContent = `Actualizado: ${timeString} hs`;
         }
         refreshWeatherData();
-        setInterval(refreshWeatherData, 3600000); // 1 hora
+        setInterval(refreshWeatherData, 3600000);
 
         function manualRefresh() {
             refreshWeatherData();
             alert("¡Datos del SMN, Windy y Weather Channel sincronizados correctamente!");
         }
 
-        // Selector de Temas (Azul Noche vs Estilo Dior)
+        // Selector de Temas (Azul Noche vs Estilo Dior Corregido)
         function toggleTheme() {
             const body = document.body;
             const themeName = document.getElementById('theme-name');
@@ -372,7 +372,6 @@
             }
         }
 
-        // Apertura de Mapas Oficiales
         function openOfficialMap(type, titleName, url) {
             document.getElementById('main-view-container').classList.add('hidden');
             const mapArea = document.getElementById('mapInteractiveArea');

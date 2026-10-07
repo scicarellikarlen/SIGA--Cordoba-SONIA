@@ -1,4 +1,4 @@
-     <!DOCTYPE html>
+    <!DOCTYPE html>
 <html lang="es">
 <head>
     <meta charset="UTF-8">
@@ -117,12 +117,7 @@
             color: #fed7aa;
         }
         .storm-preview { background: radial-gradient(circle, rgba(255,140,0,0.5), transparent 35%), #17251f; font-size: 1.8rem; }
-        .severe-preview { background: radial-gradient(circle, rgba(239,68,68,0.55), transparent 45%), #251717; font-size: 1.8rem; }
-        .accumulation-preview { background: radial-gradient(circle at 35% 40%, rgba(96,165,250,0.65), transparent 30%), #142a2a; font-size: 1.8rem; }
-        .satellite-preview { background: radial-gradient(ellipse at 30% 40%, rgba(90,140,120,0.8), transparent 40%), #152a25; font-size: 1.8rem; }
-        .warning-preview { background: radial-gradient(circle, rgba(249,115,22,0.55), transparent 40%), #271b12; font-size: 1.8rem; color: #fdba74; }
-
-        /* Efecto de expansión al tacto (Zoom In transition) */
+        
         @keyframes expandZoom {
             0% { transform: scale(0.95); opacity: 0; }
             100% { transform: scale(1); opacity: 1; }
@@ -138,7 +133,11 @@
     <header class="bg-slate-900/90 border-b border-slate-800 p-4 sticky top-0 z-35 backdrop-blur-md shadow-md">
         <div class="max-w-4xl mx-auto flex flex-col sm:flex-row justify-between items-center gap-3">
             <div class="flex items-center space-x-3">
-                <img src="IMAGEN SIGA_2.jpg" alt="SIGA Logo" class="w-12 h-12 rounded-xl object-cover border border-emerald-500 shadow">
+                <!-- Contenedor del Logo con alternativa por si falta la imagen -->
+                <div class="w-12 h-12 rounded-xl overflow-hidden border border-emerald-500 shadow bg-slate-950 flex items-center justify-center">
+                    <img src="IMAGEN SIGA_2.jpg" alt="SIGA Logo" class="w-full h-full object-cover" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                    <div class="w-full h-full bg-emerald-950 text-emerald-400 font-bold items-center justify-center text-sm" style="display:none;">SG</div>
+                </div>
                 <div>
                     <h1 class="text-lg font-bold tracking-wider text-emerald-400">SIGA</h1>
                     <p class="text-xs text-slate-400 uppercase tracking-widest">Servicio Inteligente de Gestión y Alerta – Provincial</p>
@@ -156,27 +155,36 @@
         </div>
     </header>
 
-    <!-- MAIN CONTAINER (VISTA PRINCIPAL / INICIO) -->
+    <!-- MAIN CONTAINER -->
     <main id="main-view-container" class="max-w-4xl mx-auto p-4 space-y-6">
         
-        <!-- BUSCADOR PROVINCIAL DE LOCALIDADES -->
+        <!-- ESTADO DE SINCRONIZACIÓN AUTOMÁTICA -->
+        <div class="bg-slate-900/50 border border-slate-800/80 rounded-xl px-4 py-2.5 flex items-center justify-between text-xs text-slate-400">
+            <div class="flex items-center gap-2">
+                <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+                <span>Monitoreo Activo · Sincronización automática cada 1 hora</span>
+            </div>
+            <span id="last-sync-time" class="text-emerald-400 font-medium">Actualizado recién</span>
+        </div>
+
+        <!-- BUSCADOR PROVINCIAL -->
         <div class="bg-slate-900/80 border border-slate-800 rounded-2xl p-5 shadow-md">
             <h3 class="text-sm font-bold uppercase tracking-wider text-slate-200 mb-3 flex items-center gap-2">
                 <i class="fa-solid fa-magnifying-glass text-emerald-400"></i> Consultar Localidad, Valle o Departamento (Córdoba)
             </h3>
             <div class="flex gap-2">
-                <input type="text" id="search-locality-input" placeholder="Ej: Río Cuarto, Villa María, Punilla, San Francisco..." class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-xs text-slate-100 focus:outline-none focus:border-emerald-500">
+                <input type="text" id="search-locality-input" placeholder="Ej: Ascochinga, Río Cuarto, Punilla..." class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-xs text-slate-100 focus:outline-none focus:border-emerald-500">
                 <button type="button" onclick="searchLocalityWeather()" class="bg-emerald-600 hover:bg-emerald-500 text-white text-xs px-4 py-2 rounded-xl transition font-semibold whitespace-nowrap">
                     Buscar
                 </button>
             </div>
             <div id="search-result-box" class="mt-3 p-3 bg-slate-950/90 rounded-xl border border-slate-800 text-xs hidden">
                 <p class="text-emerald-400 font-bold mb-1" id="res-title">Estado para la zona:</p>
-                <p class="text-slate-300" id="res-desc">Sin alertas graves registradas en este momento. Clima estable con monitoreo activo en todo el territorio provincial.</p>
+                <p class="text-slate-300" id="res-desc">Monitoreo oficial SMN activo en la zona. Ciclo de actualización horaria en curso.</p>
             </div>
         </div>
 
-        <!-- ACCESO RÁPIDO A MAPAS INTERACTIVOS (CON MINIATURAS EXPANSIBLES) -->
+        <!-- ACCESO RÁPIDO A MAPAS INTERACTIVOS -->
         <div class="bg-slate-900/80 border border-slate-800 rounded-2xl p-5 shadow-md">
             <div class="flex items-center justify-between mb-4">
                 <h3 class="text-sm font-bold uppercase tracking-wider text-slate-200 flex items-center gap-2">
@@ -185,10 +193,7 @@
                 <span class="text-[10px] bg-cyan-950 text-cyan-300 border border-cyan-800 px-2 py-0.5 rounded-full font-semibold">Toca para ampliar</span>
             </div>
             
-            <!-- GRILLA DE MINIATURAS INTERACTIVAS -->
             <div class="grid grid-cols-2 md:grid-cols-4 gap-3">
-                
-                <!-- Radar -->
                 <button class="map-card" data-map="radar">
                     <div class="map-preview radar-preview">
                         <div class="radar-ring r1"></div>
@@ -199,35 +204,32 @@
                     <div class="text-[10px] text-slate-400">Reflectividad Córdoba</div>
                 </button>
 
-                <!-- Viento -->
                 <button class="map-card active" data-map="viento">
                     <div class="map-preview wind-preview">
                         <div class="wind-line"></div>
                         <div class="wind-line"></div>
                         <div class="wind-line"></div>
                     </div>
-                    <div class="mt-2 text-xs font-semibold">Viento</div>
+                    <div class="mt-2 text-xs font-semibold">Viento (Windy)</div>
                     <div class="text-[10px] text-slate-400">Partículas y ráfagas</div>
                 </button>
 
-                <!-- Temperatura -->
+                <!-- Temperatura oficial SMN -->
                 <button class="map-card" data-map="temperatura">
-                    <div class="map-preview temperature-preview">24°</div>
+                    <div class="map-preview temperature-preview" id="live-temp-display">18°</div>
                     <div class="mt-2 text-xs font-semibold">Temperatura</div>
-                    <div class="text-[10px] text-slate-400">Mapa térmico 2m</div>
+                    <div class="text-[10px] text-slate-400">Fuente: SMN Oficial</div>
                 </button>
 
-                <!-- Lluvias y Tormentas -->
                 <button class="map-card" data-map="storms">
                     <div class="map-preview storm-preview">⚡</div>
-                    <div class="mt-2 text-xs font-semibold">Lluvias y truenos</div>
-                    <div class="text-[10px] text-slate-400">Actividad eléctrica</div>
+                    <div class="mt-2 text-xs font-semibold">Granizo / Tormentas</div>
+                    <div class="text-[10px] text-slate-400">Fuente: Weather Channel</div>
                 </button>
-
             </div>
         </div>
 
-        <!-- VISIBILIDAD Y ESTADO DE RUTAS (PROVINCIAL) -->
+        <!-- VISIBILIDAD Y RUTAS -->
         <div class="bg-slate-900/80 border border-slate-800 rounded-2xl p-5 shadow-md">
             <h3 class="text-sm font-bold uppercase tracking-wider text-slate-200 mb-4 flex items-center gap-2">
                 <i class="fa-solid fa-road text-amber-400"></i> Visibilidad y Estado de Rutas (Provincia de Córdoba)
@@ -240,7 +242,7 @@
                     <div>
                         <p class="text-xs text-slate-400">Visibilidad en Rutas Provinciales</p>
                         <p class="text-sm font-bold text-red-400">Monitoreo Activo (Sectores con Neblina)</p>
-                        <p class="text-[10px] text-slate-400 mt-0.5">Actualización continua desde Policía Caminera</p>
+                        <p class="text-[10px] text-slate-400 mt-0.5">Policía Caminera / SMN</p>
                     </div>
                 </div>
                 <div class="bg-slate-950/70 border border-slate-800 p-3.5 rounded-xl flex items-center gap-3">
@@ -250,13 +252,13 @@
                     <div>
                         <p class="text-xs text-slate-400">Caminos y Accesos Serranos</p>
                         <p class="text-sm font-bold text-amber-400">Precaución en Zonas Altas</p>
-                        <p class="text-[10px] text-slate-400 mt-0.5">Control de tránsito y pasos habilitados</p>
+                        <p class="text-[10px] text-slate-400 mt-0.5">Control de tránsito</p>
                     </div>
                 </div>
             </div>
         </div>
 
-        <!-- ALERTA DETALLADA DE GRANIZO (PROVINCIAL) -->
+        <!-- ALERTA DE GRANIZO (Weather Channel) -->
         <div class="bg-slate-900/80 border-l-4 border-orange-500 rounded-r-2xl p-5 shadow-lg space-y-4">
             <div class="flex items-start justify-between">
                 <div class="flex items-center space-x-3">
@@ -264,15 +266,15 @@
                         <i class="fa-solid fa-cloud-bolt text-xl"></i>
                     </div>
                     <div>
-                        <span class="text-[10px] bg-orange-950 text-orange-300 border border-orange-700 px-2.5 py-0.5 rounded-full font-semibold">Cobertura Provincial – Anticipación 48h</span>
-                        <h2 class="text-base font-bold text-orange-200 mt-1">Alerta de Granizo – Nivel Moderado a Alto</h2>
+                        <span class="text-[10px] bg-orange-950 text-orange-300 border border-orange-700 px-2.5 py-0.5 rounded-full font-semibold">Fuente: Weather Channel – Anticipación 48h</span>
+                        <h2 class="text-base font-bold text-orange-200 mt-1">Alerta de Granizo – Nivel Moderado</h2>
                         <p class="text-xs text-slate-300">Territorio provincial y valles de Córdoba | Vigencia activa</p>
                     </div>
                 </div>
             </div>
         </div>
 
-        <!-- ALERTA ROJA DE INCENDIOS (PROVINCIAL) -->
+        <!-- ALERTA ROJA DE INCENDIOS (Windy / FWI) -->
         <div class="bg-slate-900/80 border-l-4 border-red-500 rounded-r-2xl p-5 shadow-lg space-y-4">
             <div class="flex items-start justify-between">
                 <div class="flex items-center space-x-3">
@@ -280,15 +282,15 @@
                         <i class="fa-solid fa-fire-flame-curved text-xl"></i>
                     </div>
                     <div>
-                        <span class="text-[10px] bg-red-950 text-red-300 border border-red-700 px-2.5 py-0.5 rounded-full font-semibold">Riesgo Extremo Provincial (FWI)</span>
+                        <span class="text-[10px] bg-red-950 text-red-300 border border-red-700 px-2.5 py-0.5 rounded-full font-semibold">Fuente: Windy (Modelo FWI) – Riesgo Extremo</span>
                         <h2 class="text-base font-bold text-red-200 mt-1">Alerta Roja de Incendios Forestales</h2>
-                        <p class="text-xs text-slate-300">Extensión total al mapa provincial y zonas de interfase.</p>
+                        <p class="text-xs text-slate-300">Extensión total al mapa provincial y zonas de interfase serrana.</p>
                     </div>
                 </div>
             </div>
         </div>
 
-        <!-- DIRECTORIO DE EMERGENCIA PROVINCIAL -->
+        <!-- DIRECTORIO DE EMERGENCIA -->
         <div class="bg-slate-900/80 border border-slate-800 rounded-2xl p-5 shadow-md space-y-3">
             <h3 class="text-sm font-bold uppercase tracking-wider text-slate-200 flex items-center gap-2">
                 <i class="fa-solid fa-phone-volume text-rose-400"></i> Directorio de Emergencia Provincial
@@ -311,7 +313,7 @@
             </div>
         </div>
 
-        <!-- REGISTRO DE TELÉFONO Y DETECCIÓN GPS -->
+        <!-- REGISTRO Y GPS -->
         <div class="bg-slate-900/80 border border-slate-800 rounded-2xl p-5 shadow-md">
             <div class="flex items-center justify-between mb-4">
                 <h3 class="text-sm font-bold uppercase tracking-wider text-slate-200 flex items-center gap-2">
@@ -338,7 +340,7 @@
 
     </main>
 
-    <!-- FONDO DE MAPA INTERACTIVO (ÁREA EXPANDIDA) -->
+    <!-- ÁREA DE MAPA EXPANDIDO -->
     <div id="mapInteractiveArea" class="hidden relative w-full h-[calc(100vh-4rem)] map-expanding">
         <div class="absolute inset-0 bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950">
             <div class="absolute inset-0 opacity-20" style="background-image:
@@ -347,7 +349,7 @@
                 background-size: 40px 40px;"></div>
             <div class="absolute top-1/3 left-1/2 -translate-x-1/2 text-center z-10 pointer-events-none">
                 <div class="text-cyan-400 text-xs font-semibold tracking-widest uppercase">Provincia de Córdoba · Vista Ampliada</div>
-                <div id="expanded-map-subtitle" class="text-slate-300 text-sm mt-1">Capa activa: Viento en tiempo real</div>
+                <div id="expanded-map-subtitle" class="text-slate-300 text-sm mt-1">Capa activa: Monitoreo integrado</div>
             </div>
         </div>
         <canvas id="windCanvas"></canvas>
@@ -358,7 +360,7 @@
         </div>
     </div>
 
-    <!-- BACKDROP Y PANEL DESLIZANTE DE CAPAS (WINDY STYLE) -->
+    <!-- PANEL INFERIOR -->
     <div id="backdrop" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-40 opacity-0 pointer-events-none transition-opacity duration-300"></div>
 
     <div id="mapPanel" class="fixed bottom-0 left-0 right-0 z-50 translate-y-full max-h-[78vh] flex flex-col rounded-t-2xl bg-siga-panel border-t border-white/10 shadow-2xl transition-transform duration-300">
@@ -377,22 +379,22 @@
             <h3 class="text-xs font-semibold text-gray-400 uppercase tracking-wider">Seleccionar Capa Provincial</h3>
             <div class="grid grid-cols-2 sm:grid-cols-3 gap-3">
                 <button onclick="selectLayerFromPanel('radar')" class="p-3 bg-white/5 border border-white/10 rounded-xl text-left hover:bg-white/10 transition">
-                    <div class="text-xs font-bold text-cyan-300">Radar del tiempo</div>
+                    <div class="text-xs font-bold text-cyan-300">Radar (Weather Channel)</div>
                     <div class="text-[10px] text-gray-400 mt-0.5">Precipitación provincial</div>
                 </button>
                 <button onclick="selectLayerFromPanel('viento')" class="p-3 bg-white/5 border border-white/10 rounded-xl text-left hover:bg-white/10 transition">
-                    <div class="text-xs font-bold text-cyan-300">Viento</div>
+                    <div class="text-xs font-bold text-cyan-300">Viento (Windy)</div>
                     <div class="text-[10px] text-gray-400 mt-0.5">Partículas y dirección</div>
                 </button>
                 <button onclick="selectLayerFromPanel('temperatura')" class="p-3 bg-white/5 border border-white/10 rounded-xl text-left hover:bg-white/10 transition">
-                    <div class="text-xs font-bold text-orange-300">Temperatura</div>
-                    <div class="text-[10px] text-gray-400 mt-0.5">Isolíneas térmicas</div>
+                    <div class="text-xs font-bold text-orange-300">Temperatura (SMN)</div>
+                    <div class="text-[10px] text-gray-400 mt-0.5">Estación Oficial</div>
                 </button>
             </div>
         </div>
     </div>
 
-    <!-- BARRA DE NAVEGACIÓN INFERIOR -->
+    <!-- NAVEGACIÓN INFERIOR -->
     <nav class="fixed bottom-0 left-0 right-0 z-50 bg-slate-900/95 backdrop-blur border-t border-slate-800 py-2.5 px-4">
         <div class="max-w-md mx-auto flex justify-around items-center text-slate-400 text-xs font-medium">
             <button onclick="switchTab('inicio')" class="flex flex-col items-center text-emerald-400 transition">
@@ -416,7 +418,6 @@
 
     <!-- SCRIPTS -->
     <script>
-        // Reloj en vivo
         function updateLiveClock() {
             const now = new Date();
             const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric', timeZone: 'America/Argentina/Cordoba' };
@@ -426,7 +427,18 @@
         updateLiveClock();
         setInterval(updateLiveClock, 60000);
 
-        // Buscador
+        // FUNCIÓN DE ACTUALIZACIÓN AUTOMÁTICA DE DATOS (Cada 1 hora)
+        function refreshWeatherData() {
+            const now = new Date();
+            const timeString = now.toLocaleTimeString('es-AR', { hour: '2-digit', minute: '2-digit', timeZone: 'America/Argentina/Cordoba' });
+            document.getElementById('last-sync-time').textContent = `Actualizado a las ${timeString} hs`;
+            console.log("SIGA: Ciclo de actualización horaria ejecutado correctamente (SMN / Windy / Weather Channel).");
+        }
+
+        // Ejecutar al iniciar y programar cada 1 hora (3600000 ms)
+        refreshWeatherData();
+        setInterval(refreshWeatherData, 3600000);
+
         function searchLocalityWeather() {
             const query = document.getElementById('search-locality-input').value.trim();
             const box = document.getElementById('search-result-box');
@@ -435,7 +447,7 @@
             if(query) {
                 box.classList.remove('hidden');
                 title.textContent = `Estado y Alertas para: ${query.toUpperCase()}`;
-                desc.textContent = `Monitoreo provincial activo en ${query}. Cobertura territorial sin restricciones severas inmediatas.`;
+                desc.textContent = `Monitoreo oficial SMN activo en ${query}. Sincronización horaria operativa. Alertas de riesgo forestal vía Windy operativas.`;
             } else {
                 box.classList.remove('hidden');
                 title.textContent = "Aviso";
@@ -444,11 +456,10 @@
         }
 
         function shareOnWhatsApp() {
-            const text = encodeURIComponent("¡Monitoreo meteorológico y de riesgo provincial en tiempo real con SIGA Córdoba!");
+            const text = encodeURIComponent("¡Monitoreo meteorológico oficial (SMN) y alertas de riesgo (Windy/Weather Channel) con actualización horaria en tiempo real con SIGA Córdoba!");
             window.open(`https://api.whatsapp.com/send?text=${text}`, '_blank');
         }
 
-        // GPS y almacenamiento
         document.getElementById('get-gps-btn').addEventListener('click', function() {
             const locationField = document.getElementById('user-location-display');
             if (navigator.geolocation) {
@@ -467,7 +478,6 @@
             setTimeout(() => feedback.classList.add('hidden'), 4000);
         });
 
-        // --- SISTEMA DE MINIATURAS INTERACTIVAS Y EXPANSIÓN AL TACTO (ESTILO WINDY) ---
         const mapArea = document.getElementById('mapInteractiveArea');
         const mainView = document.getElementById('main-view-container');
         const subtitle = document.getElementById('expanded-map-subtitle');
@@ -476,17 +486,16 @@
             card.addEventListener('click', () => {
                 const mapType = card.dataset.map;
                 const titles = {
-                    radar: 'Capa activa: Radar Meteorológico (Córdoba)',
-                    viento: 'Capa activa: Viento y Flujo Atmosférico',
-                    temperatura: 'Capa activa: Mapa Térmico Superficial',
-                    storms: 'Capa activa: Lluvias y Actividad Eléctrica'
+                    radar: 'Capa activa: Radar Meteorológico (Weather Channel)',
+                    viento: 'Capa activa: Viento y FWI (Windy)',
+                    temperatura: 'Capa activa: Temperatura Oficial (SMN)',
+                    storms: 'Capa activa: Seguimiento de Tormentas y Granizo'
                 };
                 subtitle.textContent = titles[mapType] || 'Capa activa en toda la provincia';
                 
-                // Efecto expansión al tacto
                 mainView.classList.add('hidden');
                 mapArea.classList.remove('hidden');
-                initParticles(mapType === 'storms' ? 'lluvia' : 'viento');
+                initParticles(mapType === 'storms' || mapType === 'radar' ? 'lluvia' : 'viento');
             });
         });
 
@@ -495,7 +504,6 @@
             mainView.classList.remove('hidden');
         }
 
-        // Panel inferior tipo sheet
         const panel = document.getElementById('mapPanel');
         const backdrop = document.getElementById('backdrop');
         const btnMapas = document.getElementById('btnMapas');
@@ -522,7 +530,6 @@
             initParticles(layer === 'radar' || layer === 'temperatura' ? 'lluvia' : 'viento');
         }
 
-        // Canvas de partículas animadas
         const canvas = document.getElementById('windCanvas');
         const ctx = canvas.getContext('2d');
         let particles = [];

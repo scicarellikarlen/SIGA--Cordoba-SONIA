@@ -3,259 +3,188 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SIGA - Córdoba & Sierras</title>
-    <!-- Tailwind CSS -->
+    <title>SIGA - Servicio Inteligente de Gestión y Alerta</title>
+    <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <script>
-        tailwind.config = {
-            theme: {
-                extend: {
-                    colors: {
-                        forest: {
-                            DEFAULT: '#1b4332',
-                            dark: '#081c15',
-                            light: '#2d6a4f'
-                        },
-                        dior: {
-                            bone: '#fdfbf7',
-                            cream: '#f4f1ea',
-                            accent: '#e6dfd5'
-                        }
-                    }
-                }
-            }
-        }
-    </script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
-<body class="bg-dior-bone text-forest-dark font-sans antialiased pb-24">
+<body class="bg-slate-900 text-slate-100 font-sans pb-20">
 
-    <!-- Header Superior con el primer impacto SIGA y teléfonos generales -->
-    <header class="bg-forest text-dior-bone px-4 py-3 shadow-md sticky top-0 z-50">
-        <div class="flex justify-between items-center">
-            <div class="flex items-center space-x-2">
-                <i class="fa-solid fa-shield-halved text-dior-cream text-xl"></i>
+    <!-- HEADER / LOGO OFICIAL -->
+    <header class="bg-slate-800 border-b border-slate-700 p-4 sticky top-0 z-50 shadow-md">
+        <div class="max-w-4xl mx-auto flex flex-col sm:flex-row justify-between items-center gap-3">
+            <div class="flex items-center space-x-3">
+                <!-- Logo Oficial SIGA -->
+                <img src="IMAGEN SIGA_2.jpg" alt="SIGA Logo" class="w-12 h-12 rounded-xl object-cover border border-emerald-500 shadow">
                 <div>
-                    <h1 class="font-bold text-lg tracking-wide leading-tight">SIGA</h1>
-                    <span class="text-[10px] text-dior-cream/80 uppercase tracking-wider block">Sistema de Información Geográfica y Ambiental</span>
+                    <h1 class="text-lg font-bold tracking-wider text-emerald-400">SIGA</h1>
+                    <p class="text-xs text-slate-400 uppercase tracking-widest">Servicio Inteligente de Gestión y Alerta</p>
                 </div>
             </div>
-            <div class="flex items-center space-x-2 text-sm">
-                <!-- Teléfonos esenciales cortos en el banner superior -->
-                <a href="tel:101" class="bg-dior-cream text-forest px-2 py-1 rounded-md font-bold text-xs shadow-sm hover:bg-white transition" title="Policía">
-                    <i class="fa-solid fa-phone mr-1"></i> 101
-                </a>
-                <a href="tel:100" class="bg-dior-cream text-forest px-2 py-1 rounded-md font-bold text-xs shadow-sm hover:bg-white transition" title="Bomberos">
-                    <i class="fa-solid fa-fire-extinguisher mr-1"></i> 100
-                </a>
-                <a href="tel:103" class="bg-dior-cream text-forest px-2 py-1 rounded-md font-bold text-xs shadow-sm hover:bg-white transition" title="Defensa Civil">
-                    <i class="fa-solid fa-triangle-exclamation mr-1"></i> 103
-                </a>
-                <button onclick="toggleMenuDrawer()" aria-label="Menú" class="text-dior-bone hover:text-dior-cream text-lg pl-1"><i class="fa-solid fa-bars"></i></button>
+            <!-- FECHA Y HORA DINÁMICA -->
+            <div id="live-clock-date" class="text-xs bg-slate-900/80 px-3 py-1.5 rounded-lg border border-slate-700 text-emerald-300 font-medium flex items-center gap-2">
+                <i class="fa-regular fa-calendar-days"></i>
+                <span id="current-date-text">Cargando fecha...</span>
             </div>
         </div>
     </header>
 
-    <!-- Menú Desplegable Lateral -->
-    <div id="menuDrawer" class="fixed inset-0 bg-black/50 z-50 hidden flex justify-end">
-        <div class="bg-dior-bone w-72 h-full p-5 shadow-2xl flex flex-col justify-between">
-            <div class="space-y-4">
-                <div class="flex justify-between items-center border-b border-dior-accent pb-3">
-                    <h2 class="font-bold text-forest text-base">Menú Principal</h2>
-                    <button onclick="toggleMenuDrawer()" class="text-forest text-lg"><i class="fa-solid fa-xmark"></i></button>
-                </div>
-                <ul class="space-y-2 text-sm text-forest">
-                    <li><button onclick="switchTab('home'); toggleMenuDrawer();" class="w-full text-left py-2 px-3 rounded hover:bg-dior-cream"><i class="fa-solid fa-house mr-2"></i> Inicio / Pronóstico</button></li>
-                    <li><button onclick="switchTab('emergencias'); toggleMenuDrawer();" class="w-full text-left py-2 px-3 rounded hover:bg-dior-cream"><i class="fa-solid fa-phone-volume mr-2"></i> Teléfonos de Emergencia</button></li>
-                    <li><button onclick="switchTab('alertas'); toggleMenuDrawer();" class="w-full text-left py-2 px-3 rounded hover:bg-dior-cream"><i class="fa-solid fa-triangle-exclamation mr-2"></i> Alertas y Riesgo</button></li>
-                    <li><button onclick="switchTab('mapa'); toggleMenuDrawer();" class="w-full text-left py-2 px-3 rounded hover:bg-dior-cream"><i class="fa-solid fa-map mr-2"></i> Radar y Zonas</button></li>
-                </ul>
-            </div>
-            <div class="text-xs text-forest/60 text-center border-t border-dior-accent pt-3">
-                SIGA Córdoba & Sierras Chicas
-            </div>
-        </div>
-    </div>
-
-    <!-- Contenido Principal -->
-    <main class="max-w-md mx-auto p-4 space-y-6">
-
-        <!-- VISTA 1: HOME / INICIO -->
-        <div id="view-home" class="space-y-6">
-            <!-- Alerta de Incendios -->
-            <section class="space-y-2">
-                <div onclick="switchTab('alertas')" class="bg-amber-50 border-l-4 border-amber-500 p-3 rounded-r-lg shadow-sm flex items-start space-x-3 cursor-pointer hover:bg-amber-100 transition">
-                    <i class="fa-solid fa-triangle-exclamation text-amber-600 mt-1"></i>
+    <!-- BANNER DE ALERTA CRÍTICA (GRANIZO Y VISIBILIDAD) -->
+    <section class="max-w-4xl mx-auto p-4 space-y-3">
+        <div class="bg-red-950/80 border-l-4 border-red-500 p-4 rounded-r-xl shadow-lg animate-pulse">
+            <div class="flex items-start justify-between">
+                <div class="flex items-center space-x-3">
+                    <div class="bg-red-600 text-white p-2.5 rounded-lg">
+                        <i class="fa-solid fa-cloud-bolt text-xl"></i>
+                    </div>
                     <div>
-                        <h2 class="text-xs font-bold text-amber-800 uppercase">Alerta Roja - Riesgo de Incendios</h2>
-                        <p class="text-xs text-amber-700">Condiciones extremas en Sierras Chicas. Toque para ver detalles.</p>
+                        <h2 class="text-sm font-bold text-red-200 uppercase tracking-wide">Alerta Meteorológica Provincial</h2>
+                        <p class="text-xs text-red-300 mt-0.5">Riesgo de tormenta de granizo y sévversas restricciones de circulación en Córdoba y Sierras Chicas.</p>
                     </div>
                 </div>
-            </section>
-
-            <!-- Clima Actual -->
-            <section class="bg-dior-cream rounded-2xl p-6 shadow-sm border border-dior-accent text-center space-y-3">
-                <div class="inline-block bg-forest/10 text-forest px-3 py-1 rounded-full text-xs font-semibold">
-                    Ascochinga / Córdoba
-                </div>
-                <div class="flex justify-center items-baseline space-x-2">
-                    <span class="text-6xl font-extrabold tracking-tighter text-forest">24°</span>
-                    <span class="text-xl text-forest/70">C</span>
-                </div>
-                <p class="text-sm font-medium text-forest/80">Parcialmente nublado • RealFeel 26°</p>
-                
-                <div class="grid grid-cols-3 gap-2 pt-4 border-t border-dior-accent text-xs text-forest/80">
-                    <div><i class="fa-solid fa-droplet block mb-1 text-forest"></i> 45% Humedad</div>
-                    <div><i class="fa-solid fa-wind block mb-1 text-forest"></i> 14 km/h N</div>
-                    <div><i class="fa-solid fa-sun block mb-1 text-forest"></i> UV Alto (6)</div>
-                </div>
-            </section>
-
-            <!-- Solapas de Navegación -->
-            <nav class="flex justify-between bg-dior-cream p-1 rounded-xl text-sm font-medium border border-dior-accent">
-                <button onclick="switchTab('home')" id="tab-btn-home" class="flex-1 py-2 bg-forest text-dior-bone rounded-lg shadow-sm text-center transition">Pronóstico</button>
-                <button onclick="switchTab('alertas')" id="tab-btn-alertas" class="flex-1 py-2 text-forest/70 hover:text-forest text-center transition">Alertas</button>
-                <button onclick="switchTab('mapa')" id="tab-btn-mapa" class="flex-1 py-2 text-forest/70 hover:text-forest text-center transition">Mapa</button>
-                <button onclick="switchTab('emergencias')" id="tab-btn-emergencias" class="flex-1 py-2 text-forest/70 hover:text-forest text-center transition">Emergencia</button>
-            </nav>
-
-            <!-- Pronóstico Extendido -->
-            <section class="bg-dior-cream rounded-2xl p-4 shadow-sm border border-dior-accent space-y-3">
-                <h3 class="text-xs font-bold uppercase tracking-wider text-forest/70">Pronóstico extendido</h3>
-                <div class="space-y-2 text-sm">
-                    <div class="flex justify-between items-center py-1 border-b border-dior-accent/50">
-                        <span class="font-semibold w-12">Hoy</span>
-                        <i class="fa-solid fa-cloud-sun text-forest"></i>
-                        <span class="text-xs text-forest/70">0%</span>
-                        <span><strong>24°</strong> / 12°</span>
-                    </div>
-                    <div class="flex justify-between items-center py-1 border-b border-dior-accent/50">
-                        <span class="font-semibold w-12">Mié</span>
-                        <i class="fa-solid fa-sun text-amber-600"></i>
-                        <span class="text-xs text-forest/70">10%</span>
-                        <span><strong>26°</strong> / 14°</span>
-                    </div>
-                    <div class="flex justify-between items-center py-1 border-b border-dior-accent/50">
-                        <span class="font-semibold w-12">Jue</span>
-                        <i class="fa-solid fa-cloud-rain text-blue-600"></i>
-                        <span class="text-xs text-blue-600 font-medium">80%</span>
-                        <span><strong>19°</strong> / 11°</span>
-                    </div>
-                    <div class="flex justify-between items-center py-1">
-                        <span class="font-semibold w-12">Vie</span>
-                        <i class="fa-solid fa-cloud-sun text-forest"></i>
-                        <span class="text-xs text-forest/70">20%</span>
-                        <span><strong>22°</strong> / 10°</span>
-                    </div>
-                </div>
-            </section>
+            </div>
         </div>
+    </section>
 
-        <!-- VISTA 2: TELÉFONOS DE EMERGENCIA Y ZONALES -->
-        <div id="view-emergencias" class="space-y-4 hidden">
-            <div class="bg-dior-cream rounded-2xl p-5 shadow-sm border border-dior-accent space-y-4">
-                <div class="flex items-center space-x-3 border-b border-dior-accent pb-3">
-                    <i class="fa-solid fa-phone-volume text-forest text-xl"></i>
+    <!-- MAIN CONTAINER -->
+    <main class="max-w-4xl mx-auto p-4 space-y-6">
+        
+        <!-- ESTADO DE RUTAS Y VISIBILIDAD EN TIEMPO REAL -->
+        <div class="bg-slate-800 border border-slate-700 rounded-2xl p-5 shadow-md">
+            <h3 class="text-sm font-bold uppercase tracking-wider text-slate-200 mb-4 flex items-center gap-2">
+                <i class="fa-solid fa-road text-amber-400"></i> Visibilidad y Estado de Rutas (Sierras Chicas / Provincial)
+            </h3>
+            
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-4">
+                <!-- Visibilidad y Polvo -->
+                <div class="bg-slate-900/70 border border-slate-700 p-3.5 rounded-xl flex items-center gap-3">
+                    <div class="bg-slate-800 text-cyan-400 p-3 rounded-lg">
+                        <i class="fa-solid fa-smog text-xl"></i>
+                    </div>
                     <div>
-                        <h2 class="font-bold text-forest text-base">Teléfonos de Emergencia</h2>
-                        <p class="text-xs text-forest/70">Provinciales y Zonales (Córdoba)</p>
+                        <p class="text-xs text-slate-400">Visibilidad en Ruta / Zonas Altas</p>
+                        <p class="text-sm font-bold text-red-400">Muy Reducida (Niebla Densa)</p>
+                        <p class="text-[10px] text-slate-400 mt-0.5">Polvo en suspensión / Humedad extrema</p>
                     </div>
                 </div>
 
-                <div class="space-y-3 text-sm">
-                    <div class="bg-dior-bone p-3 rounded-xl border border-dior-accent">
-                        <span class="text-xs font-bold text-forest uppercase tracking-wider block mb-1">Provincial / Urgencias</span>
-                        <div class="flex justify-between items-center py-1">
-                            <span class="text-forest/80">Defensa Civil Provincial</span>
-                            <a href="tel:103" class="bg-forest text-dior-bone px-3 py-1 rounded-lg text-xs font-bold">103</a>
-                        </div>
-                        <div class="flex justify-between items-center py-1 border-t border-dior-accent/40">
-                            <span class="text-forest/80">Policía de Córdoba</span>
-                            <a href="tel:911" class="bg-forest text-dior-bone px-3 py-1 rounded-lg text-xs font-bold">911</a>
-                        </div>
-                        <div class="flex justify-between items-center py-1 border-t border-dior-accent/40">
-                            <span class="text-forest/80">ETAC (Incendios Forestales)</span>
-                            <a href="tel:08008883546" class="bg-forest text-dior-bone px-3 py-1 rounded-lg text-xs font-bold">0800-888-3546</a>
-                        </div>
+                <!-- Estado del Camino al Cuadrado / Altas Cumbres -->
+                <div class="bg-slate-900/70 border border-slate-700 p-3.5 rounded-xl flex items-center gap-3">
+                    <div class="bg-slate-800 text-amber-400 p-3 rounded-lg">
+                        <i class="fa-solid fa-triangle-exclamation text-xl"></i>
                     </div>
-
-                    <div class="bg-dior-bone p-3 rounded-xl border border-dior-accent">
-                        <span class="text-xs font-bold text-forest uppercase tracking-wider block mb-1">Sierras Chicas / Ascochinga / Jesús María</span>
-                        <div class="flex justify-between items-center py-1">
-                            <span class="text-forest/80">Bomberos Voluntarios Jesús María</span>
-                            <a href="tel:03525421111" class="bg-forest text-dior-bone px-3 py-1 rounded-lg text-xs font-bold">03525-421111</a>
-                        </div>
-                        <div class="flex justify-between items-center py-1 border-t border-dior-accent/40">
-                            <span class="text-forest/80">Comisaría Ascochinga</span>
-                            <a href="tel:03525492011" class="bg-forest text-dior-bone px-3 py-1 rounded-lg text-xs font-bold">03525-492011</a>
-                        </div>
-                        <div class="flex justify-between items-center py-1 border-t border-dior-accent/40">
-                            <span class="text-forest/80">Hospital Regional Vicente Agüero</span>
-                            <a href="tel:03525420456" class="bg-forest text-dior-bone px-3 py-1 rounded-lg text-xs font-bold">03525-420456</a>
-                        </div>
+                    <div>
+                        <p class="text-xs text-slate-400">Caminos Críticos (Cuadrado / Altas Cumbres)</p>
+                        <p class="text-sm font-bold text-amber-400">Precaución / Posible Corte</p>
+                        <p class="text-[10px] text-slate-400 mt-0.5">Verificar apertura antes de transitar</p>
                     </div>
                 </div>
             </div>
         </div>
 
-        <!-- VISTA 3: ALERTAS -->
-        <div id="view-alertas" class="space-y-4 hidden">
-            <div class="bg-dior-cream rounded-2xl p-5 shadow-sm border border-dior-accent space-y-3">
-                <h2 class="font-bold text-forest text-base flex items-center">
-                    <i class="fa-solid fa-triangle-exclamation text-amber-600 mr-2"></i> Estado de Alertas Ambientales
-                </h2>
-                <p class="text-xs text-forest/70">Monitoreo en tiempo real para el departamento Colón y Sierras Chicas.</p>
-                <div class="bg-amber-50 border border-amber-300 p-3 rounded-xl text-xs text-amber-900 space-y-1">
-                    <strong class="block font-bold">Riesgo Extremo de Incendios</strong>
-                    <span>Vientos norte superiores a 35 km/h y baja humedad relativa. Evitar encender fuego en zonas rurales o serranas.</span>
-                </div>
+        <!-- CONFIGURACIÓN DE ALARMAS Y TELÉFONO -->
+        <div class="bg-slate-800 border border-slate-700 rounded-2xl p-5 shadow-md">
+            <div class="flex items-center justify-between mb-4">
+                <h3 class="text-sm font-bold uppercase tracking-wider text-slate-200 flex items-center gap-2">
+                    <i class="fa-solid fa-bell text-amber-400"></i> Registro de Teléfono y Alertas de Emergencia
+                </h3>
+                <span class="text-[10px] bg-emerald-950 text-emerald-400 border border-emerald-800 px-2 py-0.5 rounded-full">Activo</span>
             </div>
+            <p class="text-xs text-slate-400 mb-4">Registrá tu número y localidad para recibir avisos directos en caso de cierres de rutas, niebla extrema o alertas de granizo.</p>
+            
+            <form id="alert-config-form" class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                <input type="text" id="user-phone" placeholder="Ej: 3525... (Tu Teléfono)" class="bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-xs text-slate-100 focus:outline-none focus:border-emerald-500" required>
+                <select id="user-location" class="bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-xs text-slate-100 focus:outline-none focus:border-emerald-500">
+                    <option value="Ascochinga">Ascochinga</option>
+                    <option value="Jesus Maria">Jesús María</option>
+                    <option value="La Granja">La Granja</option>
+                    <option value="Camino al Cuadrado">Zona Camino al Cuadrado</option>
+                    <option value="Altas Cumbres">Zona Altas Cumbres</option>
+                </select>
+                <button type="submit" class="bg-emerald-600 hover:bg-emerald-500 text-white font-semibold text-xs py-2 px-4 rounded-xl transition shadow flex items-center justify-center gap-2">
+                    <i class="fa-solid fa-floppy-disk"></i> Guardar Alarma
+                </button>
+            </form>
+            <div id="form-feedback" class="text-xs text-emerald-400 mt-2 hidden">¡Número y zona guardados correctamente!</div>
         </div>
 
-        <!-- VISTA 4: MAPA / ZONAS -->
-        <div id="view-mapa" class="space-y-4 hidden">
-            <div class="bg-dior-cream rounded-2xl p-5 shadow-sm border border-dior-accent space-y-3 text-center">
-                <h2 class="font-bold text-forest text-base">Radar y Zonas de Cobertura</h2>
-                <p class="text-xs text-forest/70">Visualización satelital de celdas de precipitación y focos de calor.</p>
-                <div class="bg-forest/5 border border-dior-accent rounded-xl p-8 text-forest/60 text-xs">
-                    <i class="fa-solid fa-map-location-dot text-3xl mb-2 text-forest"></i>
-                    <p>Mapa interactivo de Sierras Chicas cargado correctamente.</p>
-                </div>
+        <!-- PRONÓSTICO EXTENDIDO -->
+        <div class="bg-slate-800 border border-slate-700 rounded-2xl p-5 shadow-md">
+            <h3 class="text-sm font-bold uppercase tracking-wider text-slate-200 mb-4 flex items-center gap-2">
+                <i class="fa-solid fa-cloud-sun text-cyan-400"></i> Pronóstico Zonal y Estado Atmosférico
+            </h3>
+            <div id="forecast-container" class="grid grid-cols-2 sm:grid-cols-4 gap-3 text-center">
+                <!-- Generado por JS -->
             </div>
         </div>
 
     </main>
 
-    <!-- Barra de Navegación Inferior Fija -->
-    <nav class="fixed bottom-0 left-0 right-0 bg-dior-cream border-t border-dior-accent py-3 px-6 flex justify-around text-forest shadow-lg z-40">
-        <button onclick="switchTab('home')" class="flex flex-col items-center text-forest transition"><i class="fa-solid fa-house text-lg"></i><span class="text-[10px] mt-1">Home</span></button>
-        <button onclick="switchTab('alertas')" class="flex flex-col items-center text-forest/60 hover:text-forest transition"><i class="fa-solid fa-bell text-lg"></i><span class="text-[10px] mt-1">Alertas</span></button>
-        <button onclick="switchTab('mapa')" class="flex flex-col items-center text-forest/60 hover:text-forest transition"><i class="fa-solid fa-map text-lg"></i><span class="text-[10px] mt-1">Mapa</span></button>
-        <button onclick="switchTab('emergencias')" class="flex flex-col items-center text-forest/60 hover:text-forest transition"><i class="fa-solid fa-phone text-lg"></i><span class="text-[10px] mt-1">Emergencia</span></button>
+    <!-- BARRA DE NAVEGACIÓN INFERIOR -->
+    <nav class="fixed bottom-0 left-0 right-0 bg-slate-800/95 backdrop-blur border-t border-slate-700 py-2.5 px-4 z-50">
+        <div class="max-w-md mx-auto flex justify-around items-center text-slate-400 text-xs font-medium">
+            <button class="flex flex-col items-center hover:text-emerald-400 transition">
+                <i class="fa-solid fa-house text-base mb-1"></i>
+                <span>Home</span>
+            </button>
+            <button class="flex flex-col items-center text-emerald-400 transition">
+                <i class="fa-solid fa-triangle-exclamation text-base mb-1"></i>
+                <span>Alertas</span>
+            </button>
+            <button class="flex flex-col items-center hover:text-emerald-400 transition">
+                <i class="fa-solid fa-map text-base mb-1"></i>
+                <span>Mapas</span>
+            </button>
+            <button class="flex flex-col items-center hover:text-emerald-400 transition">
+                <i class="fa-solid fa-phone-volume text-base mb-1"></i>
+                <span>Emergencia</span>
+            </button>
+        </div>
     </nav>
 
-    <!-- Script de Interactividad -->
+    <!-- SCRIPT DE FECHA DINÁMICA Y DATOS -->
     <script>
-        function switchTab(tabName) {
-            // Ocultar todas las vistas
-            document.getElementById('view-home').classList.add('hidden');
-            document.getElementById('view-emergencias').classList.add('hidden');
-            document.getElementById('view-alertas').classList.add('hidden');
-            document.getElementById('view-mapa').classList.add('hidden');
-
-            // Mostrar la vista seleccionada
-            document.getElementById('view-' + tabName).classList.remove('hidden');
-            window.scrollTo(0, 0);
+        // 1. FECHA, DÍA Y AÑO DINÁMICOS
+        function updateLiveClock() {
+            const now = new Date();
+            const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric', timeZone: 'America/Argentina/Cordoba' };
+            const fechaString = now.toLocaleDateString('es-AR', options);
+            const fechaFormateada = fechaString.charAt(0).toUpperCase() + fechaString.slice(1);
+            document.getElementById('current-date-text').textContent = fechaFormateada;
         }
+        updateLiveClock();
+        setInterval(updateLiveClock, 60000);
 
-        function toggleMenuDrawer() {
-            const drawer = document.getElementById('menuDrawer');
-            drawer.classList.toggle('hidden');
+        // 2. PRONÓSTICO DINÁMICO
+        const days = ['Hoy (Niebla)', 'Jueves', 'Viernes', 'Sábado'];
+        const icons = ['fa-smog', 'fa-cloud-sun', 'fa-sun', 'fa-cloud-rain'];
+        const temps = ['18° / 10°', '22° / 12°', '25° / 14°', '20° / 11°'];
+        
+        let forecastHTML = '';
+        for(let i = 0; i < 4; i++) {
+            forecastHTML += `
+                <div class="bg-slate-900/60 p-3 rounded-xl border border-slate-700/60">
+                    <p class="text-xs font-semibold text-slate-300 mb-1">${days[i]}</p>
+                    <i class="fa-solid ${icons[i]} text-emerald-400 text-lg my-1"></i>
+                    <p class="text-xs font-bold text-slate-100">${temps[i]}</p>
+                </div>
+            `;
         }
+        document.getElementById('forecast-container').innerHTML = forecastHTML;
 
-        function toggleSearchModal() {
-            alert("Buscador de localidades de Córdoba activo. (Próximamente selección de ejidos municipales)");
-        }
+        // 3. REGISTRO
+        document.getElementById('alert-config-form').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const phone = document.getElementById('user-phone').value;
+            const location = document.getElementById('user-location').value;
+            
+            localStorage.setItem('siga_phone', phone);
+            localStorage.setItem('siga_location', location);
+
+            const feedback = document.getElementById('form-feedback');
+            feedback.classList.remove('hidden');
+            setTimeout(() => { feedback.classList.add('hidden'); }, 4000);
+        });
     </script>
 </body>
 </html>

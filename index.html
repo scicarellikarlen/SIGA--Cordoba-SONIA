@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+     <!DOCTYPE html>
 <html lang="es">
 <head>
     <meta charset="UTF-8">
@@ -13,26 +13,21 @@
                 extend: {
                     colors: {
                         siga: {
-                            dark: '#0b1220',
-                            panel: '#111827',
+                            dark: '#07110f',
+                            panel: '#081412',
                             accent: '#22d3ee',
                             warn: '#f97316',
                             danger: '#ef4444',
                             success: '#22c55e'
                         }
                     },
-                    animation: {
-                        'slide-up': 'slideUp 0.35s cubic-bezier(0.16, 1, 0.3, 1) forwards',
-                        'fade-in': 'fadeIn 0.25s ease-out forwards'
-                    },
                     keyframes: {
-                        slideUp: {
-                            '0%': { transform: 'translateY(100%)' },
-                            '100%': { transform: 'translateY(0)' }
+                        sweep: {
+                            to: { transform: 'rotate(360deg)' }
                         },
-                        fadeIn: {
-                            '0%': { opacity: '0' },
-                            '100%': { opacity: '1' }
+                        windLine: {
+                            from: { transform: 'translateX(-20px)' },
+                            to: { transform: 'translateX(20px)' }
                         }
                     }
                 }
@@ -42,35 +37,105 @@
     <style>
         .panel-scroll::-webkit-scrollbar { width: 4px; }
         .panel-scroll::-webkit-scrollbar-track { background: transparent; }
-        .panel-scroll::-webkit-scrollbar-thumb { background: #374151; border-radius: 4px; }
+        .panel-scroll::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.15); border-radius: 4px; }
+        
         #windCanvas {
             position: absolute;
             inset: 0;
             pointer-events: none;
             z-index: 5;
         }
-        .layer-card.active {
-            border-color: #22d3ee;
-            background: rgba(34, 211, 238, 0.12);
-            box-shadow: 0 0 0 1px rgba(34, 211, 238, 0.4);
+
+        /* Estilos de Miniaturas Interactivas (Estilo Windy / Vinted) */
+        .map-card {
+            text-align: left;
+            padding: 0.6rem;
+            border-radius: 1rem;
+            border: 1px solid rgba(255,255,255,0.08);
+            background: rgba(255,255,255,0.025);
+            transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
         }
-        .layer-loading::after {
-            content: '';
+        .map-card:hover {
+            transform: translateY(-3px) scale(1.02);
+            background: rgba(255,255,255,0.06);
+            border-color: rgba(34,211,238,0.4);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.4);
+        }
+        .map-card.active {
+            border-color: rgba(34,211,238,0.7);
+            background: rgba(34,211,238,0.1);
+        }
+        .map-preview {
+            position: relative;
+            height: 75px;
+            overflow: hidden;
+            border-radius: 0.7rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(135deg, #0b2823, #123d34);
+        }
+
+        /* Miniaturas Animadas Específicas */
+        .radar-preview {
+            background: radial-gradient(circle at center, rgba(239,68,68,0.75) 0 5%, rgba(250,204,21,0.5) 6% 14%, rgba(34,197,94,0.4) 15% 27%, transparent 28%), #102d28;
+        }
+        .radar-ring {
             position: absolute;
-            inset: 0;
-            background: linear-gradient(90deg, transparent, rgba(34,211,238,0.15), transparent);
-            animation: shimmer 1.2s infinite;
+            border: 1px solid rgba(255,255,255,0.3);
+            border-radius: 50%;
         }
-        @keyframes shimmer {
-            0% { transform: translateX(-100%); }
-            100% { transform: translateX(100%); }
+        .r1 { width: 35px; height: 35px; }
+        .r2 { width: 60px; height: 60px; }
+        .radar-sweep {
+            position: absolute;
+            width: 60px;
+            height: 1px;
+            background: #22d3ee;
+            transform-origin: left;
+            animation: sweep 2s linear infinite;
+        }
+
+        .wind-preview {
+            background: repeating-linear-gradient(-20deg, transparent 0 10px, rgba(100,240,200,0.15) 11px 12px), #0d2a24;
+        }
+        .wind-line {
+            width: 50px;
+            height: 2px;
+            margin: 6px;
+            background: linear-gradient(90deg, transparent, #22d3ee);
+            animation: windLine 1.5s infinite;
+        }
+
+        .temperature-preview {
+            background: linear-gradient(120deg, #164e63, #166534, #854d0e);
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #fed7aa;
+        }
+        .storm-preview { background: radial-gradient(circle, rgba(255,140,0,0.5), transparent 35%), #17251f; font-size: 1.8rem; }
+        .severe-preview { background: radial-gradient(circle, rgba(239,68,68,0.55), transparent 45%), #251717; font-size: 1.8rem; }
+        .accumulation-preview { background: radial-gradient(circle at 35% 40%, rgba(96,165,250,0.65), transparent 30%), #142a2a; font-size: 1.8rem; }
+        .satellite-preview { background: radial-gradient(ellipse at 30% 40%, rgba(90,140,120,0.8), transparent 40%), #152a25; font-size: 1.8rem; }
+        .warning-preview { background: radial-gradient(circle, rgba(249,115,22,0.55), transparent 40%), #271b12; font-size: 1.8rem; color: #fdba74; }
+
+        /* Efecto de expansión al tacto (Zoom In transition) */
+        @keyframes expandZoom {
+            0% { transform: scale(0.95); opacity: 0; }
+            100% { transform: scale(1); opacity: 1; }
+        }
+        .map-expanding {
+            animation: expandZoom 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
         }
     </style>
 </head>
 <body class="bg-siga-dark text-slate-100 font-sans pb-24 overflow-x-hidden">
 
     <!-- HEADER / LOGO OFICIAL -->
-    <header class="bg-slate-800 border-b border-slate-700 p-4 sticky top-0 z-35 shadow-md">
+    <header class="bg-slate-900/90 border-b border-slate-800 p-4 sticky top-0 z-35 backdrop-blur-md shadow-md">
         <div class="max-w-4xl mx-auto flex flex-col sm:flex-row justify-between items-center gap-3">
             <div class="flex items-center space-x-3">
                 <img src="IMAGEN SIGA_2.jpg" alt="SIGA Logo" class="w-12 h-12 rounded-xl object-cover border border-emerald-500 shadow">
@@ -83,7 +148,7 @@
                 <button onclick="shareOnWhatsApp()" class="bg-emerald-700 hover:bg-emerald-600 text-white text-xs px-3 py-1.5 rounded-lg transition flex items-center gap-1.5 shadow">
                     <i class="fa-brands fa-whatsapp text-sm"></i> Compartir
                 </button>
-                <div id="live-clock-date" class="text-xs bg-slate-900/80 px-3 py-1.5 rounded-lg border border-slate-700 text-emerald-300 font-medium flex items-center gap-2">
+                <div id="live-clock-date" class="text-xs bg-slate-950/80 px-3 py-1.5 rounded-lg border border-slate-800 text-emerald-300 font-medium flex items-center gap-2">
                     <i class="fa-regular fa-calendar-days"></i>
                     <span id="current-date-text">Cargando fecha...</span>
                 </div>
@@ -95,30 +160,81 @@
     <main id="main-view-container" class="max-w-4xl mx-auto p-4 space-y-6">
         
         <!-- BUSCADOR PROVINCIAL DE LOCALIDADES -->
-        <div class="bg-slate-800 border border-slate-700 rounded-2xl p-5 shadow-md">
+        <div class="bg-slate-900/80 border border-slate-800 rounded-2xl p-5 shadow-md">
             <h3 class="text-sm font-bold uppercase tracking-wider text-slate-200 mb-3 flex items-center gap-2">
                 <i class="fa-solid fa-magnifying-glass text-emerald-400"></i> Consultar Localidad, Valle o Departamento (Córdoba)
             </h3>
             <div class="flex gap-2">
-                <input type="text" id="search-locality-input" placeholder="Ej: Río Cuarto, Villa María, Punilla, San Francisco..." class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-xs text-slate-100 focus:outline-none focus:border-emerald-500">
+                <input type="text" id="search-locality-input" placeholder="Ej: Río Cuarto, Villa María, Punilla, San Francisco..." class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-xs text-slate-100 focus:outline-none focus:border-emerald-500">
                 <button type="button" onclick="searchLocalityWeather()" class="bg-emerald-600 hover:bg-emerald-500 text-white text-xs px-4 py-2 rounded-xl transition font-semibold whitespace-nowrap">
                     Buscar
                 </button>
             </div>
-            <div id="search-result-box" class="mt-3 p-3 bg-slate-900/80 rounded-xl border border-slate-700 text-xs hidden">
+            <div id="search-result-box" class="mt-3 p-3 bg-slate-950/90 rounded-xl border border-slate-800 text-xs hidden">
                 <p class="text-emerald-400 font-bold mb-1" id="res-title">Estado para la zona:</p>
                 <p class="text-slate-300" id="res-desc">Sin alertas graves registradas en este momento. Clima estable con monitoreo activo en todo el territorio provincial.</p>
             </div>
         </div>
 
+        <!-- ACCESO RÁPIDO A MAPAS INTERACTIVOS (CON MINIATURAS EXPANSIBLES) -->
+        <div class="bg-slate-900/80 border border-slate-800 rounded-2xl p-5 shadow-md">
+            <div class="flex items-center justify-between mb-4">
+                <h3 class="text-sm font-bold uppercase tracking-wider text-slate-200 flex items-center gap-2">
+                    <i class="fa-solid fa-map-location-dot text-cyan-400"></i> Mapas y Capas Provinciales en Tiempo Real
+                </h3>
+                <span class="text-[10px] bg-cyan-950 text-cyan-300 border border-cyan-800 px-2 py-0.5 rounded-full font-semibold">Toca para ampliar</span>
+            </div>
+            
+            <!-- GRILLA DE MINIATURAS INTERACTIVAS -->
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-3">
+                
+                <!-- Radar -->
+                <button class="map-card" data-map="radar">
+                    <div class="map-preview radar-preview">
+                        <div class="radar-ring r1"></div>
+                        <div class="radar-ring r2"></div>
+                        <div class="radar-sweep"></div>
+                    </div>
+                    <div class="mt-2 text-xs font-semibold">Radar del tiempo</div>
+                    <div class="text-[10px] text-slate-400">Reflectividad Córdoba</div>
+                </button>
+
+                <!-- Viento -->
+                <button class="map-card active" data-map="viento">
+                    <div class="map-preview wind-preview">
+                        <div class="wind-line"></div>
+                        <div class="wind-line"></div>
+                        <div class="wind-line"></div>
+                    </div>
+                    <div class="mt-2 text-xs font-semibold">Viento</div>
+                    <div class="text-[10px] text-slate-400">Partículas y ráfagas</div>
+                </button>
+
+                <!-- Temperatura -->
+                <button class="map-card" data-map="temperatura">
+                    <div class="map-preview temperature-preview">24°</div>
+                    <div class="mt-2 text-xs font-semibold">Temperatura</div>
+                    <div class="text-[10px] text-slate-400">Mapa térmico 2m</div>
+                </button>
+
+                <!-- Lluvias y Tormentas -->
+                <button class="map-card" data-map="storms">
+                    <div class="map-preview storm-preview">⚡</div>
+                    <div class="mt-2 text-xs font-semibold">Lluvias y truenos</div>
+                    <div class="text-[10px] text-slate-400">Actividad eléctrica</div>
+                </button>
+
+            </div>
+        </div>
+
         <!-- VISIBILIDAD Y ESTADO DE RUTAS (PROVINCIAL) -->
-        <div class="bg-slate-800 border border-slate-700 rounded-2xl p-5 shadow-md">
+        <div class="bg-slate-900/80 border border-slate-800 rounded-2xl p-5 shadow-md">
             <h3 class="text-sm font-bold uppercase tracking-wider text-slate-200 mb-4 flex items-center gap-2">
                 <i class="fa-solid fa-road text-amber-400"></i> Visibilidad y Estado de Rutas (Provincia de Córdoba)
             </h3>
             <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                <div class="bg-slate-900/70 border border-slate-700 p-3.5 rounded-xl flex items-center gap-3">
-                    <div class="bg-slate-800 text-cyan-400 p-3 rounded-lg">
+                <div class="bg-slate-950/70 border border-slate-800 p-3.5 rounded-xl flex items-center gap-3">
+                    <div class="bg-slate-900 text-cyan-400 p-3 rounded-lg">
                         <i class="fa-solid fa-smog text-xl"></i>
                     </div>
                     <div>
@@ -127,8 +243,8 @@
                         <p class="text-[10px] text-slate-400 mt-0.5">Actualización continua desde Policía Caminera</p>
                     </div>
                 </div>
-                <div class="bg-slate-900/70 border border-slate-700 p-3.5 rounded-xl flex items-center gap-3">
-                    <div class="bg-slate-800 text-amber-400 p-3 rounded-lg">
+                <div class="bg-slate-950/70 border border-slate-800 p-3.5 rounded-xl flex items-center gap-3">
+                    <div class="bg-slate-900 text-amber-400 p-3 rounded-lg">
                         <i class="fa-solid fa-triangle-exclamation text-xl"></i>
                     </div>
                     <div>
@@ -141,7 +257,7 @@
         </div>
 
         <!-- ALERTA DETALLADA DE GRANIZO (PROVINCIAL) -->
-        <div class="bg-slate-800 border-l-4 border-orange-500 rounded-r-2xl p-5 shadow-lg space-y-4">
+        <div class="bg-slate-900/80 border-l-4 border-orange-500 rounded-r-2xl p-5 shadow-lg space-y-4">
             <div class="flex items-start justify-between">
                 <div class="flex items-center space-x-3">
                     <div class="bg-orange-600 text-white p-3 rounded-xl shadow">
@@ -154,13 +270,10 @@
                     </div>
                 </div>
             </div>
-            <div class="bg-slate-900/70 p-4 rounded-xl border border-slate-700/60 space-y-2">
-                <p class="text-xs text-slate-200"><strong>Resumen:</strong> Tormentas con potencial caída de granizo y ráfagas fuertes afectando diversos puntos de la geografía cordobesa y zonas de llanura.</p>
-            </div>
         </div>
 
         <!-- ALERTA ROJA DE INCENDIOS (PROVINCIAL) -->
-        <div class="bg-slate-800 border-l-4 border-red-500 rounded-r-2xl p-5 shadow-lg space-y-4">
+        <div class="bg-slate-900/80 border-l-4 border-red-500 rounded-r-2xl p-5 shadow-lg space-y-4">
             <div class="flex items-start justify-between">
                 <div class="flex items-center space-x-3">
                     <div class="bg-red-600 text-white p-3 rounded-xl shadow">
@@ -176,61 +289,45 @@
         </div>
 
         <!-- DIRECTORIO DE EMERGENCIA PROVINCIAL -->
-        <div class="bg-slate-800 border border-slate-700 rounded-2xl p-5 shadow-md space-y-3">
+        <div class="bg-slate-900/80 border border-slate-800 rounded-2xl p-5 shadow-md space-y-3">
             <h3 class="text-sm font-bold uppercase tracking-wider text-slate-200 flex items-center gap-2">
                 <i class="fa-solid fa-phone-volume text-rose-400"></i> Directorio de Emergencia Provincial
             </h3>
             <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
-                <div class="bg-slate-900 p-3 rounded-xl border border-slate-700 flex justify-between items-center">
+                <div class="bg-slate-950 p-3 rounded-xl border border-slate-800 flex justify-between items-center">
                     <div>
                         <strong class="text-slate-200 block">Policía de la Provincia</strong>
                         <span class="text-[10px] text-slate-400">Emergencias Córdoba</span>
                     </div>
-                    <span class="bg-slate-800 text-emerald-400 font-bold px-2.5 py-1 rounded-lg border border-slate-700">101 / 911</span>
+                    <span class="bg-slate-900 text-emerald-400 font-bold px-2.5 py-1 rounded-lg border border-slate-800">101 / 911</span>
                 </div>
-                <div class="bg-slate-900 p-3 rounded-xl border border-slate-700 flex justify-between items-center">
+                <div class="bg-slate-950 p-3 rounded-xl border border-slate-800 flex justify-between items-center">
                     <div>
                         <strong class="text-slate-200 block">Federación de Bomberos Voluntarios</strong>
                         <span class="text-[10px] text-slate-400">Guardia Provincial de Incendios</span>
                     </div>
-                    <span class="bg-slate-800 text-rose-400 font-bold px-2.5 py-1 rounded-lg border border-slate-700">100 / 0800</span>
-                </div>
-                <div class="bg-slate-900 p-3 rounded-xl border border-slate-700 flex justify-between items-center">
-                    <div>
-                        <strong class="text-slate-200 block">Defensa Civil Córdoba</strong>
-                        <span class="text-[10px] text-slate-400">Coordinación de Emergencias</span>
-                    </div>
-                    <span class="bg-slate-800 text-emerald-400 font-bold px-2.5 py-1 rounded-lg border border-slate-700">103</span>
-                </div>
-                <div class="bg-slate-900 p-3 rounded-xl border border-slate-700 flex justify-between items-center">
-                    <div>
-                        <strong class="text-slate-200 block">Policía Caminera Córdoba</strong>
-                        <span class="text-[10px] text-slate-400">Control de Rutas Provinciales</span>
-                    </div>
-                    <span class="bg-slate-800 text-amber-400 font-bold px-2.5 py-1 rounded-lg border border-slate-700">0800-888-...</span>
+                    <span class="bg-slate-900 text-rose-400 font-bold px-2.5 py-1 rounded-lg border border-slate-800">100 / 0800</span>
                 </div>
             </div>
         </div>
 
         <!-- REGISTRO DE TELÉFONO Y DETECCIÓN GPS -->
-        <div class="bg-slate-800 border border-slate-700 rounded-2xl p-5 shadow-md">
+        <div class="bg-slate-900/80 border border-slate-800 rounded-2xl p-5 shadow-md">
             <div class="flex items-center justify-between mb-4">
                 <h3 class="text-sm font-bold uppercase tracking-wider text-slate-200 flex items-center gap-2">
                     <i class="fa-solid fa-location-crosshairs text-emerald-400"></i> Registro y Geolocalización GPS
                 </h3>
                 <span class="text-[10px] bg-emerald-950 text-emerald-400 border border-emerald-800 px-2 py-0.5 rounded-full">Automático</span>
             </div>
-            <p class="text-xs text-slate-400 mb-4">Ingresá tu teléfono y activá el GPS para que SIGA detecte tu posición exacta en cualquier punto de la provincia de Córdoba.</p>
-            
             <form id="alert-config-form" class="space-y-3">
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                    <input type="text" id="user-phone" placeholder="Ej: 351... (Tu Teléfono / Celular)" class="bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-xs text-slate-100 focus:outline-none focus:border-emerald-500" required>
-                    <button type="button" id="get-gps-btn" class="bg-slate-700 hover:bg-slate-600 text-emerald-300 font-semibold text-xs py-2 px-4 rounded-xl transition shadow flex items-center justify-center gap-2 border border-slate-600">
+                    <input type="text" id="user-phone" placeholder="Ej: 351... (Tu Teléfono / Celular)" class="bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-xs text-slate-100 focus:outline-none focus:border-emerald-500" required>
+                    <button type="button" id="get-gps-btn" class="bg-slate-800 hover:bg-slate-700 text-emerald-300 font-semibold text-xs py-2 px-4 rounded-xl transition shadow flex items-center justify-center gap-2 border border-slate-700">
                         <i class="fa-solid fa-satellite-dish"></i> Detectar mi ubicación GPS
                     </button>
                 </div>
                 <div class="flex items-center gap-3">
-                    <input type="text" id="user-location-display" placeholder="Ubicación GPS (Lat, Lon / Zona detectada)" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-xs text-emerald-400 focus:outline-none" readonly>
+                    <input type="text" id="user-location-display" placeholder="Ubicación GPS (Lat, Lon / Zona detectada)" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-xs text-emerald-400 focus:outline-none" readonly>
                     <button type="submit" class="bg-emerald-600 hover:bg-emerald-500 text-white font-semibold text-xs py-2 px-6 rounded-xl transition shadow flex items-center justify-center gap-2 whitespace-nowrap">
                         <i class="fa-solid fa-floppy-disk"></i> Guardar Alarma
                     </button>
@@ -241,219 +338,68 @@
 
     </main>
 
-    <!-- FONDO DE MAPA INTERACTIVO (Con canvas de partículas) -->
-    <div id="mapInteractiveArea" class="hidden relative w-full h-[calc(100vh-4rem)]">
-        <div class="absolute inset-0 bg-gradient-to-br from-slate-900 via-slate-800 to-slate-950">
+    <!-- FONDO DE MAPA INTERACTIVO (ÁREA EXPANDIDA) -->
+    <div id="mapInteractiveArea" class="hidden relative w-full h-[calc(100vh-4rem)] map-expanding">
+        <div class="absolute inset-0 bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950">
             <div class="absolute inset-0 opacity-20" style="background-image:
                 linear-gradient(rgba(148,163,184,0.15) 1px, transparent 1px),
                 linear-gradient(90deg, rgba(148,163,184,0.15) 1px, transparent 1px);
                 background-size: 40px 40px;"></div>
             <div class="absolute top-1/3 left-1/2 -translate-x-1/2 text-center z-10 pointer-events-none">
-                <div class="text-cyan-400/80 text-xs font-medium tracking-widest uppercase">Córdoba · SIGA Mapas Provinciales</div>
-                <div class="text-gray-400 text-[10px] mt-0.5">32.89°S · 64.18°W</div>
+                <div class="text-cyan-400 text-xs font-semibold tracking-widest uppercase">Provincia de Córdoba · Vista Ampliada</div>
+                <div id="expanded-map-subtitle" class="text-slate-300 text-sm mt-1">Capa activa: Viento en tiempo real</div>
             </div>
         </div>
         <canvas id="windCanvas"></canvas>
-        <div id="layerInfo" class="absolute top-4 left-4 right-4 z-20 flex items-start justify-between pointer-events-none">
-            <div class="bg-black/50 backdrop-blur-md rounded-xl px-3 py-2 border border-white/10">
-                <div class="text-[10px] text-gray-400 uppercase tracking-wider">Capa activa</div>
-                <div id="activeLayerName" class="text-sm font-semibold text-cyan-300">Viento</div>
-            </div>
-            <div class="bg-black/50 backdrop-blur-md rounded-xl px-3 py-2 border border-white/10 text-right">
-                <div class="text-[10px] text-gray-400">Actualizado</div>
-                <div id="lastUpdate" class="text-xs text-gray-200">hace 2 min</div>
-            </div>
+        <div class="absolute top-4 left-4 z-20">
+            <button onclick="closeExpandedMap()" class="bg-slate-800/90 hover:bg-slate-700 text-white text-xs px-4 py-2 rounded-xl border border-slate-700 shadow flex items-center gap-2 backdrop-blur">
+                <i class="fa-solid fa-arrow-left"></i> Volver al menú
+            </button>
         </div>
     </div>
 
-    <!-- BACKDROP -->
-    <div id="backdrop" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-40 opacity-0 pointer-events-none backdrop transition-opacity duration-300"></div>
+    <!-- BACKDROP Y PANEL DESLIZANTE DE CAPAS (WINDY STYLE) -->
+    <div id="backdrop" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-40 opacity-0 pointer-events-none transition-opacity duration-300"></div>
 
-    <!-- ========== PANEL DESLIZANTE (SHEET) TIPO WINDY ========== -->
     <div id="mapPanel" class="fixed bottom-0 left-0 right-0 z-50 translate-y-full max-h-[78vh] flex flex-col rounded-t-2xl bg-siga-panel border-t border-white/10 shadow-2xl transition-transform duration-300">
-        <div class="flex justify-center pt-3 pb-1">
+        <div class="flex justify-center pt-3 pb-1 cursor-pointer" id="dragHandle">
             <div class="w-10 h-1 rounded-full bg-gray-600"></div>
         </div>
         <div class="px-4 pb-3 flex items-center justify-between border-b border-white/5">
             <div class="flex items-center gap-3">
-                <button id="btnLogin" class="w-9 h-9 rounded-full bg-white/5 hover:bg-white/10 flex items-center justify-center transition" title="Iniciar sesión">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 text-gray-300" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 9V5.25A2.25 2.25 0 0013.5 3h-6a2.25 2.25 0 00-2.25 2.25v13.5A2.25 2.25 0 007.5 21h6a2.25 2.25 0 002.25-2.25V15M12 9l-3 3m0 0l3 3m-3-3h12.75" />
-                    </svg>
-                </button>
-                <div>
-                    <div class="text-sm font-semibold">Mapas SIGA</div>
-                    <div class="text-[11px] text-gray-400">Córdoba · Capas meteorológicas</div>
-                </div>
+                <div class="text-sm font-semibold">Capas del Sistema SIGA</div>
             </div>
-            <div class="flex items-center gap-2">
-                <button id="btnAlerts" class="relative w-9 h-9 rounded-full bg-white/5 hover:bg-white/10 flex items-center justify-center transition" title="Mis Alertas">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 text-amber-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M14.857 17.082a23.848 23.848 0 005.454-1.31A8.967 8.967 0 0118 9.75v-.7V9A6 6 0 006 9v.75a8.967 8.967 0 01-2.312 6.022c1.733.64 3.56 1.085 5.455 1.31m5.714 0a24.255 24.255 0 01-5.714 0m5.714 0a3 3 0 11-5.714 0" />
-                    </svg>
-                    <span class="absolute -top-0.5 -right-0.5 w-4 h-4 bg-siga-danger text-[10px] font-bold rounded-full flex items-center justify-center">3</span>
-                </button>
-                <button id="btnSettings" class="w-9 h-9 rounded-full bg-white/5 hover:bg-white/10 flex items-center justify-center transition" title="Configurar umbrales">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 text-gray-300" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M9.594 3.94c.09-.542.56-.94 1.11-.94h2.593c.55 0 1.02.398 1.11.94l.213 1.281c.063.374.313.686.645.87.074.04.147.083.22.127.324.196.72.257 1.075.124l1.217-.456a1.125 1.125 0 011.37.49l1.296 2.247a1.125 1.125 0 01-.26 1.431l-1.003.827c-.293.24-.438.613-.431.992a6.759 6.759 0 010 .255c-.007.378.138.75.43.99l1.005.828c.424.35.534.954.26 1.43l-1.298 2.247a1.125 1.125 0 01-1.369.491l-1.217-.456c-.355-.133-.75-.072-1.076.124a6.57 6.57 0 01-.22.128c-.331.183-.581.495-.644.869l-.213 1.28c-.09.543-.56.941-1.11.941h-2.594c-.55 0-1.02-.398-1.11-.94l-.213-1.281c-.062-.374-.312-.686-.644-.87a6.52 6.52 0 01-.22-.127c-.325-.196-.72-.257-1.076-.124l-1.217.456a1.125 1.125 0 01-1.369-.49l-1.297-2.247a1.125 1.125 0 01.26-1.431l1.004-.827c.292-.24.437-.613.43-.992a6.932 6.932 0 010-.255c.007-.378-.138-.75-.43-.99l-1.004-.828a1.125 1.125 0 01-.26-1.43l1.297-2.247a1.125 1.125 0 011.37-.491l1.216.456c.356.133.751.072 1.076-.124.072-.044.146-.087.22-.128.332-.183.582-.495.644-.869l.214-1.281z" />
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                    </svg>
-                </button>
-                <button id="btnClosePanel" class="w-9 h-9 rounded-full bg-white/5 hover:bg-white/10 flex items-center justify-center transition">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
-                    </svg>
-                </button>
-            </div>
+            <button id="btnClosePanel" class="w-9 h-9 rounded-full bg-white/5 hover:bg-white/10 flex items-center justify-center transition">
+                <i class="fa-solid fa-xmark text-gray-400"></i>
+            </button>
         </div>
-        <div class="flex-1 overflow-y-auto panel-scroll px-4 pb-24">
-            <section class="mt-4">
-                <h3 class="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-3">Capas y temas ambientales</h3>
-                <div class="grid grid-cols-3 gap-2.5">
-                    <button data-layer="viento" class="layer-card active relative flex flex-col items-center gap-1.5 p-3 rounded-xl bg-white/5 border border-white/10 hover:bg-white/10 transition">
-                        <div class="w-9 h-9 rounded-lg bg-cyan-500/20 flex items-center justify-center">
-                            <svg class="w-5 h-5 text-cyan-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 13.5l10.5-11.25L12 10.5h8.25L9.75 21.75 12 13.5H3.75z"/></svg>
-                        </div>
-                        <span class="text-[11px] font-medium">Viento</span>
-                    </button>
-                    <button data-layer="temperatura" class="layer-card relative flex flex-col items-center gap-1.5 p-3 rounded-xl bg-white/5 border border-white/10 hover:bg-white/10 transition">
-                        <div class="w-9 h-9 rounded-lg bg-orange-500/20 flex items-center justify-center">
-                            <svg class="w-5 h-5 text-orange-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M12 3v2.25m6.364.386l-1.591 1.591M21 12h-2.25m-.386 6.364l-1.591-1.591M12 18.75V21m-4.773-4.227l-1.591 1.591M5.25 12H3m4.227-4.773L5.636 5.636M15.75 12a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0z"/></svg>
-                        </div>
-                        <span class="text-[11px] font-medium">Temperatura</span>
-                    </button>
-                    <button data-layer="lluvia" class="layer-card relative flex flex-col items-center gap-1.5 p-3 rounded-xl bg-white/5 border border-white/10 hover:bg-white/10 transition">
-                        <div class="w-9 h-9 rounded-lg bg-blue-500/20 flex items-center justify-center">
-                            <svg class="w-5 h-5 text-blue-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M2.25 15a4.5 4.5 0 004.5 4.5H18a3.75 3.75 0 001.332-7.257 3 3 0 00-3.758-3.848 5.25 5.25 0 00-10.233 2.33A4.502 4.502 0 002.25 15z"/></svg>
-                        </div>
-                        <span class="text-[11px] font-medium">Lluvia y Nieve</span>
-                    </button>
-                    <button data-layer="aire" class="layer-card relative flex flex-col items-center gap-1.5 p-3 rounded-xl bg-white/5 border border-white/10 hover:bg-white/10 transition">
-                        <div class="w-9 h-9 rounded-lg bg-emerald-500/20 flex items-center justify-center">
-                            <svg class="w-5 h-5 text-emerald-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M12 3v2.25m6.364.386l-1.591 1.591M21 12h-2.25m-.386 6.364l-1.591-1.591M12 18.75V21m-4.773-4.227l-1.591 1.591M5.25 12H3m4.227-4.773L5.636 5.636"/></svg>
-                        </div>
-                        <span class="text-[11px] font-medium">Calidad del aire</span>
-                    </button>
-                    <button data-layer="sequia" class="layer-card relative flex flex-col items-center gap-1.5 p-3 rounded-xl bg-white/5 border border-white/10 hover:bg-white/10 transition">
-                        <div class="w-9 h-9 rounded-lg bg-amber-500/20 flex items-center justify-center">
-                            <svg class="w-5 h-5 text-amber-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126z"/></svg>
-                        </div>
-                        <span class="text-[11px] font-medium">Sequía</span>
-                    </button>
-                    <button data-layer="advertencias" class="layer-card relative flex flex-col items-center gap-1.5 p-3 rounded-xl bg-white/5 border border-white/10 hover:bg-white/10 transition">
-                        <div class="w-9 h-9 rounded-lg bg-red-500/20 flex items-center justify-center">
-                            <svg class="w-5 h-5 text-red-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m9-.75a9 9 0 11-18 0 9 9 0 0118 0zm-9 3.75h.008v.008H12v-.008z"/></svg>
-                        </div>
-                        <span class="text-[11px] font-medium">Advertencias</span>
-                    </button>
-                </div>
-            </section>
-            <section class="mt-6">
-                <h3 class="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-3">Mapas interactivos</h3>
-                <div class="space-y-2">
-                    <button data-map="radar" class="map-item w-full flex items-center gap-3 p-3 rounded-xl bg-white/5 border border-white/10 hover:bg-white/10 transition text-left">
-                        <div class="w-10 h-10 rounded-lg bg-indigo-500/20 flex items-center justify-center shrink-0">
-                            <svg class="w-5 h-5 text-indigo-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M9.348 14.652a3.75 3.75 0 010-5.304m5.304 0a3.75 3.75 0 010 5.304m-7.425 2.121a6.75 6.75 0 010-9.546m9.546 0a6.75 6.75 0 010 9.546M5.106 18.894c-3.808-3.808-3.808-9.98 0-13.788m13.788 0c3.808 3.808 3.808 9.981 0 13.79M12 12h.008v.008H12V12zm.375 0a.375.375 0 11-.75 0 .375.375 0 01.75 0z"/></svg>
-                        </div>
-                        <div class="flex-1 min-w-0">
-                            <div class="text-sm font-medium">Radar del tiempo</div>
-                            <div class="text-[11px] text-gray-400 truncate">Reflectividad · Córdoba y región</div>
-                        </div>
-                        <svg class="w-4 h-4 text-gray-500 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
-                    </button>
-                    <button data-map="satelite" class="map-item w-full flex items-center gap-3 p-3 rounded-xl bg-white/5 border border-white/10 hover:bg-white/10 transition text-left">
-                        <div class="w-10 h-10 rounded-lg bg-violet-500/20 flex items-center justify-center shrink-0">
-                            <svg class="w-5 h-5 text-violet-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M12 21a9.004 9.004 0 008.716-6.747M12 21a9.004 9.004 0 01-8.716-6.747M12 21c2.485 0 4.5-4.03 4.5-9S14.485 3 12 3m0 18c-2.485 0-4.5-4.03-4.5-9S9.515 3 12 3m0 0a8.997 8.997 0 017.843 4.582M12 3a8.997 8.997 0 00-7.843 4.582m15.686 0A11.953 11.953 0 0112 10.5c-2.998 0-5.74-1.1-7.843-2.918m15.686 0A8.959 8.959 0 0121 12c0 .778-.099 1.533-.284 2.253m0 0A17.919 17.919 0 0112 16.5c-3.162 0-6.133-.815-8.716-2.247m0 0A9.015 9.015 0 013 12c0-1.605.42-3.113 1.157-4.418"/></svg>
-                        </div>
-                        <div class="flex-1 min-w-0">
-                            <div class="text-sm font-medium">Satélite</div>
-                            <div class="text-[11px] text-gray-400 truncate">IR · Visible · Nubes provinciales</div>
-                        </div>
-                        <svg class="w-4 h-4 text-gray-500 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
-                    </button>
-                    <button data-map="viento" class="map-item w-full flex items-center gap-3 p-3 rounded-xl bg-white/5 border border-white/10 hover:bg-white/10 transition text-left">
-                        <div class="w-10 h-10 rounded-lg bg-cyan-500/20 flex items-center justify-center shrink-0">
-                            <svg class="w-5 h-5 text-cyan-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 13.5l10.5-11.25L12 10.5h8.25L9.75 21.75 12 13.5H3.75z"/></svg>
-                        </div>
-                        <div class="flex-1 min-w-0">
-                            <div class="text-sm font-medium">Viento</div>
-                            <div class="text-[11px] text-gray-400 truncate">Partículas + isobaras · 10 m</div>
-                        </div>
-                        <svg class="w-4 h-4 text-gray-500 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
-                    </button>
-                    <button data-map="lluvias-truenos" class="map-item w-full flex items-center gap-3 p-3 rounded-xl bg-white/5 border border-white/10 hover:bg-white/10 transition text-left">
-                        <div class="w-10 h-10 rounded-lg bg-yellow-500/20 flex items-center justify-center shrink-0">
-                            <svg class="w-5 h-5 text-yellow-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 13.5l10.5-11.25L12 10.5h8.25L9.75 21.75 12 13.5H3.75z"/></svg>
-                        </div>
-                        <div class="flex-1 min-w-0">
-                            <div class="text-sm font-medium">Lluvias y truenos</div>
-                            <div class="text-[11px] text-amber-400/90 truncate">Zonas afectadas · Córdoba</div>
-                        </div>
-                        <span class="text-[10px] bg-amber-500/20 text-amber-300 px-1.5 py-0.5 rounded-md shrink-0">Activo</span>
-                    </button>
-                    <button data-map="temperatura" class="map-item w-full flex items-center gap-3 p-3 rounded-xl bg-white/5 border border-white/10 hover:bg-white/10 transition text-left">
-                        <div class="w-10 h-10 rounded-lg bg-orange-500/20 flex items-center justify-center shrink-0">
-                            <svg class="w-5 h-5 text-orange-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M12 3v2.25m6.364.386l-1.591 1.591M21 12h-2.25m-.386 6.364l-1.591-1.591M12 18.75V21m-4.773-4.227l-1.591 1.591M5.25 12H3m4.227-4.773L5.636 5.636M15.75 12a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0z"/></svg>
-                        </div>
-                        <div class="flex-1 min-w-0">
-                            <div class="text-sm font-medium">Temperatura</div>
-                            <div class="text-[11px] text-gray-400 truncate">2 m · Superficie · Isolíneas</div>
-                        </div>
-                        <svg class="w-4 h-4 text-gray-500 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
-                    </button>
-                    <button data-map="eventos-severos" class="map-item w-full flex items-center gap-3 p-3 rounded-xl bg-white/5 border border-white/10 hover:bg-white/10 transition text-left">
-                        <div class="w-10 h-10 rounded-lg bg-red-500/20 flex items-center justify-center shrink-0">
-                            <svg class="w-5 h-5 text-red-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126zM12 15.75h.007v.008H12v-.008z"/></svg>
-                        </div>
-                        <div class="flex-1 min-w-0">
-                            <div class="text-sm font-medium">Eventos severos</div>
-                            <div class="text-[11px] text-gray-400 truncate">Tormentas · Granizo · Vientos fuertes</div>
-                        </div>
-                        <svg class="w-4 h-4 text-gray-500 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
-                    </button>
-                    <button data-map="acumulacion" class="map-item w-full flex items-center gap-3 p-3 rounded-xl bg-white/5 border border-white/10 hover:bg-white/10 transition text-left">
-                        <div class="w-10 h-10 rounded-lg bg-sky-500/20 flex items-center justify-center shrink-0">
-                            <svg class="w-5 h-5 text-sky-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M2.25 15a4.5 4.5 0 004.5 4.5H18a3.75 3.75 0 001.332-7.257 3 3 0 00-3.758-3.848 5.25 5.25 0 00-10.233 2.33A4.502 4.502 0 002.25 15z"/></svg>
-                        </div>
-                        <div class="flex-1 min-w-0">
-                            <div class="text-sm font-medium">Acumulación de lluvia y nubes</div>
-                            <div class="text-[11px] text-gray-400 truncate">Últimas 24 h · Pronóstico 48 h</div>
-                        </div>
-                        <svg class="w-4 h-4 text-gray-500 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
-                    </button>
-                </div>
-            </section>
-            <section class="mt-6 mb-4">
-                <h3 class="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-3">Umbrales de alerta (SIGA)</h3>
-                <div class="bg-white/5 rounded-xl border border-white/10 p-3 space-y-3">
-                    <div class="flex items-center justify-between">
-                        <span class="text-sm">Viento fuerte</span>
-                        <span class="text-xs text-cyan-300 font-mono">> 60 km/h</span>
-                    </div>
-                    <div class="flex items-center justify-between">
-                        <span class="text-sm">Lluvia intensa</span>
-                        <span class="text-xs text-blue-300 font-mono">> 30 mm/h</span>
-                    </div>
-                    <div class="flex items-center justify-between">
-                        <span class="text-sm">Temperatura extrema</span>
-                        <span class="text-xs text-orange-300 font-mono">> 38 °C / < 2 °C</span>
-                    </div>
-                    <button id="btnEditThresholds" class="w-full mt-1 py-2 text-xs font-medium text-cyan-400 hover:text-cyan-300 transition">
-                        Editar umbrales →
-                    </button>
-                </div>
-            </section>
+        <div class="flex-1 overflow-y-auto panel-scroll px-4 py-4 space-y-4">
+            <h3 class="text-xs font-semibold text-gray-400 uppercase tracking-wider">Seleccionar Capa Provincial</h3>
+            <div class="grid grid-cols-2 sm:grid-cols-3 gap-3">
+                <button onclick="selectLayerFromPanel('radar')" class="p-3 bg-white/5 border border-white/10 rounded-xl text-left hover:bg-white/10 transition">
+                    <div class="text-xs font-bold text-cyan-300">Radar del tiempo</div>
+                    <div class="text-[10px] text-gray-400 mt-0.5">Precipitación provincial</div>
+                </button>
+                <button onclick="selectLayerFromPanel('viento')" class="p-3 bg-white/5 border border-white/10 rounded-xl text-left hover:bg-white/10 transition">
+                    <div class="text-xs font-bold text-cyan-300">Viento</div>
+                    <div class="text-[10px] text-gray-400 mt-0.5">Partículas y dirección</div>
+                </button>
+                <button onclick="selectLayerFromPanel('temperatura')" class="p-3 bg-white/5 border border-white/10 rounded-xl text-left hover:bg-white/10 transition">
+                    <div class="text-xs font-bold text-orange-300">Temperatura</div>
+                    <div class="text-[10px] text-gray-400 mt-0.5">Isolíneas térmicas</div>
+                </button>
+            </div>
         </div>
     </div>
 
     <!-- BARRA DE NAVEGACIÓN INFERIOR -->
-    <nav class="fixed bottom-0 left-0 right-0 z-50 bg-slate-800/95 backdrop-blur border-t border-slate-700 py-2.5 px-4">
+    <nav class="fixed bottom-0 left-0 right-0 z-50 bg-slate-900/95 backdrop-blur border-t border-slate-800 py-2.5 px-4">
         <div class="max-w-md mx-auto flex justify-around items-center text-slate-400 text-xs font-medium">
-            <button onclick="switchTab('inicio')" id="nav-inicio" class="flex flex-col items-center text-emerald-400 transition">
+            <button onclick="switchTab('inicio')" class="flex flex-col items-center text-emerald-400 transition">
                 <i class="fa-solid fa-house text-base mb-1"></i>
                 <span>Inicio</span>
             </button>
-            <button onclick="switchTab('alertas')" id="nav-alertas" class="flex flex-col items-center hover:text-emerald-400 transition">
+            <button onclick="switchTab('alertas')" class="flex flex-col items-center hover:text-emerald-400 transition">
                 <i class="fa-solid fa-triangle-exclamation text-base mb-1"></i>
                 <span>Alertas</span>
             </button>
@@ -461,7 +407,7 @@
                 <i class="fa-solid fa-map text-base mb-1"></i>
                 <span>Mapas</span>
             </button>
-            <button onclick="switchTab('emergencia')" id="nav-emergencia" class="flex flex-col items-center hover:text-emerald-400 transition">
+            <button onclick="switchTab('emergencia')" class="flex flex-col items-center hover:text-emerald-400 transition">
                 <i class="fa-solid fa-phone-volume text-base mb-1"></i>
                 <span>Emergencia</span>
             </button>
@@ -470,6 +416,7 @@
 
     <!-- SCRIPTS -->
     <script>
+        // Reloj en vivo
         function updateLiveClock() {
             const now = new Date();
             const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric', timeZone: 'America/Argentina/Cordoba' };
@@ -479,126 +426,103 @@
         updateLiveClock();
         setInterval(updateLiveClock, 60000);
 
+        // Buscador
         function searchLocalityWeather() {
             const query = document.getElementById('search-locality-input').value.trim();
             const box = document.getElementById('search-result-box');
             const title = document.getElementById('res-title');
             const desc = document.getElementById('res-desc');
-            
             if(query) {
                 box.classList.remove('hidden');
                 title.textContent = `Estado y Alertas para: ${query.toUpperCase()}`;
-                desc.textContent = `Monitoreo provincial activo en ${query}. Cobertura territorial sin restricciones severas inmediatas. Vientos moderados y condiciones estables.`;
+                desc.textContent = `Monitoreo provincial activo en ${query}. Cobertura territorial sin restricciones severas inmediatas.`;
             } else {
                 box.classList.remove('hidden');
                 title.textContent = "Aviso";
-                desc.textContent = "Por favor ingrese una localidad, valle o departamento de Córdoba para consultar.";
+                desc.textContent = "Ingrese una localidad, valle o departamento de Córdoba para consultar.";
             }
         }
 
         function shareOnWhatsApp() {
-            const text = encodeURIComponent("¡Mirá las alertas meteorológicas y de riesgo provincial en tiempo real con SIGA! Monitoreo de granizo e incendios en toda la Provincia de Córdoba.");
+            const text = encodeURIComponent("¡Monitoreo meteorológico y de riesgo provincial en tiempo real con SIGA Córdoba!");
             window.open(`https://api.whatsapp.com/send?text=${text}`, '_blank');
         }
 
+        // GPS y almacenamiento
         document.getElementById('get-gps-btn').addEventListener('click', function() {
             const locationField = document.getElementById('user-location-display');
             if (navigator.geolocation) {
                 locationField.value = "Obteniendo señal GPS provincial...";
                 navigator.geolocation.getCurrentPosition(
-                    function(position) {
-                        const lat = position.coords.latitude.toFixed(4);
-                        const lon = position.coords.longitude.toFixed(4);
-                        locationField.value = `Córdoba (Lat: ${lat}, Lon: ${lon}) - GPS Activo`;
-                    },
-                    function(error) {
-                        locationField.value = "Error al obtener GPS. Verifique permisos.";
-                    }
+                    pos => locationField.value = `Córdoba (Lat: ${pos.coords.latitude.toFixed(4)}, Lon: ${pos.coords.longitude.toFixed(4)})`,
+                    () => locationField.value = "Error al obtener GPS."
                 );
-            } else {
-                locationField.value = "Geolocalización no soportada en este navegador.";
             }
         });
 
         document.getElementById('alert-config-form').addEventListener('submit', function(e) {
             e.preventDefault();
-            const phone = document.getElementById('user-phone').value;
-            const location = document.getElementById('user-location-display').value || "Provincia de Córdoba (General)";
-            
-            localStorage.setItem('siga_phone', phone);
-            localStorage.setItem('siga_location', location);
-
             const feedback = document.getElementById('form-feedback');
             feedback.classList.remove('hidden');
-            setTimeout(() => { feedback.classList.add('hidden'); }, 4000);
+            setTimeout(() => feedback.classList.add('hidden'), 4000);
         });
 
-        const state = { panelOpen: false, activeLayer: 'viento' };
-        const panel = document.getElementById('mapPanel');
-        const backdrop = document.getElementById('backdrop');
-        const btnMapas = document.getElementById('btnMapas');
-        const btnClose = document.getElementById('btnClosePanel');
-        const activeLayerName = document.getElementById('activeLayerName');
-        const lastUpdate = document.getElementById('lastUpdate');
+        // --- SISTEMA DE MINIATURAS INTERACTIVAS Y EXPANSIÓN AL TACTO (ESTILO WINDY) ---
         const mapArea = document.getElementById('mapInteractiveArea');
         const mainView = document.getElementById('main-view-container');
+        const subtitle = document.getElementById('expanded-map-subtitle');
 
-        function openPanel() {
-            state.panelOpen = true;
-            panel.classList.remove('translate-y-full');
-            backdrop.classList.remove('opacity-0', 'pointer-events-none');
-            backdrop.classList.add('opacity-100');
-            mapArea.classList.remove('hidden');
-            mainView.classList.add('hidden');
-        }
+        document.querySelectorAll('.map-card').forEach(card => {
+            card.addEventListener('click', () => {
+                const mapType = card.dataset.map;
+                const titles = {
+                    radar: 'Capa activa: Radar Meteorológico (Córdoba)',
+                    viento: 'Capa activa: Viento y Flujo Atmosférico',
+                    temperatura: 'Capa activa: Mapa Térmico Superficial',
+                    storms: 'Capa activa: Lluvias y Actividad Eléctrica'
+                };
+                subtitle.textContent = titles[mapType] || 'Capa activa en toda la provincia';
+                
+                // Efecto expansión al tacto
+                mainView.classList.add('hidden');
+                mapArea.classList.remove('hidden');
+                initParticles(mapType === 'storms' ? 'lluvia' : 'viento');
+            });
+        });
 
-        function closePanel() {
-            state.panelOpen = false;
-            panel.classList.add('translate-y-full');
-            backdrop.classList.add('opacity-0', 'pointer-events-none');
-            backdrop.classList.remove('opacity-100');
+        function closeExpandedMap() {
             mapArea.classList.add('hidden');
             mainView.classList.remove('hidden');
         }
 
+        // Panel inferior tipo sheet
+        const panel = document.getElementById('mapPanel');
+        const backdrop = document.getElementById('backdrop');
+        const btnMapas = document.getElementById('btnMapas');
+
         btnMapas.addEventListener('click', () => {
-            if (state.panelOpen) closePanel();
-            else openPanel();
+            panel.classList.remove('translate-y-full');
+            backdrop.classList.remove('opacity-0', 'pointer-events-none');
+            backdrop.classList.add('opacity-100');
         });
-        btnClose.addEventListener('click', closePanel);
+
+        document.getElementById('btnClosePanel').addEventListener('click', closePanel);
         backdrop.addEventListener('click', closePanel);
 
-        const layerLabels = { viento: 'Viento', temperatura: 'Temperatura', lluvia: 'Lluvia y Nieve', aire: 'Calidad del aire', sequia: 'Sequía', advertencias: 'Advertencias' };
+        function closePanel() {
+            panel.classList.add('translate-y-full');
+            backdrop.classList.add('opacity-0', 'pointer-events-none');
+        }
 
-        document.querySelectorAll('.layer-card').forEach(card => {
-            card.addEventListener('click', () => {
-                document.querySelectorAll('.layer-card').forEach(c => c.classList.remove('active'));
-                card.classList.add('active');
-                const layer = card.dataset.layer;
-                state.activeLayer = layer;
-                activeLayerName.textContent = layerLabels[layer] || layer;
-                lastUpdate.textContent = 'hace unos segundos';
-                initParticles(layer);
-            });
-        });
+        function selectLayerFromPanel(layer) {
+            closePanel();
+            mainView.classList.add('hidden');
+            mapArea.classList.remove('hidden');
+            subtitle.textContent = `Capa activa: ${layer.toUpperCase()} (Provincia de Córdoba)`;
+            initParticles(layer === 'radar' || layer === 'temperatura' ? 'lluvia' : 'viento');
+        }
 
-        document.querySelectorAll('.map-item').forEach(item => {
-            item.addEventListener('click', () => {
-                const map = item.dataset.map;
-                item.classList.add('layer-loading');
-                setTimeout(() => item.classList.remove('layer-loading'), 800);
-                const mapToLayer = { radar: 'lluvia', satelite: 'lluvia', viento: 'viento', 'lluvias-truenos': 'lluvia', temperatura: 'temperatura', 'eventos-severos': 'advertencias', acumulacion: 'lluvia' };
-                const targetLayer = mapToLayer[map] || 'viento';
-                document.querySelectorAll('.layer-card').forEach(c => {
-                    c.classList.toggle('active', c.dataset.layer === targetLayer);
-                });
-                state.activeLayer = targetLayer;
-                activeLayerName.textContent = layerLabels[targetLayer];
-                initParticles(targetLayer);
-                setTimeout(closePanel, 350);
-            });
-        });
-
+        // Canvas de partículas animadas
         const canvas = document.getElementById('windCanvas');
         const ctx = canvas.getContext('2d');
         let particles = [];
@@ -614,7 +538,7 @@
 
         function createParticles(mode) {
             particles = [];
-            const count = mode === 'viento' ? 120 : mode === 'lluvia' ? 80 : 60;
+            const count = mode === 'viento' ? 100 : 70;
             for (let i = 0; i < count; i++) {
                 particles.push({
                     x: Math.random() * canvas.width,
@@ -627,23 +551,8 @@
             }
         }
 
-        function drawPressureLines() {
-            ctx.strokeStyle = 'rgba(34, 211, 238, 0.12)';
-            ctx.lineWidth = 1;
-            const cx = canvas.width * 0.5;
-            const cy = canvas.height * 0.4;
-            for (let r = 40; r < 320; r += 45) {
-                ctx.beginPath();
-                ctx.ellipse(cx + Math.sin(Date.now() / 8000) * 20, cy, r, r * 0.65, 0.2, 0, Math.PI * 2);
-                ctx.stroke();
-            }
-        }
-
         function animate() {
             ctx.clearRect(0, 0, canvas.width, canvas.height);
-            if (currentMode === 'viento' || currentMode === 'temperatura') {
-                drawPressureLines();
-            }
             particles.forEach(p => {
                 p.x += p.vx;
                 p.y += p.vy;
@@ -652,17 +561,9 @@
                 if (p.y > canvas.height + 10) p.y = -10;
                 if (p.y < -10) p.y = canvas.height + 10;
                 ctx.beginPath();
-                if (currentMode === 'lluvia') {
-                    ctx.strokeStyle = `rgba(96, 165, 250, ${p.alpha})`;
-                    ctx.lineWidth = 1.2;
-                    ctx.moveTo(p.x, p.y);
-                    ctx.lineTo(p.x - 1, p.y + 8);
-                    ctx.stroke();
-                } else {
-                    ctx.fillStyle = `rgba(34, 211, 238, ${p.alpha})`;
-                    ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
-                    ctx.fill();
-                }
+                ctx.fillStyle = `rgba(34, 211, 238, ${p.alpha})`;
+                ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
+                ctx.fill();
             });
             animId = requestAnimationFrame(animate);
         }
@@ -675,13 +576,8 @@
         }
         initParticles('viento');
 
-        document.getElementById('btnAlerts').addEventListener('click', () => alert('Mis Alertas SIGA:\n• Alerta por tormenta severa en zonas de valles\n• Viento fuerte en región provincial'));
-        document.getElementById('btnSettings').addEventListener('click', () => alert('Configuración de umbrales de alerta SIGA'));
-        document.getElementById('btnLogin').addEventListener('click', () => alert('Iniciar sesión en SIGA (Cuenta provincial)'));
-        document.getElementById('btnEditThresholds').addEventListener('click', () => alert('Editor de umbrales activos'));
-
         function switchTab(tab) {
-            if(tab === 'inicio') closePanel();
+            if(tab === 'inicio') closeExpandedMap();
             else if(tab === 'alertas') alert('Sección de Alertas Activas Provinciales');
             else if(tab === 'emergencia') alert('Directorio de Emergencia Provincial: 101 / 100 / 103');
         }

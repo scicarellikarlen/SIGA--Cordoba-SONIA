@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="es">
+<html lang="es" id="html-root">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -18,10 +18,10 @@
         }
     </style>
 </head>
-<body class="bg-[#05160a] text-slate-100 min-h-screen flex flex-col justify-between selection:bg-emerald-500 selection:text-white">
+<body id="body-root" class="bg-[#05160a] text-slate-100 min-h-screen flex flex-col justify-between transition-colors duration-300 selection:bg-emerald-500 selection:text-white">
 
-    <!-- Encabezado con Logo SIGA -->
-    <header class="bg-[#082210] border-b border-emerald-900/60 p-4 shadow-md">
+    <!-- Encabezado con Logo SIGA, Buscador y Selector de Tema -->
+    <header id="header-root" class="bg-[#082210] border-b border-emerald-900/65 p-4 shadow-md transition-colors duration-300">
         <div class="max-w-4xl mx-auto flex flex-col sm:flex-row justify-between items-center gap-4">
             
             <!-- Logotipo e Identidad -->
@@ -30,15 +30,23 @@
                     🌱
                 </div>
                 <div>
-                    <h1 class="text-2xl font-bold tracking-wider text-emerald-300 leading-tight">SIGA</h1>
-                    <p class="text-[10px] uppercase tracking-widest text-emerald-400/80 font-medium">Gestión Ambiental y Clima</p>
+                    <h1 id="titulo-siga" class="text-2xl font-bold tracking-wider text-emerald-300 leading-tight">SIGA</h1>
+                    <p id="subtitulo-siga" class="text-[10px] uppercase tracking-widest text-emerald-400/80 font-medium">Gestión Ambiental y Clima</p>
                 </div>
             </div>
-            
-            <!-- Buscador de Localidad -->
-            <div class="flex w-full sm:w-auto gap-2">
-                <input type="text" id="buscador-localidad" placeholder="Buscar localidad (ej. Ascochinga)..." class="bg-[#05160a] border border-emerald-800/80 px-3 py-2 rounded-lg text-sm text-slate-100 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-emerald-400 w-full sm:w-64">
-                <button onclick="buscarPorNombre()" class="bg-emerald-700 hover:bg-emerald-600 text-white px-4 py-2 rounded-lg text-sm font-semibold transition">Buscar</button>
+
+            <!-- Controles Superiores: Buscador de Localidades y Tema -->
+            <div class="flex flex-wrap items-center gap-2 w-full sm:w-auto justify-end">
+                <!-- Buscador de Localidad -->
+                <div class="flex w-full sm:w-auto gap-2">
+                    <input type="text" id="buscador-localidad" placeholder="Buscar localidad (ej. Ascochinga)..." class="bg-[#05160a] border border-emerald-800/80 px-3 py-2 rounded-lg text-sm text-slate-100 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-emerald-400 w-full sm:w-56" onkeypress="if(event.key === 'KeyE' || event.key === 'Enter') buscarPorNombre()">
+                    <button onclick="buscarPorNombre()" class="bg-emerald-700 hover:bg-emerald-600 text-white px-3 py-2 rounded-lg text-sm font-semibold transition whitespace-nowrap">🔍 Buscar</button>
+                </div>
+
+                <!-- Botón de Cambio de Tema (Dior / Noche) -->
+                <button onclick="alternarTema()" id="btn-tema" class="bg-emerald-800 hover:bg-emerald-700 text-white px-3 py-2 rounded-lg text-xs font-semibold shadow transition flex items-center gap-1">
+                    🎨 <span id="txt-modo">Modo Dior</span>
+                </button>
             </div>
         </div>
     </header>
@@ -46,8 +54,8 @@
     <!-- Contenido Principal -->
     <main class="max-w-4xl mx-auto p-4 w-full flex-grow flex flex-col gap-6">
 
-        <!-- Panel de Ubicación, GPS y Configuración de Alertas -->
-        <section class="bg-[#0b2b14] p-4 rounded-xl shadow-lg border border-emerald-900 flex flex-col md:flex-row justify-between items-center gap-4">
+        <!-- Panel de Ubicación, GPS y Alertas Telefónicas -->
+        <section id="panel-ubicacion" class="bg-[#0b2b14] p-4 rounded-xl shadow-lg border border-emerald-900 flex flex-col md:flex-row justify-between items-center gap-4 transition-colors duration-300">
             <div>
                 <h2 id="nombre-ubicacion" class="text-xl font-semibold text-emerald-200">Detectando ubicación...</h2>
                 <p id="coordenadas-gps" class="text-xs text-emerald-400/70">Lat: --, Lon: --</p>
@@ -57,30 +65,30 @@
                 <button onclick="obtenerUbicacionGPS()" class="bg-sky-700 hover:bg-sky-600 text-white px-3 py-2 rounded-lg text-xs font-semibold shadow transition flex items-center gap-1 whitespace-nowrap">
                     📍 Usar GPS
                 </button>
-                <input type="tel" id="input-telefono" placeholder="Nº Teléfono para Alertas" class="bg-[#05160a] border border-emerald-800 px-3 py-2 rounded-lg text-xs text-slate-100 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-emerald-400 w-full sm:w-44">
+                <input type="tel" id="input-telefono" placeholder="Nº Teléfono para Alertas" class="bg-[#05160a] border border-emerald-800 px-3 py-2 rounded-lg text-xs text-slate-100 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-emerald-400 w-full sm:w-40">
                 <button onclick="guardarConfiguracionAlertas()" class="bg-emerald-600 hover:bg-emerald-500 text-white px-3 py-2 rounded-lg text-xs font-semibold whitespace-nowrap transition">
-                    🔔 Activar Alertas
+                    🔔 Activar
                 </button>
             </div>
         </section>
 
         <!-- Bloque Principal de Temperatura Gigante -->
-        <section class="bg-gradient-to-br from-[#0b2b14] to-[#081e0e] p-6 rounded-2xl shadow-xl border border-emerald-900/80 text-center flex flex-col items-center justify-center relative">
+        <section id="panel-temperatura" class="bg-gradient-to-br from-[#0b2b14] to-[#081e0e] p-6 rounded-2xl shadow-xl border border-emerald-900/80 text-center flex flex-col items-center justify-center relative transition-colors duration-300">
             <span id="etiqueta-zona" class="text-sm uppercase tracking-widest text-emerald-300 font-semibold mb-2">Zona actual</span>
             <div class="flex items-start justify-center">
                 <span id="valor-temperatura" class="temp-display text-white">--</span>
-                <span class="text-4xl font-bold text-emerald-300 mt-2">°C</span>
+                <span id="simbolo-grados" class="text-4xl font-bold text-emerald-300 mt-2">°C</span>
             </div>
             <p id="estado-cielo" class="text-lg text-emerald-100/90 mt-2 capitalize">Cargando condiciones del tiempo...</p>
         </section>
 
         <!-- Métricas Secundarias y Botón WhatsApp -->
         <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
-            <div class="bg-[#0b2b14] p-4 rounded-xl border border-emerald-900 flex justify-between items-center">
+            <div id="card-humedad" class="bg-[#0b2b14] p-4 rounded-xl border border-emerald-900 flex justify-between items-center transition-colors duration-300">
                 <span class="text-emerald-300/80 text-sm">Humedad</span>
                 <span id="valor-humedad" class="text-xl font-bold text-white">--%</span>
             </div>
-            <div class="bg-[#0b2b14] p-4 rounded-xl border border-emerald-900 flex justify-between items-center">
+            <div id="card-viento" class="bg-[#0b2b14] p-4 rounded-xl border border-emerald-900 flex justify-between items-center transition-colors duration-300">
                 <span class="text-emerald-300/80 text-sm">Viento</span>
                 <span id="valor-viento" class="text-xl font-bold text-white">-- km/h</span>
             </div>
@@ -89,46 +97,74 @@
             </button>
         </div>
 
-        <!-- Módulo de Mapas Interactivos (Estilo Windy / Radar Satelital de Tormentas) -->
-        <section class="bg-[#082210] p-5 rounded-xl border border-emerald-800/80 shadow-md">
+        <!-- Alertas Meteorológicas Vigentes en Pantalla -->
+        <section id="panel-alertas-activas" class="bg-[#082210] p-4 rounded-xl border border-emerald-800/80 shadow-md transition-colors duration-300">
+            <h3 class="text-emerald-300 font-bold text-sm mb-1 flex items-center gap-2">
+                ⚠️ Alertas Meteorológicas Vigentes
+            </h3>
+            <p id="texto-alerta" class="text-xs text-slate-200">Sin alertas meteorológicas de riesgo extremo en este momento para la zona seleccionada.</p>
+        </section>
+
+        <!-- Pronóstico Extendido de 7 Días -->
+        <section id="panel-pronostico" class="bg-[#082210] p-5 rounded-xl border border-emerald-800/80 shadow-md transition-colors duration-300">
+            <h3 class="text-emerald-300 font-bold text-base mb-3 flex items-center justify-between">
+                <span>📅 Pronóstico Extendido (7 Días)</span>
+                <span class="text-xs font-normal text-emerald-400/80">Tendencia semanal</span>
+            </h3>
+            <div id="grid-pronostico-7d" class="grid grid-cols-2 sm:grid-cols-7 gap-2 text-center text-xs">
+                <p class="text-slate-400 col-span-full">Cargando pronóstico semanal...</p>
+            </div>
+        </section>
+
+        <!-- Módulo de Zonas Calientes / Alertas Contra Incendios -->
+        <section id="panel-incendios" class="bg-[#082210] p-5 rounded-xl border border-emerald-800/80 shadow-md transition-colors duration-300">
             <h3 class="text-emerald-300 font-bold text-base mb-2 flex items-center justify-between">
-                <span>🛰️ Radar Satelital y Tormentas en Vivo (Estilo Windy)</span>
+                <span>🔥 Riesgo de Incendios y Zonas Calientes (Provincia de Córdoba)</span>
+                <span class="text-xs font-normal text-amber-400">Monitoreo de focos activos</span>
+            </h3>
+            <p class="text-xs text-slate-300 mb-3">Mapa de puntos de calor y áreas con índice de peligro extremo de incendios forestales.</p>
+            <div class="map-container rounded-lg overflow-hidden border border-emerald-900 bg-[#05160a]">
+                <iframe id="iframe-incendios" src="" class="w-full h-full border-0"></iframe>
+            </div>
+        </section>
+
+        <!-- Radar Satelital de Tormentas (Estilo Windy) -->
+        <section id="panel-radar" class="bg-[#082210] p-5 rounded-xl border border-emerald-800/80 shadow-md transition-colors duration-300">
+            <h3 class="text-emerald-300 font-bold text-base mb-2 flex items-center justify-between">
+                <span>🛰️ Radar Satelital y Tormentas (Estilo Windy)</span>
                 <span class="text-xs font-normal text-emerald-400/80">Evolución en tiempo real</span>
             </h3>
-            <p class="text-xs text-slate-300 mb-3">Visualización de frentes de tormenta, nubosidad y corrientes de viento sobre la región.</p>
             <div class="map-container rounded-lg overflow-hidden border border-emerald-900 bg-[#05160a]">
-                <!-- Visor cartográfico dinámico de radar meteorológico regional -->
                 <iframe id="iframe-radar" src="" class="w-full h-full border-0"></iframe>
             </div>
         </section>
 
         <!-- Módulo de Sismos en Tiempo Real -->
-        <section class="bg-[#082210] p-5 rounded-xl border border-emerald-800/80 shadow-md">
+        <section id="panel-sismos" class="bg-[#082210] p-5 rounded-xl border border-emerald-800/80 shadow-md transition-colors duration-300">
             <h3 class="text-emerald-300 font-bold text-base mb-2 flex items-center justify-between">
-                <span> seismógrafo 🌍 Monitoreo de Sismos en Tiempo Real</span>
-                <span class="text-xs font-normal text-emerald-400/80">Últimos eventos registrados</span>
+                <span>🌍 Monitoreo de Sismos en Tiempo Real</span>
+                <span class="text-xs font-normal text-emerald-400/80">Últimos eventos</span>
             </h3>
-            <p class="text-xs text-slate-300 mb-3">Registro de actividad sísmica reciente con foco en la región y norte argentino.</p>
-            <div id="lista-sismos" class="bg-[#05160a] p-4 rounded-lg border border-emerald-900 text-xs text-slate-200 space-y-2 max-h-48 overflow-y-auto">
-                <p class="text-emerald-400 animate-pulse">Consultando registros sismológicos en vivo...</p>
+            <div id="lista-sismos" class="bg-[#05160a] p-4 rounded-lg border border-emerald-900 text-xs text-slate-200 space-y-2 max-h-40 overflow-y-auto">
+                <p class="text-emerald-400 animate-pulse">Consultando red sismológica...</p>
             </div>
         </section>
 
         <!-- Directorio de Emergencia Provincial -->
-        <section class="bg-[#082210] p-5 rounded-xl border border-emerald-800/80 shadow-md">
+        <section id="panel-emergencias" class="bg-[#082210] p-5 rounded-xl border border-emerald-800/80 shadow-md transition-colors duration-300">
             <h3 class="text-emerald-300 font-bold text-base mb-3 flex items-center gap-2">
                 🚨 Directorio de Emergencia Provincial (Córdoba)
             </h3>
             <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 text-sm">
-                <div class="bg-[#05160a] p-3 rounded-lg border border-emerald-900 flex justify-between items-center">
+                <div class="bg-[#05160a] p-3 rounded-lg border border-emerald-900 flex justify-between items-center emergency-card">
                     <span class="text-slate-300 font-medium">Policía</span>
                     <a href="tel:101" class="text-emerald-300 font-bold hover:underline">101</a>
                 </div>
-                <div class="bg-[#05160a] p-3 rounded-lg border border-emerald-900 flex justify-between items-center">
+                <div class="bg-[#05160a] p-3 rounded-lg border border-emerald-900 flex justify-between items-center emergency-card">
                     <span class="text-slate-300 font-medium">Bomberos (Urgencia)</span>
                     <a href="tel:100" class="text-emerald-300 font-bold hover:underline">100</a>
                 </div>
-                <div class="bg-[#05160a] p-3 rounded-lg border border-emerald-900 flex justify-between items-center">
+                <div class="bg-[#05160a] p-3 rounded-lg border border-emerald-900 flex justify-between items-center emergency-card">
                     <span class="text-slate-300 font-medium">Bomberos Provincial</span>
                     <a href="tel:080038346" class="text-emerald-300 font-bold hover:underline text-xs">0800-383-46</a>
                 </div>
@@ -136,9 +172,9 @@
         </section>
 
         <!-- Fuentes Oficiales de Referencia -->
-        <section class="bg-[#082210]/60 p-4 rounded-xl border border-emerald-900/50 text-center text-xs text-emerald-400/70 flex flex-wrap justify-center gap-4">
+        <section class="bg-[#082210]/60 p-4 rounded-xl border border-emerald-900/50 text-center text-xs text-emerald-400/70 flex flex-wrap justify-center gap-4 transition-colors duration-300">
             <span>Fuentes de referencia oficiales:</span>
-            <a href="https://www.smn.gob.ar" target="_blank" rel="noopener noreferrer" class="text-emerald-300 hover:underline">Servicio Meteorológico Nacional</a>
+            <a href="https://www.smn.gob.ar" target="_blank" rel="noopener noreferrer" class="text-emerald-300 hover:underline">Servicio Meteorológico Nacional (SMN)</a>
             <span>•</span>
             <a href="https://weather.com" target="_blank" rel="noopener noreferrer" class="text-emerald-300 hover:underline">The Weather Channel</a>
         </section>
@@ -146,7 +182,7 @@
     </main>
 
     <!-- Pie de página -->
-    <footer class="bg-[#082210] border-t border-emerald-900/60 p-4 text-center text-xs text-emerald-400/60">
+    <footer id="footer-root" class="bg-[#082210] border-t border-emerald-900/60 p-4 text-center text-xs text-emerald-400/60 transition-colors duration-300">
         SIGA - Sistema Inteligente de Gestión Ambiental y Clima &copy; 2026
     </footer>
 
@@ -157,6 +193,60 @@
         let nombreZonaActual = "Ascochinga, Córdoba";
         let temperaturaActualValor = "--";
         let estadoActualTexto = "Cargando...";
+        let modoDiorActivo = false;
+
+        function alternarTema() {
+            modoDiorActivo = !modoDiorActivo;
+            const body = document.getElementById('body-root');
+            const header = document.getElementById('header-root');
+            const footer = document.getElementById('footer-root');
+            const txtModo = document.getElementById('txt-modo');
+            const btnTema = document.getElementById('btn-tema');
+
+            const paneles = [
+                document.getElementById('panel-ubicacion'),
+                document.getElementById('panel-temperatura'),
+                document.getElementById('card-humedad'),
+                document.getElementById('card-viento'),
+                document.getElementById('panel-alertas-activas'),
+                document.getElementById('panel-pronostico'),
+                document.getElementById('panel-incendios'),
+                document.getElementById('panel-radar'),
+                document.getElementById('panel-sismos'),
+                document.getElementById('panel-emergencias')
+            ];
+
+            if (modoDiorActivo) {
+                // MODO DIOR: Fondo Blanco, Letras Oscuras y Elegantes
+                body.className = "bg-slate-100 text-slate-900 min-h-screen flex flex-col justify-between transition-colors duration-300 selection:bg-slate-300 selection:text-slate-900";
+                header.className = "bg-white border-b border-slate-200 p-4 shadow-sm transition-colors duration-300";
+                footer.className = "bg-white border-t border-slate-200 p-4 text-center text-xs text-slate-500 transition-colors duration-300";
+                txtModo.innerText = "Modo Noche";
+                btnTema.className = "bg-slate-800 hover:bg-slate-700 text-white px-3 py-2 rounded-lg text-xs font-semibold shadow transition flex items-center gap-1";
+
+                panesEstiloDior(paneles, true);
+            } else {
+                // MODO NOCHE: Verde Oscuro / Negro, Letras Blancas y Claras
+                body.className = "bg-[#05160a] text-slate-100 min-h-screen flex flex-col justify-between transition-colors duration-300 selection:bg-emerald-500 selection:text-white";
+                header.className = "bg-[#082210] border-b border-emerald-900/60 p-4 shadow-md transition-colors duration-300";
+                footer.className = "bg-[#082210] border-t border-emerald-900/60 p-4 text-center text-xs text-emerald-400/60 transition-colors duration-300";
+                txtModo.innerText = "Modo Dior";
+                btnTema.className = "bg-emerald-800 hover:bg-emerald-700 text-white px-3 py-2 rounded-lg text-xs font-semibold shadow transition flex items-center gap-1";
+
+                panesEstiloDior(paneles, false);
+            }
+        }
+
+        function panesEstiloDior(paneles, esDior) {
+            paneles.forEach(panel => {
+                if (!panel) return;
+                if (esDior) {
+                    panel.className = panel.className.replace(/bg-\[#0b2b14\]|bg-\[#082210\]|bg-gradient-to-br from-\[#0b2b14\] to-\[#081e0e\]/g, 'bg-white shadow-md border border-slate-200 text-slate-800');
+                } else {
+                    panel.className = panel.className.replace(/bg-white shadow-md border border-slate-200 text-slate-800/g, 'bg-[#0b2b14] border border-emerald-900 text-slate-100');
+                }
+            });
+        }
 
         async function cargarClima(lat, lon, nombreLugar) {
             latActual = lat;
@@ -167,12 +257,15 @@
             document.getElementById('coordenadas-gps').innerText = `Lat: ${lat.toFixed(4)}, Lon: ${lon.toFixed(4)}`;
             document.getElementById('etiqueta-zona').innerText = `Zona: ${nombreLugar}`;
 
-            // Actualizar mapa interactivo de radar centrado en las coordenadas actuales (estilo Windy/Sentinel)
+            // Actualizar Mapas Interactivos (Windy Radar y Focos de Incendio / Zonas Calientes)
             const urlRadar = `https://embed.windy.com/embed2.html?lat=${lat}&lon=${lon}&zoom=8&level=surface&overlay=radar&product=ecmwf&menu=&message=&marker=true&calendar=now&pressure=&type=map&location=coordinates&detail=&metricWind=default&metricTemp=default&radarRange=-1`;
             document.getElementById('iframe-radar').src = urlRadar;
 
+            const urlIncendios = `https://embed.windy.com/embed2.html?lat=${lat}&lon=${lon}&zoom=8&level=surface&overlay=fires&product=ecmwf&menu=&message=&marker=true&calendar=now&pressure=&type=map&location=coordinates&detail=&metricWind=default&metricTemp=default`;
+            document.getElementById('iframe-incendios').src = urlIncendios;
+
             try {
-                const respuesta = await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,relative_humidity_2m,weather_code,wind_speed_10m`);
+                const respuesta = await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,relative_humidity_2m,weather_code,wind_speed_10m&daily=weather_code,temperature_2m_max,temperature_2m_min&timezone=auto`);
                 const datos = await respuesta.json();
 
                 if (datos && datos.current) {
@@ -187,7 +280,41 @@
                     document.getElementById('valor-humedad').innerText = `${humedad}%`;
                     document.getElementById('valor-viento').innerText = `${viento} km/h`;
                     document.getElementById('estado-cielo').innerText = estadoActualTexto;
+
+                    const cajaAlerta = document.getElementById('texto-alerta');
+                    if (viento > 40) {
+                        cajaAlerta.innerText = `⚠️ ALERTA AMARILLA: Vientos intensos de hasta ${viento} km/h en la región. Precaución en rutas serranas.`;
+                        cajaAlerta.className = "text-xs font-bold text-amber-400";
+                    } else {
+                        cajaAlerta.innerText = `✅ Sin alertas de riesgo meteorológico extremo vigentes para ${nombreLugar}. Monitoreo SMN en línea.`;
+                        cajaAlerta.className = "text-xs text-slate-200";
+                    }
                 }
+
+                if (datos && datos.daily) {
+                    const grid7d = document.getElementById('grid-pronostico-7d');
+                    grid7d.innerHTML = '';
+                    const diasSemana = ['Dom', 'Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb'];
+                    
+                    for (let i = 0; i < 7; i++) {
+                        const fechaObj = new Date(datos.daily.time[i]);
+                        const nombreDia = i === 0 ? 'Hoy' : diasSemana[fechaObj.getDay()];
+                        const tMax = Math.round(datos.daily.temperature_2m_max[i]);
+                        const tMin = Math.round(datos.daily.temperature_2m_min[i]);
+                        const codigoDia = datos.daily.weather_code[i];
+                        const icono = obtenerIconoClima(codigoDia);
+
+                        const tarjeta = document.createElement('div');
+                        tarjeta.className = "bg-[#05160a] p-2 rounded-lg border border-emerald-900 flex flex-col items-center justify-between";
+                        tarjeta.innerHTML = `
+                            <span class="font-bold text-emerald-300">${nombreDia}</span>
+                            <span class="text-xl my-1">${icono}</span>
+                            <div class="text-[10px]"><span class="text-white font-bold">${tMax}°</span> / <span class="text-slate-400">${tMin}°</span></div>
+                        `;
+                        grid7d.appendChild(tarjeta);
+                    }
+                }
+
             } catch (error) {
                 console.error("Error al obtener los datos del clima:", error);
                 document.getElementById('estado-cielo').innerText = "Error al conectar con la estación meteorológica.";
@@ -199,13 +326,11 @@
         async function cargarSismos() {
             const contenedorSismos = document.getElementById('lista-sismos');
             try {
-                // API pública de sismos en tiempo real (USGS últimos sismos significativos / globales)
                 const res = await fetch('https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/2.5_day.geojson');
                 const data = await res.json();
                 
                 if (data && data.features && data.features.length > 0) {
                     contenedorSismos.innerHTML = '';
-                    // Tomar los 4 sismos más recientes
                     const sismosRecientes = data.features.slice(0, 4);
                     sismosRecientes.forEach(sismo => {
                         const props = sismo.properties;
@@ -251,6 +376,7 @@
             if (!query) return;
 
             try {
+                document.getElementById('nombre-ubicacion').innerText = `Buscando "${query}"...`;
                 const res = await fetch(`https://geocoding-api.open-meteo.com/v1/search?name=${encodeURIComponent(query)}&count=1&language=es&format=json`);
                 const data = await res.json();
 
@@ -259,6 +385,7 @@
                     cargarClima(lugar.latitude, lugar.longitude, `${lugar.name}, ${lugar.admin1 || ''}`);
                 } else {
                     alert("No se encontró la localidad especificada.");
+                    document.getElementById('nombre-ubicacion').innerText = nombreZonaActual;
                 }
             } catch (err) {
                 console.error("Error en la búsqueda:", err);
@@ -276,28 +403,10 @@
         }
 
         function compartirWhatsApp() {
-            const mensaje = `⚠️ *Reporte SIGA - Clima y Radar en Vivo* ⚠️\n📍 Zona: ${nombreZonaActual}\n🌡️ Temperatura: ${temperaturaActualValor}°C\n☁️ Estado: ${estadoActualTexto}\nLat/Lon: ${latActual.toFixed(4)}, ${lonActual.toFixed(4)}`;
+            const mensaje = `⚠️ *Reporte SIGA - Clima, Radar e Incendios* ⚠️\n📍 Zona: ${nombreZonaActual}\n🌡️ Temperatura: ${temperaturaActualValor}°C\n☁️ Estado: ${estadoActualTexto}\nLat/Lon: ${latActual.toFixed(4)}, ${lonActual.toFixed(4)}`;
             const urlWp = `https://api.whatsapp.com/send?text=${encodeURIComponent(mensaje)}`;
             window.open(urlWp, '_blank');
         }
 
         window.onload = function() {
-            cargarClima(latActual, lonActual, nombreZonaActual);
-        };
-
-        function interpretarCodigoClima(codigo) {
-            const codigos = {
-                0: "Cielo despejado ☀️",
-                1: "Principalmente despejado 🌤️",
-                2: "Parcialmente nublado ⛅",
-                3: "Nublado ☁️",
-                45: "Neblina 🌫️",
-                51: "Llovizna ligera 🌧️",
-                61: "Lluvia moderada 🌧️",
-                95: "Tormenta eléctrica ⚡"
-            };
-            return codigos[codigo] || "Condiciones estables 🌤️";
-        }
-    </script>
-</body>
-</html>
+            cargarClima

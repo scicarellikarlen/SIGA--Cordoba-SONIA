@@ -1,4 +1,4 @@
-   <!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="es">
 <head>
     <meta charset="UTF-8">
@@ -11,6 +11,10 @@
             font-size: 5rem;
             line-height: 1;
             font-weight: 800;
+        }
+        .map-container {
+            height: 380px;
+            width: 100%;
         }
     </style>
 </head>
@@ -85,6 +89,31 @@
             </button>
         </div>
 
+        <!-- Módulo de Mapas Interactivos (Estilo Windy / Radar Satelital de Tormentas) -->
+        <section class="bg-[#082210] p-5 rounded-xl border border-emerald-800/80 shadow-md">
+            <h3 class="text-emerald-300 font-bold text-base mb-2 flex items-center justify-between">
+                <span>🛰️ Radar Satelital y Tormentas en Vivo (Estilo Windy)</span>
+                <span class="text-xs font-normal text-emerald-400/80">Evolución en tiempo real</span>
+            </h3>
+            <p class="text-xs text-slate-300 mb-3">Visualización de frentes de tormenta, nubosidad y corrientes de viento sobre la región.</p>
+            <div class="map-container rounded-lg overflow-hidden border border-emerald-900 bg-[#05160a]">
+                <!-- Visor cartográfico dinámico de radar meteorológico regional -->
+                <iframe id="iframe-radar" src="" class="w-full h-full border-0"></iframe>
+            </div>
+        </section>
+
+        <!-- Módulo de Sismos en Tiempo Real -->
+        <section class="bg-[#082210] p-5 rounded-xl border border-emerald-800/80 shadow-md">
+            <h3 class="text-emerald-300 font-bold text-base mb-2 flex items-center justify-between">
+                <span> seismógrafo 🌍 Monitoreo de Sismos en Tiempo Real</span>
+                <span class="text-xs font-normal text-emerald-400/80">Últimos eventos registrados</span>
+            </h3>
+            <p class="text-xs text-slate-300 mb-3">Registro de actividad sísmica reciente con foco en la región y norte argentino.</p>
+            <div id="lista-sismos" class="bg-[#05160a] p-4 rounded-lg border border-emerald-900 text-xs text-slate-200 space-y-2 max-h-48 overflow-y-auto">
+                <p class="text-emerald-400 animate-pulse">Consultando registros sismológicos en vivo...</p>
+            </div>
+        </section>
+
         <!-- Directorio de Emergencia Provincial -->
         <section class="bg-[#082210] p-5 rounded-xl border border-emerald-800/80 shadow-md">
             <h3 class="text-emerald-300 font-bold text-base mb-3 flex items-center gap-2">
@@ -138,6 +167,10 @@
             document.getElementById('coordenadas-gps').innerText = `Lat: ${lat.toFixed(4)}, Lon: ${lon.toFixed(4)}`;
             document.getElementById('etiqueta-zona').innerText = `Zona: ${nombreLugar}`;
 
+            // Actualizar mapa interactivo de radar centrado en las coordenadas actuales (estilo Windy/Sentinel)
+            const urlRadar = `https://embed.windy.com/embed2.html?lat=${lat}&lon=${lon}&zoom=8&level=surface&overlay=radar&product=ecmwf&menu=&message=&marker=true&calendar=now&pressure=&type=map&location=coordinates&detail=&metricWind=default&metricTemp=default&radarRange=-1`;
+            document.getElementById('iframe-radar').src = urlRadar;
+
             try {
                 const respuesta = await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,relative_humidity_2m,weather_code,wind_speed_10m`);
                 const datos = await respuesta.json();
@@ -158,6 +191,39 @@
             } catch (error) {
                 console.error("Error al obtener los datos del clima:", error);
                 document.getElementById('estado-cielo').innerText = "Error al conectar con la estación meteorológica.";
+            }
+
+            cargarSismos();
+        }
+
+        async function cargarSismos() {
+            const contenedorSismos = document.getElementById('lista-sismos');
+            try {
+                // API pública de sismos en tiempo real (USGS últimos sismos significativos / globales)
+                const res = await fetch('https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/2.5_day.geojson');
+                const data = await res.json();
+                
+                if (data && data.features && data.features.length > 0) {
+                    contenedorSismos.innerHTML = '';
+                    // Tomar los 4 sismos más recientes
+                    const sismosRecientes = data.features.slice(0, 4);
+                    sismosRecientes.forEach(sismo => {
+                        const props = sismo.properties;
+                        const fecha = new Date(props.time).toLocaleString();
+                        const div = document.createElement('div');
+                        div.className = "flex justify-between items-center border-b border-emerald-900/60 pb-1";
+                        div.innerHTML = `
+                            <span class="text-slate-200">📍 ${props.place}</span>
+                            <span class="text-emerald-400 font-bold">Mag: ${props.mag.toFixed(1)} (${fecha})</span>
+                        `;
+                        contenedorSismos.appendChild(div);
+                    });
+                } else {
+                    contenedorSismos.innerHTML = '<p class="text-slate-400">Sin actividad sísmica relevante en las últimas horas.</p>';
+                }
+            } catch (err) {
+                console.error("Error al cargar sismos:", err);
+                contenedorSismos.innerHTML = '<p class="text-red-400">No se pudo conectar con la red sismológica.</p>';
             }
         }
 
@@ -210,7 +276,7 @@
         }
 
         function compartirWhatsApp() {
-            const mensaje = `⚠️ *Reporte SIGA - Clima en Vivo* ⚠️\n📍 Zona: ${nombreZonaActual}\n🌡️ Temperatura: ${temperaturaActualValor}°C\n☁️ Estado: ${estadoActualTexto}\nLat/Lon: ${latActual.toFixed(4)}, ${lonActual.toFixed(4)}`;
+            const mensaje = `⚠️ *Reporte SIGA - Clima y Radar en Vivo* ⚠️\n📍 Zona: ${nombreZonaActual}\n🌡️ Temperatura: ${temperaturaActualValor}°C\n☁️ Estado: ${estadoActualTexto}\nLat/Lon: ${latActual.toFixed(4)}, ${lonActual.toFixed(4)}`;
             const urlWp = `https://api.whatsapp.com/send?text=${encodeURIComponent(mensaje)}`;
             window.open(urlWp, '_blank');
         }

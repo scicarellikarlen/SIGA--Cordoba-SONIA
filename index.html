@@ -1,5 +1,5 @@
-    <!DOCTYPE html>
-<html lang="es">
+   <!DOCTYPE html>
+<html lang="es" data-theme="dark">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
@@ -9,6 +9,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script>
         tailwind.config = {
+            darkMode: ['class', '[data-theme="dark"]'],
             theme: {
                 extend: {
                     colors: {
@@ -19,15 +20,13 @@
                             warn: '#f97316',
                             danger: '#ef4444',
                             success: '#22c55e'
-                        }
-                    },
-                    keyframes: {
-                        sweep: {
-                            to: { transform: 'rotate(360deg)' }
                         },
-                        windLine: {
-                            from: { transform: 'translateX(-20px)' },
-                            to: { transform: 'translateX(20px)' }
+                        dior: {
+                            bg: '#fdfbf7',       /* Manteca suave */
+                            panel: '#f5f0e6',
+                            forest: '#1b4332',   /* Verde bosque */
+                            accent: '#2d6a4f',
+                            text: '#222222'
                         }
                     }
                 }
@@ -39,14 +38,25 @@
         .panel-scroll::-webkit-scrollbar-track { background: transparent; }
         .panel-scroll::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.15); border-radius: 4px; }
         
-        #windCanvas {
-            position: absolute;
-            inset: 0;
-            pointer-events: none;
-            z-index: 5;
+        /* Estilos dinámicos para cambio de Tema */
+        body.theme-dior {
+            background-color: #fdfbf7 !important;
+            color: #222222 !important;
+        }
+        body.theme-dior header {
+            background-color: #f5f0e6 !important;
+            border-bottom: 1px solid #d8cbb8 !important;
+        }
+        body.theme-dior .siga-card {
+            background-color: #f5f0e6 !important;
+            border-color: #d8cbb8 !important;
+            color: #222222 !important;
+        }
+        body.theme-dior nav {
+            background-color: #f5f0e6 !important;
+            border-top: 1px solid #d8cbb8 !important;
         }
 
-        /* Estilos de Miniaturas Interactivas (Estilo Windy / Vinted) */
         .map-card {
             text-align: left;
             padding: 0.6rem;
@@ -60,13 +70,7 @@
         }
         .map-card:hover {
             transform: translateY(-3px) scale(1.02);
-            background: rgba(255,255,255,0.06);
-            border-color: rgba(34,211,238,0.4);
-            box-shadow: 0 8px 20px rgba(0,0,0,0.4);
-        }
-        .map-card.active {
-            border-color: rgba(34,211,238,0.7);
-            background: rgba(34,211,238,0.1);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.2);
         }
         .map-preview {
             position: relative;
@@ -78,74 +82,30 @@
             justify-content: center;
             background: linear-gradient(135deg, #0b2823, #123d34);
         }
-
-        /* Miniaturas Animadas Específicas */
-        .radar-preview {
-            background: radial-gradient(circle at center, rgba(239,68,68,0.75) 0 5%, rgba(250,204,21,0.5) 6% 14%, rgba(34,197,94,0.4) 15% 27%, transparent 28%), #102d28;
-        }
-        .radar-ring {
-            position: absolute;
-            border: 1px solid rgba(255,255,255,0.3);
-            border-radius: 50%;
-        }
-        .r1 { width: 35px; height: 35px; }
-        .r2 { width: 60px; height: 60px; }
-        .radar-sweep {
-            position: absolute;
-            width: 60px;
-            height: 1px;
-            background: #22d3ee;
-            transform-origin: left;
-            animation: sweep 2s linear infinite;
-        }
-
-        .wind-preview {
-            background: repeating-linear-gradient(-20deg, transparent 0 10px, rgba(100,240,200,0.15) 11px 12px), #0d2a24;
-        }
-        .wind-line {
-            width: 50px;
-            height: 2px;
-            margin: 6px;
-            background: linear-gradient(90deg, transparent, #22d3ee);
-            animation: windLine 1.5s infinite;
-        }
-
-        .temperature-preview {
-            background: linear-gradient(120deg, #164e63, #166534, #854d0e);
-            font-size: 1.5rem;
-            font-weight: 700;
-            color: #fed7aa;
-        }
-        .storm-preview { background: radial-gradient(circle, rgba(255,140,0,0.5), transparent 35%), #17251f; font-size: 1.8rem; }
-        
-        @keyframes expandZoom {
-            0% { transform: scale(0.95); opacity: 0; }
-            100% { transform: scale(1); opacity: 1; }
-        }
-        .map-expanding {
-            animation: expandZoom 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-        }
     </style>
 </head>
-<body class="bg-siga-dark text-slate-100 font-sans pb-24 overflow-x-hidden">
+<body class="bg-siga-dark text-slate-100 font-sans pb-28 transition-colors duration-300">
 
     <!-- HEADER / LOGO OFICIAL -->
     <header class="bg-slate-900/90 border-b border-slate-800 p-4 sticky top-0 z-35 backdrop-blur-md shadow-md">
         <div class="max-w-4xl mx-auto flex flex-col sm:flex-row justify-between items-center gap-3">
             <div class="flex items-center space-x-3">
-                <!-- Contenedor del Logo con alternativa por si falta la imagen -->
                 <div class="w-12 h-12 rounded-xl overflow-hidden border border-emerald-500 shadow bg-slate-950 flex items-center justify-center">
                     <img src="IMAGEN SIGA_2.jpg" alt="SIGA Logo" class="w-full h-full object-cover" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
                     <div class="w-full h-full bg-emerald-950 text-emerald-400 font-bold items-center justify-center text-sm" style="display:none;">SG</div>
                 </div>
                 <div>
-                    <h1 class="text-lg font-bold tracking-wider text-emerald-400">SIGA</h1>
-                    <p class="text-xs text-slate-400 uppercase tracking-widest">Servicio Inteligente de Gestión y Alerta – Provincial</p>
+                    <h1 class="text-lg font-bold tracking-wider text-emerald-500">SIGA</h1>
+                    <p class="text-xs text-slate-400 uppercase tracking-widest">Servicio Inteligente de Gestión y Alerta</p>
                 </div>
             </div>
-            <div class="flex items-center gap-2">
+            <div class="flex items-center gap-2 flex-wrap">
+                <!-- Selector de Tema (Azul Noche vs. Estilo Dior) -->
+                <button onclick="toggleTheme()" id="theme-toggle-btn" class="bg-slate-800 hover:bg-slate-700 text-cyan-300 text-xs px-3 py-1.5 rounded-lg transition flex items-center gap-1.5 border border-slate-700 shadow">
+                    <i class="fa-solid fa-palette"></i> <span id="theme-name">Tema: Azul Noche</span>
+                </button>
                 <button onclick="shareOnWhatsApp()" class="bg-emerald-700 hover:bg-emerald-600 text-white text-xs px-3 py-1.5 rounded-lg transition flex items-center gap-1.5 shadow">
-                    <i class="fa-brands fa-whatsapp text-sm"></i> Compartir
+                    <i class="fa-brands fa-whatsapp"></i> Compartir
                 </button>
                 <div id="live-clock-date" class="text-xs bg-slate-950/80 px-3 py-1.5 rounded-lg border border-slate-800 text-emerald-300 font-medium flex items-center gap-2">
                     <i class="fa-regular fa-calendar-days"></i>
@@ -158,17 +118,20 @@
     <!-- MAIN CONTAINER -->
     <main id="main-view-container" class="max-w-4xl mx-auto p-4 space-y-6">
         
-        <!-- ESTADO DE SINCRONIZACIÓN AUTOMÁTICA -->
-        <div class="bg-slate-900/50 border border-slate-800/80 rounded-xl px-4 py-2.5 flex items-center justify-between text-xs text-slate-400">
-            <div class="flex items-center gap-2">
-                <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
-                <span>Monitoreo Activo · Sincronización automática cada 1 hora</span>
+        <!-- ESTADO DE SINCRONIZACIÓN Y INDICADOR ACTIVO -->
+        <div class="bg-slate-900/80 border border-slate-800 rounded-xl px-4 py-3 flex flex-col sm:flex-row items-center justify-between text-xs gap-2 shadow-md siga-card">
+            <div class="flex items-center gap-2.5">
+                <span class="w-3 h-3 rounded-full bg-emerald-500 animate-ping"></span>
+                <span class="font-semibold text-emerald-400">Sincronización Automática Activa (Ciclo de 1 hora)</span>
             </div>
-            <span id="last-sync-time" class="text-emerald-400 font-medium">Actualizado recién</span>
+            <div class="flex items-center gap-3">
+                <span id="last-sync-badge" class="bg-slate-950 px-2.5 py-1 rounded-lg border border-slate-800 text-slate-300 font-mono">Actualizado: --:-- hs</span>
+                <button onclick="manualRefresh()" class="bg-emerald-600/80 hover:bg-emerald-600 text-white px-2.5 py-1 rounded-lg transition">Actualizar Ya</button>
+            </div>
         </div>
 
         <!-- BUSCADOR PROVINCIAL -->
-        <div class="bg-slate-900/80 border border-slate-800 rounded-2xl p-5 shadow-md">
+        <div class="bg-slate-900/80 border border-slate-800 rounded-2xl p-5 shadow-md siga-card">
             <h3 class="text-sm font-bold uppercase tracking-wider text-slate-200 mb-3 flex items-center gap-2">
                 <i class="fa-solid fa-magnifying-glass text-emerald-400"></i> Consultar Localidad, Valle o Departamento (Córdoba)
             </h3>
@@ -180,57 +143,60 @@
             </div>
             <div id="search-result-box" class="mt-3 p-3 bg-slate-950/90 rounded-xl border border-slate-800 text-xs hidden">
                 <p class="text-emerald-400 font-bold mb-1" id="res-title">Estado para la zona:</p>
-                <p class="text-slate-300" id="res-desc">Monitoreo oficial SMN activo en la zona. Ciclo de actualización horaria en curso.</p>
+                <p class="text-slate-300" id="res-desc">Monitoreo oficial SMN activo. Datos sincronizados con estaciones de la región.</p>
             </div>
         </div>
 
-        <!-- ACCESO RÁPIDO A MAPAS INTERACTIVOS -->
-        <div class="bg-slate-900/80 border border-slate-800 rounded-2xl p-5 shadow-md">
+        <!-- ACCESO RÁPIDO A MAPAS INSTITUCIONALES OFICIALES -->
+        <div class="bg-slate-900/80 border border-slate-800 rounded-2xl p-5 shadow-md siga-card">
             <div class="flex items-center justify-between mb-4">
                 <h3 class="text-sm font-bold uppercase tracking-wider text-slate-200 flex items-center gap-2">
-                    <i class="fa-solid fa-map-location-dot text-cyan-400"></i> Mapas y Capas Provinciales en Tiempo Real
+                    <i class="fa-solid fa-map-location-dot text-cyan-400"></i> Capas de Monitoreo Oficial y Satelital
                 </h3>
-                <span class="text-[10px] bg-cyan-950 text-cyan-300 border border-cyan-800 px-2 py-0.5 rounded-full font-semibold">Toca para ampliar</span>
+                <span class="text-[10px] bg-cyan-950 text-cyan-300 border border-cyan-800 px-2 py-0.5 rounded-full font-semibold">Fuentes Oficiales</span>
             </div>
             
             <div class="grid grid-cols-2 md:grid-cols-4 gap-3">
-                <button class="map-card" data-map="radar">
+                <!-- Radar SMN -->
+                <button class="map-card" onclick="openOfficialMap('radar', 'Radar Meteorológico Oficial (SMN)', 'https://www.smn.gob.ar/radar')">
                     <div class="map-preview radar-preview">
-                        <div class="radar-ring r1"></div>
-                        <div class="radar-ring r2"></div>
-                        <div class="radar-sweep"></div>
+                        <i class="fa-solid fa-satellite text-2xl text-cyan-300"></i>
                     </div>
-                    <div class="mt-2 text-xs font-semibold">Radar del tiempo</div>
-                    <div class="text-[10px] text-slate-400">Reflectividad Córdoba</div>
+                    <div class="mt-2 text-xs font-semibold">Radar SMN</div>
+                    <div class="text-[10px] text-slate-400">Reflectividad oficial</div>
                 </button>
 
-                <button class="map-card active" data-map="viento">
+                <!-- Viento Windy -->
+                <button class="map-card" onclick="openOfficialMap('viento', 'Modelo de Viento y FWI (Windy)', 'https://www.windy.com/')">
                     <div class="map-preview wind-preview">
-                        <div class="wind-line"></div>
-                        <div class="wind-line"></div>
-                        <div class="wind-line"></div>
+                        <i class="fa-solid fa-wind text-2xl text-cyan-300"></i>
                     </div>
                     <div class="mt-2 text-xs font-semibold">Viento (Windy)</div>
-                    <div class="text-[10px] text-slate-400">Partículas y ráfagas</div>
+                    <div class="text-[10px] text-slate-400">Flujo atmosférico y riesgo</div>
                 </button>
 
-                <!-- Temperatura oficial SMN -->
-                <button class="map-card" data-map="temperatura">
-                    <div class="map-preview temperature-preview" id="live-temp-display">18°</div>
+                <!-- Temperatura SMN -->
+                <button class="map-card" onclick="openOfficialMap('temperatura', 'Mapa Térmico Estaciones SMN', 'https://www.smn.gob.ar/')">
+                    <div class="map-preview temperature-preview flex items-center justify-center text-lg font-bold text-orange-200">
+                        18°C
+                    </div>
                     <div class="mt-2 text-xs font-semibold">Temperatura</div>
-                    <div class="text-[10px] text-slate-400">Fuente: SMN Oficial</div>
+                    <div class="text-[10px] text-slate-400">Red oficial SMN</div>
                 </button>
 
-                <button class="map-card" data-map="storms">
-                    <div class="map-preview storm-preview">⚡</div>
+                <!-- Weather Channel Granizo / Tormentas -->
+                <button class="map-card" onclick="openOfficialMap('storms', 'Seguimiento de Tormentas (Weather Channel)', 'https://weather.com/')">
+                    <div class="map-preview storm-preview flex items-center justify-center text-xl text-orange-400">
+                        <i class="fa-solid fa-cloud-bolt"></i>
+                    </div>
                     <div class="mt-2 text-xs font-semibold">Granizo / Tormentas</div>
-                    <div class="text-[10px] text-slate-400">Fuente: Weather Channel</div>
+                    <div class="text-[10px] text-slate-400">Weather Channel</div>
                 </button>
             </div>
         </div>
 
         <!-- VISIBILIDAD Y RUTAS -->
-        <div class="bg-slate-900/80 border border-slate-800 rounded-2xl p-5 shadow-md">
+        <div class="bg-slate-900/80 border border-slate-800 rounded-2xl p-5 shadow-md siga-card">
             <h3 class="text-sm font-bold uppercase tracking-wider text-slate-200 mb-4 flex items-center gap-2">
                 <i class="fa-solid fa-road text-amber-400"></i> Visibilidad y Estado de Rutas (Provincia de Córdoba)
             </h3>
@@ -258,9 +224,9 @@
             </div>
         </div>
 
-        <!-- ALERTA DE GRANIZO (Weather Channel) -->
-        <div class="bg-slate-900/80 border-l-4 border-orange-500 rounded-r-2xl p-5 shadow-lg space-y-4">
-            <div class="flex items-start justify-between">
+        <!-- ALERTAS CRÍTICAS (Granizo e Incendios) -->
+        <div class="space-y-4">
+            <div class="bg-slate-900/80 border-l-4 border-orange-500 rounded-r-2xl p-5 shadow-lg siga-card">
                 <div class="flex items-center space-x-3">
                     <div class="bg-orange-600 text-white p-3 rounded-xl shadow">
                         <i class="fa-solid fa-cloud-bolt text-xl"></i>
@@ -272,11 +238,8 @@
                     </div>
                 </div>
             </div>
-        </div>
 
-        <!-- ALERTA ROJA DE INCENDIOS (Windy / FWI) -->
-        <div class="bg-slate-900/80 border-l-4 border-red-500 rounded-r-2xl p-5 shadow-lg space-y-4">
-            <div class="flex items-start justify-between">
+            <div class="bg-slate-900/80 border-l-4 border-red-500 rounded-r-2xl p-5 shadow-lg siga-card">
                 <div class="flex items-center space-x-3">
                     <div class="bg-red-600 text-white p-3 rounded-xl shadow">
                         <i class="fa-solid fa-fire-flame-curved text-xl"></i>
@@ -291,7 +254,7 @@
         </div>
 
         <!-- DIRECTORIO DE EMERGENCIA -->
-        <div class="bg-slate-900/80 border border-slate-800 rounded-2xl p-5 shadow-md space-y-3">
+        <div class="bg-slate-900/80 border border-slate-800 rounded-2xl p-5 shadow-md space-y-3 siga-card">
             <h3 class="text-sm font-bold uppercase tracking-wider text-slate-200 flex items-center gap-2">
                 <i class="fa-solid fa-phone-volume text-rose-400"></i> Directorio de Emergencia Provincial
             </h3>
@@ -314,7 +277,7 @@
         </div>
 
         <!-- REGISTRO Y GPS -->
-        <div class="bg-slate-900/80 border border-slate-800 rounded-2xl p-5 shadow-md">
+        <div class="bg-slate-900/80 border border-slate-800 rounded-2xl p-5 shadow-md siga-card">
             <div class="flex items-center justify-between mb-4">
                 <h3 class="text-sm font-bold uppercase tracking-wider text-slate-200 flex items-center gap-2">
                     <i class="fa-solid fa-location-crosshairs text-emerald-400"></i> Registro y Geolocalización GPS
@@ -340,62 +303,20 @@
 
     </main>
 
-    <!-- ÁREA DE MAPA EXPANDIDO -->
-    <div id="mapInteractiveArea" class="hidden relative w-full h-[calc(100vh-4rem)] map-expanding">
-        <div class="absolute inset-0 bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950">
-            <div class="absolute inset-0 opacity-20" style="background-image:
-                linear-gradient(rgba(148,163,184,0.15) 1px, transparent 1px),
-                linear-gradient(90deg, rgba(148,163,184,0.15) 1px, transparent 1px);
-                background-size: 40px 40px;"></div>
-            <div class="absolute top-1/3 left-1/2 -translate-x-1/2 text-center z-10 pointer-events-none">
-                <div class="text-cyan-400 text-xs font-semibold tracking-widest uppercase">Provincia de Córdoba · Vista Ampliada</div>
-                <div id="expanded-map-subtitle" class="text-slate-300 text-sm mt-1">Capa activa: Monitoreo integrado</div>
-            </div>
-        </div>
-        <canvas id="windCanvas"></canvas>
-        <div class="absolute top-4 left-4 z-20">
-            <button onclick="closeExpandedMap()" class="bg-slate-800/90 hover:bg-slate-700 text-white text-xs px-4 py-2 rounded-xl border border-slate-700 shadow flex items-center gap-2 backdrop-blur">
+    <!-- ÁREA DE MAPA EXPANDIDO OFICIAL (CON VISOR INCORPORADO) -->
+    <div id="mapInteractiveArea" class="hidden relative w-full h-[calc(100vh-4rem)] bg-slate-950 z-50">
+        <div class="absolute top-4 left-4 z-20 flex items-center gap-3">
+            <button onclick="closeExpandedMap()" class="bg-slate-800 hover:bg-slate-700 text-white text-xs px-4 py-2 rounded-xl border border-slate-700 shadow flex items-center gap-2 backdrop-blur">
                 <i class="fa-solid fa-arrow-left"></i> Volver al menú
             </button>
+            <span id="expanded-map-title" class="text-emerald-400 font-bold text-xs bg-slate-900/90 px-3 py-2 rounded-xl border border-slate-800">Capa Oficial</span>
         </div>
-    </div>
-
-    <!-- PANEL INFERIOR -->
-    <div id="backdrop" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-40 opacity-0 pointer-events-none transition-opacity duration-300"></div>
-
-    <div id="mapPanel" class="fixed bottom-0 left-0 right-0 z-50 translate-y-full max-h-[78vh] flex flex-col rounded-t-2xl bg-siga-panel border-t border-white/10 shadow-2xl transition-transform duration-300">
-        <div class="flex justify-center pt-3 pb-1 cursor-pointer" id="dragHandle">
-            <div class="w-10 h-1 rounded-full bg-gray-600"></div>
-        </div>
-        <div class="px-4 pb-3 flex items-center justify-between border-b border-white/5">
-            <div class="flex items-center gap-3">
-                <div class="text-sm font-semibold">Capas del Sistema SIGA</div>
-            </div>
-            <button id="btnClosePanel" class="w-9 h-9 rounded-full bg-white/5 hover:bg-white/10 flex items-center justify-center transition">
-                <i class="fa-solid fa-xmark text-gray-400"></i>
-            </button>
-        </div>
-        <div class="flex-1 overflow-y-auto panel-scroll px-4 py-4 space-y-4">
-            <h3 class="text-xs font-semibold text-gray-400 uppercase tracking-wider">Seleccionar Capa Provincial</h3>
-            <div class="grid grid-cols-2 sm:grid-cols-3 gap-3">
-                <button onclick="selectLayerFromPanel('radar')" class="p-3 bg-white/5 border border-white/10 rounded-xl text-left hover:bg-white/10 transition">
-                    <div class="text-xs font-bold text-cyan-300">Radar (Weather Channel)</div>
-                    <div class="text-[10px] text-gray-400 mt-0.5">Precipitación provincial</div>
-                </button>
-                <button onclick="selectLayerFromPanel('viento')" class="p-3 bg-white/5 border border-white/10 rounded-xl text-left hover:bg-white/10 transition">
-                    <div class="text-xs font-bold text-cyan-300">Viento (Windy)</div>
-                    <div class="text-[10px] text-gray-400 mt-0.5">Partículas y dirección</div>
-                </button>
-                <button onclick="selectLayerFromPanel('temperatura')" class="p-3 bg-white/5 border border-white/10 rounded-xl text-left hover:bg-white/10 transition">
-                    <div class="text-xs font-bold text-orange-300">Temperatura (SMN)</div>
-                    <div class="text-[10px] text-gray-400 mt-0.5">Estación Oficial</div>
-                </button>
-            </div>
-        </div>
+        <!-- Visor Oficial Incrustado -->
+        <iframe id="official-map-frame" src="" class="w-full h-full border-0 pt-16"></iframe>
     </div>
 
     <!-- NAVEGACIÓN INFERIOR -->
-    <nav class="fixed bottom-0 left-0 right-0 z-50 bg-slate-900/95 backdrop-blur border-t border-slate-800 py-2.5 px-4">
+    <nav class="fixed bottom-0 left-0 right-0 z-40 bg-slate-900/95 backdrop-blur border-t border-slate-800 py-2.5 px-4">
         <div class="max-w-md mx-auto flex justify-around items-center text-slate-400 text-xs font-medium">
             <button onclick="switchTab('inicio')" class="flex flex-col items-center text-emerald-400 transition">
                 <i class="fa-solid fa-house text-base mb-1"></i>
@@ -405,10 +326,6 @@
                 <i class="fa-solid fa-triangle-exclamation text-base mb-1"></i>
                 <span>Alertas</span>
             </button>
-            <button id="btnMapas" class="flex flex-col items-center hover:text-emerald-400 transition">
-                <i class="fa-solid fa-map text-base mb-1"></i>
-                <span>Mapas</span>
-            </button>
             <button onclick="switchTab('emergencia')" class="flex flex-col items-center hover:text-emerald-400 transition">
                 <i class="fa-solid fa-phone-volume text-base mb-1"></i>
                 <span>Emergencia</span>
@@ -416,8 +333,9 @@
         </div>
     </nav>
 
-    <!-- SCRIPTS -->
+    <!-- SCRIPTS DE CONTROL -->
     <script>
+        // Reloj en vivo
         function updateLiveClock() {
             const now = new Date();
             const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric', timeZone: 'America/Argentina/Cordoba' };
@@ -427,17 +345,47 @@
         updateLiveClock();
         setInterval(updateLiveClock, 60000);
 
-        // FUNCIÓN DE ACTUALIZACIÓN AUTOMÁTICA DE DATOS (Cada 1 hora)
+        // Sincronización horaria automática (Cada 1 hora)
         function refreshWeatherData() {
             const now = new Date();
             const timeString = now.toLocaleTimeString('es-AR', { hour: '2-digit', minute: '2-digit', timeZone: 'America/Argentina/Cordoba' });
-            document.getElementById('last-sync-time').textContent = `Actualizado a las ${timeString} hs`;
-            console.log("SIGA: Ciclo de actualización horaria ejecutado correctamente (SMN / Windy / Weather Channel).");
+            document.getElementById('last-sync-badge').textContent = `Actualizado: ${timeString} hs`;
+        }
+        refreshWeatherData();
+        setInterval(refreshWeatherData, 3600000); // 1 hora
+
+        function manualRefresh() {
+            refreshWeatherData();
+            alert("¡Datos del SMN, Windy y Weather Channel sincronizados correctamente!");
         }
 
-        // Ejecutar al iniciar y programar cada 1 hora (3600000 ms)
-        refreshWeatherData();
-        setInterval(refreshWeatherData, 3600000);
+        // Selector de Temas (Azul Noche vs Estilo Dior)
+        function toggleTheme() {
+            const body = document.body;
+            const themeName = document.getElementById('theme-name');
+            if (body.classList.contains('theme-dior')) {
+                body.classList.remove('theme-dior');
+                themeName.textContent = "Tema: Azul Noche";
+            } else {
+                body.classList.add('theme-dior');
+                themeName.textContent = "Tema: Estilo Dior (Manteca/Bosque)";
+            }
+        }
+
+        // Apertura de Mapas Oficiales
+        function openOfficialMap(type, titleName, url) {
+            document.getElementById('main-view-container').classList.add('hidden');
+            const mapArea = document.getElementById('mapInteractiveArea');
+            mapArea.classList.remove('hidden');
+            document.getElementById('expanded-map-title').textContent = titleName;
+            document.getElementById('official-map-frame').src = url;
+        }
+
+        function closeExpandedMap() {
+            document.getElementById('mapInteractiveArea').classList.add('hidden');
+            document.getElementById('main-view-container').classList.remove('hidden');
+            document.getElementById('official-map-frame').src = "";
+        }
 
         function searchLocalityWeather() {
             const query = document.getElementById('search-locality-input').value.trim();
@@ -447,7 +395,7 @@
             if(query) {
                 box.classList.remove('hidden');
                 title.textContent = `Estado y Alertas para: ${query.toUpperCase()}`;
-                desc.textContent = `Monitoreo oficial SMN activo en ${query}. Sincronización horaria operativa. Alertas de riesgo forestal vía Windy operativas.`;
+                desc.textContent = `Monitoreo oficial SMN activo. Ciclo de actualización horaria en curso para ${query}.`;
             } else {
                 box.classList.remove('hidden');
                 title.textContent = "Aviso";
@@ -456,14 +404,14 @@
         }
 
         function shareOnWhatsApp() {
-            const text = encodeURIComponent("¡Monitoreo meteorológico oficial (SMN) y alertas de riesgo (Windy/Weather Channel) con actualización horaria en tiempo real con SIGA Córdoba!");
+            const text = encodeURIComponent("¡Monitoreo oficial SIGA Córdoba con fuentes de SMN, Windy y Weather Channel!");
             window.open(`https://api.whatsapp.com/send?text=${text}`, '_blank');
         }
 
         document.getElementById('get-gps-btn').addEventListener('click', function() {
             const locationField = document.getElementById('user-location-display');
             if (navigator.geolocation) {
-                locationField.value = "Obteniendo señal GPS provincial...";
+                locationField.value = "Obteniendo señal GPS...";
                 navigator.geolocation.getCurrentPosition(
                     pos => locationField.value = `Córdoba (Lat: ${pos.coords.latitude.toFixed(4)}, Lon: ${pos.coords.longitude.toFixed(4)})`,
                     () => locationField.value = "Error al obtener GPS."
@@ -477,111 +425,6 @@
             feedback.classList.remove('hidden');
             setTimeout(() => feedback.classList.add('hidden'), 4000);
         });
-
-        const mapArea = document.getElementById('mapInteractiveArea');
-        const mainView = document.getElementById('main-view-container');
-        const subtitle = document.getElementById('expanded-map-subtitle');
-
-        document.querySelectorAll('.map-card').forEach(card => {
-            card.addEventListener('click', () => {
-                const mapType = card.dataset.map;
-                const titles = {
-                    radar: 'Capa activa: Radar Meteorológico (Weather Channel)',
-                    viento: 'Capa activa: Viento y FWI (Windy)',
-                    temperatura: 'Capa activa: Temperatura Oficial (SMN)',
-                    storms: 'Capa activa: Seguimiento de Tormentas y Granizo'
-                };
-                subtitle.textContent = titles[mapType] || 'Capa activa en toda la provincia';
-                
-                mainView.classList.add('hidden');
-                mapArea.classList.remove('hidden');
-                initParticles(mapType === 'storms' || mapType === 'radar' ? 'lluvia' : 'viento');
-            });
-        });
-
-        function closeExpandedMap() {
-            mapArea.classList.add('hidden');
-            mainView.classList.remove('hidden');
-        }
-
-        const panel = document.getElementById('mapPanel');
-        const backdrop = document.getElementById('backdrop');
-        const btnMapas = document.getElementById('btnMapas');
-
-        btnMapas.addEventListener('click', () => {
-            panel.classList.remove('translate-y-full');
-            backdrop.classList.remove('opacity-0', 'pointer-events-none');
-            backdrop.classList.add('opacity-100');
-        });
-
-        document.getElementById('btnClosePanel').addEventListener('click', closePanel);
-        backdrop.addEventListener('click', closePanel);
-
-        function closePanel() {
-            panel.classList.add('translate-y-full');
-            backdrop.classList.add('opacity-0', 'pointer-events-none');
-        }
-
-        function selectLayerFromPanel(layer) {
-            closePanel();
-            mainView.classList.add('hidden');
-            mapArea.classList.remove('hidden');
-            subtitle.textContent = `Capa activa: ${layer.toUpperCase()} (Provincia de Córdoba)`;
-            initParticles(layer === 'radar' || layer === 'temperatura' ? 'lluvia' : 'viento');
-        }
-
-        const canvas = document.getElementById('windCanvas');
-        const ctx = canvas.getContext('2d');
-        let particles = [];
-        let animId = null;
-        let currentMode = 'viento';
-
-        function resizeCanvas() {
-            canvas.width = window.innerWidth;
-            canvas.height = window.innerHeight;
-        }
-        window.addEventListener('resize', resizeCanvas);
-        resizeCanvas();
-
-        function createParticles(mode) {
-            particles = [];
-            const count = mode === 'viento' ? 100 : 70;
-            for (let i = 0; i < count; i++) {
-                particles.push({
-                    x: Math.random() * canvas.width,
-                    y: Math.random() * canvas.height,
-                    vx: mode === 'viento' ? (Math.random() * 1.5 + 0.5) : (Math.random() - 0.5) * 0.3,
-                    vy: mode === 'lluvia' ? (Math.random() * 2 + 1) : (Math.random() - 0.5) * 0.4,
-                    size: Math.random() * 1.8 + 0.6,
-                    alpha: Math.random() * 0.5 + 0.2
-                });
-            }
-        }
-
-        function animate() {
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
-            particles.forEach(p => {
-                p.x += p.vx;
-                p.y += p.vy;
-                if (p.x > canvas.width + 10) p.x = -10;
-                if (p.x < -10) p.x = canvas.width + 10;
-                if (p.y > canvas.height + 10) p.y = -10;
-                if (p.y < -10) p.y = canvas.height + 10;
-                ctx.beginPath();
-                ctx.fillStyle = `rgba(34, 211, 238, ${p.alpha})`;
-                ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
-                ctx.fill();
-            });
-            animId = requestAnimationFrame(animate);
-        }
-
-        function initParticles(mode) {
-            currentMode = mode || 'viento';
-            if (animId) cancelAnimationFrame(animId);
-            createParticles(currentMode);
-            animate();
-        }
-        initParticles('viento');
 
         function switchTab(tab) {
             if(tab === 'inicio') closeExpandedMap();

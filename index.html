@@ -1,10 +1,10 @@
-<!DOCTYPE html>
+   <!DOCTYPE html>
 <html lang="es">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>SIGA - Sistema Inteligente de Gestión Ambiental y Clima</title>
-    <!-- Tailwind CSS para un diseño moderno y responsivo -->
+    <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         .temp-display {
@@ -14,17 +14,17 @@
         }
     </style>
 </head>
-<body class="bg-slate-900 text-slate-100 min-h-screen flex flex-col justify-between">
+<body class="bg-[#05160a] text-slate-100 min-h-screen flex flex-col justify-between selection:bg-emerald-500 selection:text-white">
 
     <!-- Encabezado -->
-    <header class="bg-slate-800 border-b border-slate-700 p-4 shadow-md">
+    <header class="bg-[#082210] border-b border-emerald-900/60 p-4 shadow-md">
         <div class="max-w-4xl mx-auto flex flex-col sm:flex-row justify-between items-center gap-4">
-            <h1 class="text-2xl font-bold tracking-wider text-emerald-400">SIGA <span class="text-xs font-normal text-slate-400">v22 Con Alertas</span></h1>
+            <h1 class="text-2xl font-bold tracking-wider text-emerald-300">SIGA <span class="text-xs font-normal text-emerald-400/80">v23 Pro</span></h1>
             
             <!-- Buscador de Localidad -->
             <div class="flex w-full sm:w-auto gap-2">
-                <input type="text" id="buscador-localidad" placeholder="Buscar localidad (ej. Ascochinga)..." class="bg-slate-700 px-3 py-2 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-emerald-400 w-full sm:w-64">
-                <button onclick="buscarPorNombre()" class="bg-emerald-600 hover:bg-emerald-500 px-4 py-2 rounded-lg text-sm font-semibold transition">Buscar</button>
+                <input type="text" id="buscador-localidad" placeholder="Buscar localidad (ej. Ascochinga)..." class="bg-[#05160a] border border-emerald-800/80 px-3 py-2 rounded-lg text-sm text-slate-100 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-emerald-400 w-full sm:w-64">
+                <button onclick="buscarPorNombre()" class="bg-emerald-700 hover:bg-emerald-600 text-white px-4 py-2 rounded-lg text-sm font-semibold transition">Buscar</button>
             </div>
         </div>
     </header>
@@ -32,61 +32,82 @@
     <!-- Contenido Principal -->
     <main class="max-w-4xl mx-auto p-4 w-full flex-grow flex flex-col gap-6">
 
-        <!-- Panel de Ubicación, GPS y Configuración de Alertas Telefónicas -->
-        <section class="bg-slate-800 p-4 rounded-xl shadow-lg border border-slate-700 flex flex-col md:flex-row justify-between items-center gap-4">
+        <!-- Panel de Ubicación, GPS y Configuración de Alertas -->
+        <section class="bg-[#0b2b14] p-4 rounded-xl shadow-lg border border-emerald-900 flex flex-col md:flex-row justify-between items-center gap-4">
             <div>
-                <h2 id="nombre-ubicacion" class="text-xl font-semibold text-emerald-300">Detectando ubicación...</h2>
-                <p id="coordenadas-gps" class="text-xs text-slate-400">Lat: --, Lon: --</p>
+                <h2 id="nombre-ubicacion" class="text-xl font-semibold text-emerald-200">Detectando ubicación...</h2>
+                <p id="coordenadas-gps" class="text-xs text-emerald-400/70">Lat: --, Lon: --</p>
             </div>
             
             <div class="flex flex-col sm:flex-row items-center gap-2 w-full md:w-auto">
-                <button onclick="obtenerUbicacionGPS()" class="bg-sky-600 hover:bg-sky-500 text-white px-3 py-2 rounded-lg text-xs font-semibold shadow transition flex items-center gap-1 whitespace-nowrap">
+                <button onclick="obtenerUbicacionGPS()" class="bg-sky-700 hover:bg-sky-600 text-white px-3 py-2 rounded-lg text-xs font-semibold shadow transition flex items-center gap-1 whitespace-nowrap">
                     📍 Usar GPS
                 </button>
-                <input type="tel" id="input-telefono" placeholder="Nº Teléfono para Alertas" class="bg-slate-700 px-3 py-2 rounded-lg text-xs focus:outline-none focus:ring-2 focus:ring-emerald-400 w-full sm:w-44">
-                <button onclick="guardarConfiguracionAlertas()" class="bg-emerald-600 hover:bg-emerald-500 px-3 py-2 rounded-lg text-xs font-semibold whitespace-nowrap transition">
+                <input type="tel" id="input-telefono" placeholder="Nº Teléfono para Alertas" class="bg-[#05160a] border border-emerald-800 px-3 py-2 rounded-lg text-xs text-slate-100 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-emerald-400 w-full sm:w-44">
+                <button onclick="guardarConfiguracionAlertas()" class="bg-emerald-600 hover:bg-emerald-500 text-white px-3 py-2 rounded-lg text-xs font-semibold whitespace-nowrap transition">
                     🔔 Activar Alertas
                 </button>
             </div>
         </section>
 
         <!-- Bloque Principal de Temperatura Gigante -->
-        <section class="bg-gradient-to-br from-slate-800 to-slate-800/60 p-6 rounded-2xl shadow-xl border border-slate-700 text-center flex flex-col items-center justify-center relative">
-            <span id="etiqueta-zona" class="text-sm uppercase tracking-widest text-emerald-400 font-semibold mb-2">Zona actual</span>
+        <section class="bg-gradient-to-br from-[#0b2b14] to-[#081e0e] p-6 rounded-2xl shadow-xl border border-emerald-900/80 text-center flex flex-col items-center justify-center relative">
+            <span id="etiqueta-zona" class="text-sm uppercase tracking-widest text-emerald-300 font-semibold mb-2">Zona actual</span>
             <div class="flex items-start justify-center">
-                <span id="valor-temperatura" class="temp-display text-emerald-400">--</span>
-                <span class="text-4xl font-bold text-emerald-400 mt-2">°C</span>
+                <span id="valor-temperatura" class="temp-display text-white">--</span>
+                <span class="text-4xl font-bold text-emerald-300 mt-2">°C</span>
             </div>
-            <p id="estado-cielo" class="text-lg text-slate-300 mt-2 capitalize">Cargando condiciones del tiempo...</p>
+            <p id="estado-cielo" class="text-lg text-emerald-100/90 mt-2 capitalize">Cargando condiciones del tiempo...</p>
         </section>
 
         <!-- Métricas Secundarias y Botón WhatsApp -->
         <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
-            <div class="bg-slate-800 p-4 rounded-xl border border-slate-700 flex justify-between items-center">
-                <span class="text-slate-400 text-sm">Humedad</span>
-                <span id="valor-humedad" class="text-xl font-bold">--%</span>
+            <div class="bg-[#0b2b14] p-4 rounded-xl border border-emerald-900 flex justify-between items-center">
+                <span class="text-emerald-300/80 text-sm">Humedad</span>
+                <span id="valor-humedad" class="text-xl font-bold text-white">--%</span>
             </div>
-            <div class="bg-slate-800 p-4 rounded-xl border border-slate-700 flex justify-between items-center">
-                <span class="text-slate-400 text-sm">Viento</span>
-                <span id="valor-viento" class="text-xl font-bold">-- km/h</span>
+            <div class="bg-[#0b2b14] p-4 rounded-xl border border-emerald-900 flex justify-between items-center">
+                <span class="text-emerald-300/80 text-sm">Viento</span>
+                <span id="valor-viento" class="text-xl font-bold text-white">-- km/h</span>
             </div>
-            <button onclick="compartirWhatsApp()" class="bg-green-600 hover:bg-green-500 text-white p-4 rounded-xl border border-green-500 flex justify-center items-center gap-2 font-semibold shadow transition">
-                💬 Compartir por WhatsApp
+            <button onclick="compartirWhatsApp()" class="bg-emerald-700 hover:bg-emerald-600 text-white p-4 rounded-xl border border-emerald-600 flex justify-center items-center gap-2 font-semibold shadow transition">
+                💬 Compartir Reporte
             </button>
         </div>
 
+        <!-- Directorio de Emergencia Provincial (Con alta visibilidad y números completos) -->
+        <section class="bg-[#082210] p-5 rounded-xl border border-emerald-800/80 shadow-md">
+            <h3 class="text-emerald-300 font-bold text-base mb-3 flex items-center gap-2">
+                🚨 Directorio de Emergencia Provincial (Córdoba)
+            </h3>
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 text-sm">
+                <div class="bg-[#05160a] p-3 rounded-lg border border-emerald-900 flex justify-between items-center">
+                    <span class="text-slate-300 font-medium">Policía</span>
+                    <a href="tel:101" class="text-emerald-300 font-bold hover:underline">101</a>
+                </div>
+                <div class="bg-[#05160a] p-3 rounded-lg border border-emerald-900 flex justify-between items-center">
+                    <span class="text-slate-300 font-medium">Bomberos (Urgencia)</span>
+                    <a href="tel:100" class="text-emerald-300 font-bold hover:underline">100</a>
+                </div>
+                <div class="bg-[#05160a] p-3 rounded-lg border border-emerald-900 flex justify-between items-center">
+                    <span class="text-slate-300 font-medium">Bomberos Provincial</span>
+                    <a href="tel:080038346" class="text-emerald-300 font-bold hover:underline text-xs">0800-383-46</a>
+                </div>
+            </div>
+        </section>
+
         <!-- Fuentes Oficiales de Referencia -->
-        <section class="bg-slate-800/40 p-4 rounded-xl border border-slate-800 text-center text-xs text-slate-400 flex flex-wrap justify-center gap-4">
+        <section class="bg-[#082210]/60 p-4 rounded-xl border border-emerald-900/50 text-center text-xs text-emerald-400/70 flex flex-wrap justify-center gap-4">
             <span>Fuentes de referencia oficiales:</span>
-            <a href="https://www.smn.gob.ar" target="_blank" rel="noopener noreferrer" class="text-emerald-400 hover:underline">Servicio Meteorológico Nacional</a>
+            <a href="https://www.smn.gob.ar" target="_blank" rel="noopener noreferrer" class="text-emerald-300 hover:underline">Servicio Meteorológico Nacional</a>
             <span>•</span>
-            <a href="https://weather.com" target="_blank" rel="noopener noreferrer" class="text-emerald-400 hover:underline">The Weather Channel</a>
+            <a href="https://weather.com" target="_blank" rel="noopener noreferrer" class="text-emerald-300 hover:underline">The Weather Channel</a>
         </section>
 
     </main>
 
     <!-- Pie de página -->
-    <footer class="bg-slate-800 border-t border-slate-700 p-4 text-center text-xs text-slate-500">
+    <footer class="bg-[#082210] border-t border-emerald-900/60 p-4 text-center text-xs text-emerald-400/60">
         SIGA - Sistema Inteligente de Gestión Ambiental y Clima &copy; 2026
     </footer>
 
@@ -175,7 +196,7 @@
                 alert("Por favor, ingresa un número de teléfono válido para configurar las alertas.");
                 return;
             }
-            alert(`¡Alertas configuradas exitosamente para el número ${telefono} en la zona ${nombreZonaActual}! Recibirás notificaciones en este dispositivo.`);
+            alert(`¡Alertas configuradas para el número ${telefono} en ${nombreZonaActual}! Recibirás los avisos de emergencia.`);
         }
 
         function compartirWhatsApp() {

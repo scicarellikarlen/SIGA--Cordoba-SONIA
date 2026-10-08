@@ -73,6 +73,10 @@
             border-radius: 8px;
             margin-bottom: 10px;
         }
+        .alert-box.hail {
+            background: rgba(245, 158, 11, 0.2);
+            border: 1px solid #f59e0b;
+        }
         .emergency-list, .forecast-list { list-style: none; padding: 0; margin: 0; }
         .emergency-list li {
             padding: 6px 0;
@@ -144,6 +148,10 @@
                 <strong>Riesgo de Incendios: Extremo</strong><br>
                 <span>Zona Sierras Chicas / Córdoba Norte. Viento Norte activo.</span>
             </div>
+            <div class="alert-box hail">
+                <strong>⚠️ Alerta Preventiva por Granizo</strong><br>
+                <span>Posibilidad de caída de granizo aislado en áreas de tormentas severas.</span>
+            </div>
             <button class="action-btn" onclick="shareWhatsApp()">Compartir Alerta por WhatsApp</button>
             <div style="margin-top: 12px;">
                 <label style="font-size: 0.85rem;">Registrar celular para alertas de campo:</label>
@@ -160,7 +168,7 @@
             <ul class="forecast-list">
                 <li><span>Jueves 8:</span> <b>24° / 12°</b> - Parcialmente nublado</li>
                 <li><span>Viernes 9:</span> <b>26° / 14°</b> - Soleado, Viento Norte</li>
-                <li><span>Sábado 10:</span> <b>21° / 10°</b> - Prob. Tormentas aisladas</li>
+                <li><span>Sábado 10:</span> <b>21° / 10°</b> - Tormentas / <b>Riesgo Granizo</b></li>
                 <li><span>Domingo 11:</span> <b>19° / 8°</b> - Despejado / Estable</li>
                 <li><span>Lunes 12:</span> <b>23° / 11°</b> - Nubosidad variable</li>
                 <li><span>Martes 13:</span> <b>25° / 13°</b> - Ingreso frente húmedo</li>
@@ -268,7 +276,7 @@
     }
 
     function shareWhatsApp() {
-        const text = encodeURIComponent("🚨 ALERTA RURAL SIGA (Córdoba): Advertencia meteorológica y riesgo de incendios activo en la región. Máxima precaución.");
+        const text = encodeURIComponent("🚨 ALERTA RURAL SIGA (Córdoba): Advertencia por tormentas severas, riesgo de granizo e incendios activos en la región. Máxima precaución.");
         window.open(`https://api.whatsapp.com/send?text=${text}`, '_blank');
     }
 
@@ -285,4 +293,3 @@
 
 </body>
 </html>
-       

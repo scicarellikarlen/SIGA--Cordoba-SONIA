@@ -1,18 +1,91 @@
-// Script para alternar entre el Modo Dior (Manteca / Verde Bosque) y el Modo Tecnológico (Azul / Verde Flúor)
-document.addEventListener('DOMContentLoaded', () => {
-  const toggleBtn = document.getElementById('dior-mode-btn'); // Asegúrate de que este sea el ID de tu botón en el HTML
+ <!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0" />
+  <title>SIGA · Sistema Integrado de Gestión Atmosférica</title>
+  <link rel="stylesheet" href="styles.css" />
+  <link rel="preconnect" href="https://embed.windy.com" />
+</head>
+<body>
+  <header class="header">
+    <div class="logo">
+      <span class="logo-icon">🌤</span>
+      <h1>SIGA</h1>
+      <span class="subtitle">Sistema Integrado de Gestión Atmosférica</span>
+    </div>
+    <div class="status-bar">
+      <span id="connection-status" class="status online">● En línea</span>
+      <span id="last-update">Última actualización: --</span>
+    </div>
+  </header>
 
-  if (toggleBtn) {
-    toggleBtn.addEventListener('click', (e) => {
-      e.preventDefault();
-      document.body.classList.toggle('tech-mode');
-      
-      // Opcional: Cambiar el texto del botón según el modo activo
-      if (document.body.classList.contains('tech-mode')) {
-        toggleBtn.textContent = "Cambiar a Modo Dior";
-      } else {
-        toggleBtn.textContent = "Cambiar a Modo Tecnológico";
-      }
-    });
-  }
-});
+  <main class="dashboard">
+    <!-- Panel de datos meteorológicos -->
+    <section class="panel weather-panel">
+      <div class="panel-header">
+        <h2>Condiciones actuales</h2>
+        <span id="offline-badge" class="badge hidden">Datos temporales offline</span>
+      </div>
+
+      <div class="weather-grid">
+        <div class="metric primary">
+          <span class="label">Temperatura</span>
+          <span id="temp" class="value">--°C</span>
+          <span id="feels-like" class="sub">Sensación: --°C</span>
+        </div>
+        <div class="metric">
+          <span class="label">Humedad</span>
+          <span id="humidity" class="value">--%</span>
+        </div>
+        <div class="metric">
+          <span class="label">Viento</span>
+          <span id="wind" class="value">-- km/h</span>
+        </div>
+        <div class="metric">
+          <span class="label">Presión</span>
+          <span id="pressure" class="value">-- hPa</span>
+        </div>
+        <div class="metric">
+          <span class="label">Precipitación</span>
+          <span id="precip" class="value">-- mm</span>
+        </div>
+        <div class="metric">
+          <span class="label">Nubosidad</span>
+          <span id="clouds" class="value">--%</span>
+        </div>
+      </div>
+
+      <div class="location-info">
+        <span id="location-name">Buenos Aires, Argentina</span>
+        <span id="coords">-34.60, -58.38</span>
+      </div>
+    </section>
+
+    <!-- Mapa Windy -->
+    <section class="panel map-panel">
+      <div class="panel-header">
+        <h2>Mapa satelital · Windy</h2>
+        <button id="reload-map" class="btn-reload" title="Recargar mapa">↻</button>
+      </div>
+      <div class="map-container" id="map-container">
+        <div id="map-loading" class="map-loading">Cargando mapa de alta resolución…</div>
+        <iframe
+          id="windy-iframe"
+          title="Mapa satelital Windy"
+          loading="lazy"
+          allowfullscreen
+          referrerpolicy="no-referrer-when-downgrade"
+        ></iframe>
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <p>SIGA · Datos: Open-Meteo + Windy · Actualización automática cada 5 min</p>
+    <p class="small">Diseñado para máxima resiliencia y estabilidad</p>
+  </footer>
+
+  <script src="app.js"></script>
+</body>
+</html>

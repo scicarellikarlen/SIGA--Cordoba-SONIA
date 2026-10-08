@@ -1,321 +1,89 @@
-/**
- * SIGA - Sistema Integrado de Gestión Atmosférica
- * Arquitectura resiliente con fallbacks, retry, polling y persistencia
- */
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SIGA - Alertas Meteorológicas Córdoba</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f6f9;
+            color: #333;
+            margin: 0;
+            padding: 20px;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #2c3e50;
+            text-align: center;
+        }
+        .search-box {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+        input[type="text"] {
+            flex: 1;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+        button {
+            padding: 10px 20px;
+            background-color: #3498db;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #2980b9;
+        }
+        #resultado {
+            margin-top: 20px;
+            padding: 15px;
+            border: 1px solid #e1e8ed;
+            border-radius: 4px;
+            background-color: #fafbfc;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>SIGA - Córdoba</h1>
+        <p>Sistema de Información y Gestión Ambiental - Alertas Meteorológicas</p>
+        
+        <div class="search-box">
+            <input type="text" id="localidadInput" placeholder="Ingrese localidad de Córdoba (ej. Córdoba Capital, Ascochinga, Villa Carlos Paz)..." value="Córdoba">
+            <button onclick="consultarClima()">Consultar</button>
+        </div>
 
-(function () {
-  'use strict';
+        <div id="resultado">
+            <p>Ingrese una localidad de la Provincia de Córdoba para ver el estado meteorológico.</p>
+        </div>
+    </div>
 
-  // ─────────────────────────────────────────────
-  // CONFIGURACIÓN
-  // ─────────────────────────────────────────────
-  const CONFIG = {
-    // Ubicación por defecto (Buenos Aires)
-    lat: -34.6037,
-    lon: -58.3816,
-    locationName: 'Buenos Aires, Argentina',
+    <script>
+        function consultarClima() {
+            const localidad = document.getElementById('localidadInput').value;
+            const resultadoDiv = document.getElementById('resultado');
+            
+            if (!localidad.trim()) {
+                resultadoDiv.innerHTML = '<p style="color: red;">Por favor, ingrese una localidad válida.</p>';
+                return;
+            }
 
-    // Intervalo de polling (ms) – 5 minutos
-    POLL_INTERVAL: 5 * 60 * 1000,
-
-    // Retry
-    MAX_RETRIES: 4,
-    BASE_DELAY: 1200, // ms
-
-    // Claves de localStorage
-    STORAGE_KEY: 'siga_weather_cache',
-    PREFS_KEY: 'siga_prefs',
-
-    // Open-Meteo (sin API key, excelente para AR)
-    OPEN_METEO_URL: 'https://api.open-meteo.com/v1/forecast',
-
-    // Windy embed (alta calidad)
-    WINDY_BASE: 'https://embed.windy.com/embed2.html'
-  };
-
-  // ─────────────────────────────────────────────
-  // UTILIDADES DE RESILIENCIA
-  // ─────────────────────────────────────────────
-  function sleep(ms) {
-    return new Promise(resolve => setTimeout(resolve, ms));
-  }
-
-  /**
-   * fetch con exponential backoff + jitter
-   */
-  async function fetchWithRetry(url, options = {}, retries = CONFIG.MAX_RETRIES) {
-    let lastError;
-    for (let attempt = 0; attempt <= retries; attempt++) {
-      try {
-        const controller = new AbortController();
-        const timeout = setTimeout(() => controller.abort(), 12000);
-
-        const res = await fetch(url, {
-          ...options,
-          signal: controller.signal,
-          headers: {
-            'Accept': 'application/json',
-            ...(options.headers || {})
-          }
-        });
-        clearTimeout(timeout);
-
-        if (!res.ok) throw new Error(`HTTP ${res.status}`);
-        return await res.json();
-      } catch (err) {
-        lastError = err;
-        if (attempt === retries) break;
-        const delay = CONFIG.BASE_DELAY * Math.pow(2, attempt) + Math.random() * 400;
-        console.warn(`[SIGA] Intento ${attempt + 1} fallido. Reintentando en ${Math.round(delay)}ms…`, err.message);
-        await sleep(delay);
-      }
-    }
-    throw lastError;
-  }
-
-  // ─────────────────────────────────────────────
-  // PERSISTENCIA
-  // ─────────────────────────────────────────────
-  function saveCache(data) {
-    try {
-      const payload = {
-        data,
-        timestamp: Date.now(),
-        location: { lat: CONFIG.lat, lon: CONFIG.lon, name: CONFIG.locationName }
-      };
-      localStorage.setItem(CONFIG.STORAGE_KEY, JSON.stringify(payload));
-    } catch (e) {
-      console.warn('[SIGA] No se pudo guardar caché', e);
-    }
-  }
-
-  function loadCache() {
-    try {
-      const raw = localStorage.getItem(CONFIG.STORAGE_KEY);
-      if (!raw) return null;
-      const parsed = JSON.parse(raw);
-      // Consideramos válido si tiene menos de 2 horas
-      if (Date.now() - parsed.timestamp < 2 * 60 * 60 * 1000) {
-        return parsed;
-      }
-    } catch (e) { /* ignore */ }
-    return null;
-  }
-
-  // ─────────────────────────────────────────────
-  // API METEOROLÓGICA (Open-Meteo)
-  // ─────────────────────────────────────────────
-  async function fetchWeatherData() {
-    const params = new URLSearchParams({
-      latitude: CONFIG.lat,
-      longitude: CONFIG.lon,
-      current: [
-        'temperature_2m',
-        'relative_humidity_2m',
-        'apparent_temperature',
-        'precipitation',
-        'cloud_cover',
-        'pressure_msl',
-        'wind_speed_10m',
-        'wind_direction_10m'
-      ].join(','),
-      timezone: 'America/Argentina/Buenos_Aires',
-      wind_speed_unit: 'kmh'
-    });
-
-    const url = `${CONFIG.OPEN_METEO_URL}?${params}`;
-    const json = await fetchWithRetry(url);
-
-    if (!json.current) throw new Error('Respuesta inválida de Open-Meteo');
-
-    const c = json.current;
-    return {
-      temp: Math.round(c.temperature_2m * 10) / 10,
-      feelsLike: Math.round(c.apparent_temperature * 10) / 10,
-      humidity: Math.round(c.relative_humidity_2m),
-      wind: Math.round(c.wind_speed_10m),
-      pressure: Math.round(c.pressure_msl),
-      precip: Math.round((c.precipitation || 0) * 10) / 10,
-      clouds: Math.round(c.cloud_cover || 0),
-      source: 'Open-Meteo',
-      updatedAt: new Date().toISOString()
-    };
-  }
-
-  // ─────────────────────────────────────────────
-  // RENDER UI
-  // ─────────────────────────────────────────────
-  const $ = id => document.getElementById(id);
-
-  function renderWeather(data, isOffline = false) {
-    const panel = document.querySelector('.weather-panel');
-    panel.classList.add('updating');
-
-    $('temp').textContent = `${data.temp}°C`;
-    $('feels-like').textContent = `Sensación: ${data.feelsLike}°C`;
-    $('humidity').textContent = `${data.humidity}%`;
-    $('wind').textContent = `${data.wind} km/h`;
-    $('pressure').textContent = `${data.pressure} hPa`;
-    $('precip').textContent = `${data.precip} mm`;
-    $('clouds').textContent = `${data.clouds}%`;
-
-    $('location-name').textContent = CONFIG.locationName;
-    $('coords').textContent = `${CONFIG.lat.toFixed(2)}, ${CONFIG.lon.toFixed(2)}`;
-
-    const now = new Date();
-    $('last-update').textContent = `Última actualización: ${now.toLocaleTimeString('es-AR')}`;
-
-    const badge = $('offline-badge');
-    const status = $('connection-status');
-
-    if (isOffline) {
-      badge.classList.remove('hidden');
-      status.textContent = '● Offline (caché)';
-      status.className = 'status offline';
-    } else {
-      badge.classList.add('hidden');
-      status.textContent = '● En línea';
-      status.className = 'status online';
-    }
-
-    setTimeout(() => panel.classList.remove('updating'), 900);
-  }
-
-  // ─────────────────────────────────────────────
-  // WINDY MAP (alta resolución + reintento)
-  // ─────────────────────────────────────────────
-  function buildWindyUrl() {
-    const params = new URLSearchParams({
-      lat: CONFIG.lat,
-      lon: CONFIG.lon,
-      detailLat: CONFIG.lat,
-      detailLon: CONFIG.lon,
-      zoom: 7,
-      level: 'surface',
-      overlay: 'satellite',
-      product: 'ecmwf',
-      menu: '',
-      message: 'true',
-      marker: 'true',
-      calendar: 'now',
-      pressure: '',
-      type: 'map',
-      location: 'coordinates',
-      detail: 'true',
-      metricWind: 'km/h',
-      metricTemp: '°C',
-      radarRange: '-1'
-    });
-    return `${CONFIG.WINDY_BASE}?${params.toString()}`;
-  }
-
-  let mapRetryCount = 0;
-  const MAX_MAP_RETRIES = 3;
-
-  function loadWindyMap() {
-    const iframe = $('windy-iframe');
-    const loading = $('map-loading');
-    loading.classList.remove('hidden');
-
-    iframe.src = buildWindyUrl();
-
-    iframe.onload = () => {
-      loading.classList.add('hidden');
-      mapRetryCount = 0;
-      console.log('[SIGA] Mapa Windy cargado correctamente');
-    };
-
-    iframe.onerror = () => {
-      console.warn('[SIGA] Error al cargar iframe Windy');
-      retryMap();
-    };
-
-    // Timeout de seguridad
-    setTimeout(() => {
-      if (!loading.classList.contains('hidden') && mapRetryCount < MAX_MAP_RETRIES) {
-        console.warn('[SIGA] Timeout de mapa. Reintentando…');
-        retryMap();
-      }
-    }, 12000);
-  }
-
-  function retryMap() {
-    if (mapRetryCount >= MAX_MAP_RETRIES) {
-      $('map-loading').textContent = 'No se pudo cargar el mapa. Verificá la conexión.';
-      return;
-    }
-    mapRetryCount++;
-    setTimeout(loadWindyMap, 1500 * mapRetryCount);
-  }
-
-  // ─────────────────────────────────────────────
-  // MOTOR DE ACTUALIZACIÓN
-  // ─────────────────────────────────────────────
-  async function updateWeather(force = false) {
-    try {
-      const data = await fetchWeatherData();
-      renderWeather(data, false);
-      saveCache(data);
-      console.log('[SIGA] Datos actualizados', data);
-    } catch (err) {
-      console.error('[SIGA] Fallo al obtener datos frescos', err);
-
-      const cached = loadCache();
-      if (cached && cached.data) {
-        renderWeather(cached.data, true);
-        console.log('[SIGA] Usando caché local');
-      } else {
-        renderWeather({
-          temp: '--', feelsLike: '--', humidity: '--',
-          wind: '--', pressure: '--', precip: '--', clouds: '--'
-        }, true);
-        $('connection-status').textContent = '● Error de conexión';
-        $('connection-status').className = 'status error';
-      }
-    }
-  }
-
-  // ─────────────────────────────────────────────
-  // INICIALIZACIÓN
-  // ─────────────────────────────────────────────
-  function init() {
-    // 1. Mostrar caché inmediatamente
-    const cached = loadCache();
-    if (cached && cached.data) {
-      renderWeather(cached.data, true);
-    }
-
-    // 2. Cargar mapa
-    loadWindyMap();
-
-    // 3. Primera actualización en vivo
-    updateWeather();
-
-    // 4. Polling cada 5 minutos
-    setInterval(() => updateWeather(), CONFIG.POLL_INTERVAL);
-
-    // 5. Botón de recarga del mapa
-    $('reload-map').addEventListener('click', () => {
-      mapRetryCount = 0;
-      loadWindyMap();
-    });
-
-    // 6. Detectar cambios de conectividad
-    window.addEventListener('online', () => {
-      console.log('[SIGA] Conexión recuperada');
-      updateWeather(true);
-    });
-    window.addEventListener('offline', () => {
-      $('connection-status').textContent = '● Sin conexión';
-      $('connection-status').className = 'status offline';
-      $('offline-badge').classList.remove('hidden');
-    });
-  }
-
-  // Arrancar cuando el DOM esté listo
-  if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', init);
-  } else {
-    init();
-  }
-})();
+            resultadoDiv.innerHTML = `<p>Consultando datos meteorológicos para <strong>${localidad}, Córdoba</strong>...</p>`;
+            
+            // Aquí puedes integrar la lógica de tu API del clima
+        }
+    </script>
+</body>
+</html>

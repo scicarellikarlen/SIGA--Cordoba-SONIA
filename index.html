@@ -1,43 +1,48 @@
-// Listado oficial de números de emergencia para SIGA
-const emergencyNumbers = [
-  {
-    entity: "Bomberos de la Provincia",
-    number: "0800-888-38346",
-    type: "0800"
-  },
-  {
-    entity: "Bomberos",
-    number: "100",
-    type: "Emergencia"
-  },
-  {
-    entity: "Policía",
-    number: "101",
-    type: "Emergencia"
-  },
-  {
-    entity: "Defensa Civil",
-    number: "103",
-    type: "Emergencia"
-  },
-  {
-    entity: "Toxicología",
-    number: "104",
-    type: "Emergencia"
-  },
-  {
-    entity: "Emergencia Ambiental",
-    number: "105",
-    type: "Emergencia"
-  },
-  {
-    entity: "Accidentes Vía Pública",
-    number: "107",
-    type: "Emergencia"
-  },
-  {
-    entity: "Protección Ciudadana",
-    number: ["108", "4636823", "4285835"],
-    type: "Emergencia / Líneas rotativas"
-  }
-];
+/* Configuración de Temas de Color - SIGA */
+
+:root {
+  /* Modo Dior / Bosque (Por defecto): Fondo claro color manteca para relajar la vista */
+  --bg-primary: #FDFBF7; /* Tono manteca claro */
+  --bg-secondary: #F4EEDB; /* Manteca un poco más profundo para tarjetas/pestañas */
+  --text-main: #1b3b22; /* Texto y detalles en verde bosque */
+  --accent-color: #2e6f40; /* Verde bosque para botones y bordes */
+  --border-color: #2e6f40;
+}
+
+/* Modo Tecnológico (Activado al hacer clic en el botón) */
+body.tech-mode {
+  --bg-primary: #0b1329; /* Azul tecnológico oscuro de fondo */
+  --bg-secondary: #050814;
+  --text-main: #ffffff; /* Blanco para lectura general */
+  --accent-color: #00f0ff;
+  --fluor-green: #39ff14; /* Verde flúor para resaltar */
+  --border-color: #00f0ff;
+}
+
+body {
+  background-color: var(--bg-primary);
+  color: var(--text-main);
+  font-family: sans-serif;
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+.container, .card, .tab {
+  background-color: var(--bg-secondary);
+  border: 2px solid var(--border-color);
+  padding: 20px;
+  border-radius: 8px;
+}
+
+/* Clases específicas para el modo tecnológico cuando esté activo */
+body.tech-mode .fluor-text {
+  color: var(--fluor-green);
+}
+
+.btn-mode {
+  background-color: var(--accent-color);
+  color: var(--text-main);
+  border: 2px solid var(--border-color);
+  padding: 10px 15px;
+  cursor: pointer;
+  font-weight: bold;
+}

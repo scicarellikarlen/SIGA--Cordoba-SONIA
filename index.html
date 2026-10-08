@@ -1,283 +1,569 @@
-/**
- * SIGA - Sistema Integrado de Gestión Atmosférica (Provincia de Córdoba)
- * Buscador abierto para todas las localidades + Windy dinámico + Resiliencia
- */
-
-(function () {
-  'use strict';
-
-  // CONFIGURACIÓN INICIAL (Córdoba Capital por defecto)
-  const CONFIG = {
-    lat: -31.4201,
-    lon: -64.1888,
-    locationName: 'Córdoba Capital, Córdoba',
-    POLL_INTERVAL: 5 * 60 * 1000,
-    MAX_RETRIES: 4,
-    BASE_DELAY: 1200,
-    STORAGE_KEY: 'siga_cordoba_weather_cache',
-    OPEN_METEO_FORECAST: 'https://api.open-meteo.com/v1/forecast',
-    GEOCODING_URL: 'https://geocoding-api.open-meteo.com/v1/search',
-    WINDY_BASE: 'https://embed.windy.com/embed2.html'
-  };
-
-  const $ = id => document.getElementById(id);
-
-  function sleep(ms) {
-    return new Promise(resolve => setTimeout(resolve, ms));
-  }
-
-  async function fetchWithRetry(url, options = {}, retries = CONFIG.MAX_RETRIES) {
-    let lastError;
-    for (let attempt = 0; attempt <= retries; attempt++) {
-      try {
-        const controller = new AbortController();
-        const timeout = setTimeout(() => controller.abort(), 12000);
-
-        const res = await fetch(url, {
-          ...options,
-          signal: controller.signal,
-          headers: { 'Accept': 'application/json', ...(options.headers || {}) }
-        });
-        clearTimeout(timeout);
-
-        if (!res.ok) throw new Error(`HTTP ${res.status}`);
-        return await res.json();
-      } catch (err) {
-        lastError = err;
-        if (attempt === retries) break;
-        const delay = CONFIG.BASE_DELAY * Math.pow(2, attempt) + Math.random() * 400;
-        await sleep(delay);
-      }
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0" />
+  <title>SIGA · Sistema Integrado de Gestión Atmosférica - Córdoba</title>
+  <link rel="preconnect" href="https://embed.windy.com" />
+  <style>
+    :root {
+      --bg: #0b1220;
+      --panel: #121a2b;
+      --border: #1e2a44;
+      --text: #e8eef9;
+      --muted: #8b9bb8;
+      --accent: #3b82f6;
+      --success: #22c55e;
+      --warning: #f59e0b;
+      --danger: #ef4444;
+      --radius: 14px;
+      --shadow: 0 8px 32px rgba(0,0,0,0.35);
     }
-    throw lastError;
-  }
 
-  // BÚSQUEDA DE LOCALIDADES EN CÓRDOBA
-  async function buscarLocalidad(query) {
-    const errorDiv = $('search-error');
-    errorDiv.style.display = 'none';
+    * { box-sizing: border-box; margin: 0; padding: 0; }
 
-    try {
-      // Forzamos la búsqueda acotada a Córdoba, Argentina para mayor precisión
-      const url = `${CONFIG.GEOCODING_URL}?name=${encodeURIComponent(query + " Córdoba")}&count=5&language=es&format=json`;
-      const data = await fetchWithRetry(url);
+    body {
+      font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      line-height: 1.5;
+    }
 
-      if (!data.results || data.results.length === 0) {
-        // Segundo intento general por si el usuario tipeó solo el nombre del pueblo/ciudad
-        const urlAlt = `${CONFIG.GEOCODING_URL}?name=${encodeURIComponent(query)}&count=5&language=es&format=json`;
-        const dataAlt = await fetchWithRetry(urlAlt);
+    .header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 1rem 1.5rem;
+      background: var(--panel);
+      border-bottom: 1px solid var(--border);
+      flex-wrap: wrap;
+      gap: 0.75rem;
+    }
+
+    .logo { display: flex; align-items: center; gap: 0.6rem; }
+    .logo-icon { font-size: 1.8rem; }
+    .logo h1 { font-size: 1.5rem; font-weight: 700; letter-spacing: -0.5px; }
+    .subtitle { color: var(--muted); font-size: 0.85rem; }
+
+    .status-bar { display: flex; align-items: center; gap: 1rem; font-size: 0.85rem; }
+    .status { font-weight: 600; }
+    .status.online { color: var(--success); }
+    .status.offline { color: var(--warning); }
+    .status.error { color: var(--danger); }
+
+    .dashboard {
+      display: grid;
+      grid-template-columns: 1fr 1.4fr;
+      gap: 1.25rem;
+      padding: 1.25rem;
+      max-width: 1400px;
+      margin: 0 auto;
+    }
+
+    @media (max-width: 900px) {
+      .dashboard { grid-template-columns: 1fr; }
+    }
+
+    .panel {
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      overflow: hidden;
+    }
+
+    .panel-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 0.9rem 1.2rem;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .panel-header h2 { font-size: 1.05rem; font-weight: 600; }
+
+    .badge {
+      background: var(--warning);
+      color: #111;
+      font-size: 0.7rem;
+      font-weight: 700;
+      padding: 0.25rem 0.55rem;
+      border-radius: 999px;
+      text-transform: uppercase;
+      letter-spacing: 0.3px;
+    }
+    .badge.hidden { display: none; }
+
+    .weather-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 0.8rem;
+      padding: 1.2rem;
+    }
+
+    @media (max-width: 600px) {
+      .weather-grid { grid-template-columns: repeat(2, 1fr); }
+    }
+
+    .metric {
+      background: rgba(255,255,255,0.03);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 0.9rem;
+      text-align: center;
+      transition: transform 0.2s ease;
+    }
+    .metric.primary { grid-column: span 2; }
+    @media (max-width: 600px) { .metric.primary { grid-column: span 2; } }
+
+    .metric .label { display: block; font-size: 0.75rem; color: var(--muted); margin-bottom: 0.3rem; }
+    .metric .value {
+      font-size: 1.6rem;
+      font-weight: 700;
+      letter-spacing: -0.5px;
+    }
+    .metric.primary .value { font-size: 2.4rem; color: var(--accent); }
+    .metric .sub { display: block; font-size: 0.8rem; color: var(--muted); margin-top: 0.2rem; }
+
+    .location-info {
+      padding: 0 1.2rem 1.2rem;
+      font-size: 0.85rem;
+      color: var(--muted);
+      display: flex;
+      justify-content: space-between;
+    }
+
+    .map-panel { display: flex; flex-direction: column; }
+    .map-container {
+      position: relative;
+      flex: 1;
+      min-height: 420px;
+      background: #0a0f1a;
+    }
+
+    #windy-iframe {
+      width: 100%;
+      height: 100%;
+      min-height: 420px;
+      border: none;
+      display: block;
+      image-rendering: -webkit-optimize-contrast;
+      image-rendering: crisp-edges;
+    }
+
+    .map-loading {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: rgba(11,18,32,0.85);
+      color: var(--muted);
+      font-size: 0.95rem;
+      z-index: 2;
+      transition: opacity 0.4s ease;
+    }
+    .map-loading.hidden { opacity: 0; pointer-events: none; }
+
+    .btn-reload {
+      background: transparent;
+      border: 1px solid var(--border);
+      color: var(--text);
+      width: 32px;
+      height: 32px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 1.1rem;
+      transition: background 0.2s;
+    }
+    .btn-reload:hover { background: rgba(255,255,255,0.08); }
+
+    .footer {
+      text-align: center;
+      padding: 1.5rem;
+      color: var(--muted);
+      font-size: 0.8rem;
+    }
+    .footer .small { font-size: 0.7rem; margin-top: 0.3rem; }
+
+    @keyframes pulse-update {
+      0% { opacity: 1; }
+      50% { opacity: 0.6; }
+      100% { opacity: 1; }
+    }
+    .updating .value { animation: pulse-update 0.8s ease; }
+  </style>
+</head>
+<body>
+  <header class="header">
+    <div class="logo">
+      <span class="logo-icon">🌤</span>
+      <h1>SIGA · Córdoba</h1>
+      <span class="subtitle">Sistema Integrado de Gestión Atmosférica</span>
+    </div>
+    <div class="status-bar">
+      <span id="connection-status" class="status online">● En línea</span>
+      <span id="last-update">Última actualización: --</span>
+    </div>
+  </header>
+
+  <main class="dashboard">
+    <!-- Panel de datos meteorológicos y Buscador -->
+    <section class="panel weather-panel">
+      <div class="panel-header">
+        <h2>Condiciones actuales</h2>
+        <span id="offline-badge" class="badge hidden">Datos temporales offline</span>
+      </div>
+
+      <!-- Buscador general para toda la Provincia de Córdoba -->
+      <div class="search-container" style="padding: 1.2rem 1.2rem 0 1.2rem;">
+        <div style="display: flex; gap: 8px;">
+          <input 
+            type="text" 
+            id="search-input" 
+            placeholder="Ingrese localidad (ej. Ascochinga, Río Cuarto, San Francisco)..." 
+            value="Córdoba"
+            style="flex: 1; padding: 10px; border-radius: 8px; border: 1px solid var(--border); background: var(--bg); color: var(--text); font-size: 0.95rem;"
+          />
+          <button 
+            id="search-btn"
+            style="padding: 10px 18px; border-radius: 8px; border: none; background: var(--accent); color: white; font-weight: 600; cursor: pointer;"
+          >Buscar</button>
+        </div>
+        <div id="search-error" style="color: var(--danger); font-size: 0.8rem; margin-top: 5px; display: none;"></div>
+      </div>
+
+      <div class="weather-grid" style="margin-top: 1rem;">
+        <div class="metric primary">
+          <span class="label">Temperatura</span>
+          <span id="temp" class="value">--°C</span>
+          <span id="feels-like" class="sub">Sensación: --°C</span>
+        </div>
+        <div class="metric">
+          <span class="label">Humedad</span>
+          <span id="humidity" class="value">--%</span>
+        </div>
+        <div class="metric">
+          <span class="label">Viento</span>
+          <span id="wind" class="value">-- km/h</span>
+        </div>
+        <div class="metric">
+          <span class="label">Presión</span>
+          <span id="pressure" class="value">-- hPa</span>
+        </div>
+        <div class="metric">
+          <span class="label">Precipitación</span>
+          <span id="precip" class="value">-- mm</span>
+        </div>
+        <div class="metric">
+          <span class="label">Nubosidad</span>
+          <span id="clouds" class="value">--%</span>
+        </div>
+      </div>
+
+      <div class="location-info">
+        <span id="location-name">Córdoba, Argentina</span>
+        <span id="coords">-31.42, -64.18</span>
+      </div>
+    </section>
+
+    <!-- Mapa Windy -->
+    <section class="panel map-panel">
+      <div class="panel-header">
+        <h2>Mapa satelital · Windy (Córdoba y región)</h2>
+        <button id="reload-map" class="btn-reload" title="Recargar mapa">↻</button>
+      </div>
+      <div class="map-container" id="map-container">
+        <div id="map-loading" class="map-loading">Cargando mapa de alta resolución…</div>
+        <iframe
+          id="windy-iframe"
+          title="Mapa satelital Windy"
+          loading="lazy"
+          allowfullscreen
+          referrerpolicy="no-referrer-when-downgrade"
+        ></iframe>
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <p>SIGA · Provincia de Córdoba · Datos: Open-Meteo + Windy · Actualización automática</p>
+    <p class="small">Cobertura integral de todas las localidades del norte, sur, este y oeste provincial</p>
+  </footer>
+
+  <script>
+    /**
+     * SIGA - Sistema Integrado de Gestión Atmosférica (Provincia de Córdoba)
+     * Buscador abierto para todas las localidades + Windy dinámico + Resiliencia
+     */
+    (function () {
+      'use strict';
+
+      const CONFIG = {
+        lat: -31.4201,
+        lon: -64.1888,
+        locationName: 'Córdoba Capital, Córdoba',
+        POLL_INTERVAL: 5 * 60 * 1000,
+        MAX_RETRIES: 4,
+        BASE_DELAY: 1200,
+        STORAGE_KEY: 'siga_cordoba_weather_cache',
+        OPEN_METEO_FORECAST: 'https://api.open-meteo.com/v1/forecast',
+        GEOCODING_URL: 'https://geocoding-api.open-meteo.com/v1/search',
+        WINDY_BASE: 'https://embed.windy.com/embed2.html'
+      };
+
+      const $ = id => document.getElementById(id);
+
+      function sleep(ms) {
+        return new Promise(resolve => setTimeout(resolve, ms));
+      }
+
+      async function fetchWithRetry(url, options = {}, retries = CONFIG.MAX_RETRIES) {
+        let lastError;
+        for (let attempt = 0; attempt <= retries; attempt++) {
+          try {
+            const controller = new AbortController();
+            const timeout = setTimeout(() => controller.abort(), 12000);
+
+            const res = await fetch(url, {
+              ...options,
+              signal: controller.signal,
+              headers: { 'Accept': 'application/json', ...(options.headers || {}) }
+            });
+            clearTimeout(timeout);
+
+            if (!res.ok) throw new Error(`HTTP ${res.status}`);
+            return await res.json();
+          } catch (err) {
+            lastError = err;
+            if (attempt === retries) break;
+            const delay = CONFIG.BASE_DELAY * Math.pow(2, attempt) + Math.random() * 400;
+            await sleep(delay);
+          }
+        }
+        throw lastError;
+      }
+
+      async function buscarLocalidad(query) {
+        const errorDiv = $('search-error');
+        errorDiv.style.display = 'none';
+
+        try {
+          const url = `${CONFIG.GEOCODING_URL}?name=${encodeURIComponent(query + " Córdoba")}&count=5&language=es&format=json`;
+          const data = await fetchWithRetry(url);
+
+          if (!data.results || data.results.length === 0) {
+            const urlAlt = `${CONFIG.GEOCODING_URL}?name=${encodeURIComponent(query)}&count=5&language=es&format=json`;
+            const dataAlt = await fetchWithRetry(urlAlt);
+            
+            const matchAr = dataAlt.results?.find(r => r.country === "Argentina");
+            if (matchAr) {
+              aplicarNuevaUbicacion(matchAr);
+              return;
+            }
+
+            errorDiv.textContent = `No se encontró "${query}". Intente con otra localidad de Córdoba.`;
+            errorDiv.style.display = 'block';
+            return;
+          }
+
+          aplicarNuevaUbicacion(data.results[0]);
+        } catch (err) {
+          errorDiv.textContent = 'Error al buscar la localidad. Verifique su conexión.';
+          errorDiv.style.display = 'block';
+        }
+      }
+
+      function aplicarNuevaUbicacion(ubicacion) {
+        CONFIG.lat = ubicacion.latitude;
+        CONFIG.lon = ubicacion.longitude;
+        CONFIG.locationName = `${ubicacion.name}, ${ubicacion.admin1 || 'Córdoba'}, Argentina`;
         
-        // Filtrar preferentemente resultados en Argentina/Córdoba si existen
-        const matchAr = dataAlt.results?.find(r => r.country === "Argentina");
-        if (matchAr) {
-          aplicarNuevaUbicacion(matchAr);
-          return;
+        updateWeather(true);
+        loadWindyMap();
+      }
+
+      function saveCache(data) {
+        try {
+          const payload = { data, timestamp: Date.now(), location: { lat: CONFIG.lat, lon: CONFIG.lon, name: CONFIG.locationName } };
+          localStorage.setItem(CONFIG.STORAGE_KEY, JSON.stringify(payload));
+        } catch (e) {}
+      }
+
+      function loadCache() {
+        try {
+          const raw = localStorage.getItem(CONFIG.STORAGE_KEY);
+          if (!raw) return null;
+          const parsed = JSON.parse(raw);
+          if (Date.now() - parsed.timestamp < 2 * 60 * 60 * 1000) return parsed;
+        } catch (e) {}
+        return null;
+      }
+
+      async function fetchWeatherData() {
+        const params = new URLSearchParams({
+          latitude: CONFIG.lat,
+          longitude: CONFIG.lon,
+          current: [
+            'temperature_2m', 'relative_humidity_2m', 'apparent_temperature',
+            'precipitation', 'cloud_cover', 'pressure_msl', 'wind_speed_10m'
+          ].join(','),
+          timezone: 'America/Argentina/Cordoba',
+          wind_speed_unit: 'kmh'
+        });
+
+        const json = await fetchWithRetry(`${CONFIG.OPEN_METEO_FORECAST}?${params}`);
+        if (!json.current) throw new Error('Respuesta inválida');
+
+        const c = json.current;
+        return {
+          temp: Math.round(c.temperature_2m * 10) / 10,
+          feelsLike: Math.round(c.apparent_temperature * 10) / 10,
+          humidity: Math.round(c.relative_humidity_2m),
+          wind: Math.round(c.wind_speed_10m),
+          pressure: Math.round(c.pressure_msl),
+          precip: Math.round((c.precipitation || 0) * 10) / 10,
+          clouds: Math.round(c.cloud_cover || 0),
+          updatedAt: new Date().toISOString()
+        };
+      }
+
+      function renderWeather(data, isOffline = false) {
+        const panel = document.querySelector('.weather-panel');
+        panel.classList.add('updating');
+
+        $('temp').textContent = `${data.temp}°C`;
+        $('feels-like').textContent = `Sensación: ${data.feelsLike}°C`;
+        $('humidity').textContent = `${data.humidity}%`;
+        $('wind').textContent = `${data.wind} km/h`;
+        $('pressure').textContent = `${data.pressure} hPa`;
+        $('precip').textContent = `${data.precip} mm`;
+        $('clouds').textContent = `${data.clouds}%`;
+
+        $('location-name').textContent = CONFIG.locationName;
+        $('coords').textContent = `${CONFIG.lat.toFixed(2)}, ${CONFIG.lon.toFixed(2)}`;
+
+        $('last-update').textContent = `Última actualización: ${new Date().toLocaleTimeString('es-AR')}`;
+
+        const badge = $('offline-badge');
+        const status = $('connection-status');
+
+        if (isOffline) {
+          badge.classList.remove('hidden');
+          status.textContent = '● Offline (caché)';
+          status.className = 'status offline';
+        } else {
+          badge.classList.add('hidden');
+          status.textContent = '● En línea';
+          status.className = 'status online';
         }
 
-        errorDiv.textContent = `No se encontró "${query}". Intente con otra localidad de Córdoba.`;
-        errorDiv.style.display = 'block';
-        return;
+        setTimeout(() => panel.classList.remove('updating'), 900);
       }
 
-      // Tomamos el primer resultado relevante
-      aplicarNuevaUbicacion(data.results[0]);
-    } catch (err) {
-      errorDiv.textContent = 'Error al buscar la localidad. Verifique su conexión.';
-      errorDiv.style.display = 'block';
-    }
-  }
+      let mapRetryCount = 0;
+      const MAX_MAP_RETRIES = 3;
 
-  function aplicarNuevaUbicacion(ubicacion) {
-    CONFIG.lat = ubicacion.latitude;
-    CONFIG.lon = ubicacion.longitude;
-    CONFIG.locationName = `${ubicacion.name}, ${ubicacion.admin1 || 'Córdoba'}, Argentina`;
-    
-    // Actualizar datos del clima y recargar el mapa centrado en la nueva localidad
-    updateWeather(true);
-    loadWindyMap();
-  }
+      function buildWindyUrl() {
+        const params = new URLSearchParams({
+          lat: CONFIG.lat,
+          lon: CONFIG.lon,
+          detailLat: CONFIG.lat,
+          detailLon: CONFIG.lon,
+          zoom: 8,
+          level: 'surface',
+          overlay: 'satellite',
+          product: 'ecmwf',
+          menu: '',
+          message: 'true',
+          marker: 'true',
+          calendar: 'now',
+          type: 'map',
+          location: 'coordinates',
+          detail: 'true',
+          metricWind: 'km/h',
+          metricTemp: '°C'
+        });
+        return `${CONFIG.WINDY_BASE}?${params.toString()}`;
+      }
 
-  // PERSISTENCIA CACHÉ
-  function saveCache(data) {
-    try {
-      const payload = { data, timestamp: Date.now(), location: { lat: CONFIG.lat, lon: CONFIG.lon, name: CONFIG.locationName } };
-      localStorage.setItem(CONFIG.STORAGE_KEY, JSON.stringify(payload));
-    } catch (e) {}
-  }
+      function loadWindyMap() {
+        const iframe = $('windy-iframe');
+        const loading = $('map-loading');
+        loading.classList.remove('hidden');
 
-  function loadCache() {
-    try {
-      const raw = localStorage.getItem(CONFIG.STORAGE_KEY);
-      if (!raw) return null;
-      const parsed = JSON.parse(raw);
-      if (Date.now() - parsed.timestamp < 2 * 60 * 60 * 1000) return parsed;
-    } catch (e) {}
-    return null;
-  }
+        iframe.src = buildWindyUrl();
 
-  // API METEOROLÓGICA OPEN-METEO
-  async function fetchWeatherData() {
-    const params = new URLSearchParams({
-      latitude: CONFIG.lat,
-      longitude: CONFIG.lon,
-      current: [
-        'temperature_2m', 'relative_humidity_2m', 'apparent_temperature',
-        'precipitation', 'cloud_cover', 'pressure_msl', 'wind_speed_10m'
-      ].join(','),
-      timezone: 'America/Argentina/Cordoba',
-      wind_speed_unit: 'kmh'
-    });
+        iframe.onload = () => {
+          loading.classList.add('hidden');
+          mapRetryCount = 0;
+        };
 
-    const json = await fetchWithRetry(`${CONFIG.OPEN_METEO_FORECAST}?${params}`);
-    if (!json.current) throw new Error('Respuesta inválida');
+        iframe.onerror = () => {
+          if (mapRetryCount < MAX_MAP_RETRIES) {
+            mapRetryCount++;
+            setTimeout(loadWindyMap, 1500 * mapRetryCount);
+          } else {
+            loading.textContent = 'No se pudo cargar el mapa.';
+          }
+        };
+      }
 
-    const c = json.current;
-    return {
-      temp: Math.round(c.temperature_2m * 10) / 10,
-      feelsLike: Math.round(c.apparent_temperature * 10) / 10,
-      humidity: Math.round(c.relative_humidity_2m),
-      wind: Math.round(c.wind_speed_10m),
-      pressure: Math.round(c.pressure_msl),
-      precip: Math.round((c.precipitation || 0) * 10) / 10,
-      clouds: Math.round(c.cloud_cover || 0),
-      updatedAt: new Date().toISOString()
-    };
-  }
+      async function updateWeather() {
+        try {
+          const data = await fetchWeatherData();
+          renderWeather(data, false);
+          saveCache(data);
+        } catch (err) {
+          const cached = loadCache();
+          if (cached && cached.data) {
+            renderWeather(cached.data, true);
+          } else {
+            renderWeather({ temp: '--', feelsLike: '--', humidity: '--', wind: '--', pressure: '--', precip: '--', clouds: '--' }, true);
+            $('connection-status').textContent = '● Error de conexión';
+            $('connection-status').className = 'status error';
+          }
+        }
+      }
 
-  function renderWeather(data, isOffline = false) {
-    const panel = document.querySelector('.weather-panel');
-    panel.classList.add('updating');
+      function init() {
+        const cached = loadCache();
+        if (cached && cached.data) {
+          renderWeather(cached.data, true);
+        }
 
-    $('temp').textContent = `${data.temp}°C`;
-    $('feels-like').textContent = `Sensación: ${data.feelsLike}°C`;
-    $('humidity').textContent = `${data.humidity}%`;
-    $('wind').textContent = `${data.wind} km/h`;
-    $('pressure').textContent = `${data.pressure} hPa`;
-    $('precip').textContent = `${data.precip} mm`;
-    $('clouds').textContent = `${data.clouds}%`;
+        loadWindyMap();
+        updateWeather();
+        setInterval(updateWeather, CONFIG.POLL_INTERVAL);
 
-    $('location-name').textContent = CONFIG.locationName;
-    $('coords').textContent = `${CONFIG.lat.toFixed(2)}, ${CONFIG.lon.toFixed(2)}`;
+        const searchBtn = $('search-btn');
+        const searchInput = $('search-input');
 
-    $('last-update').textContent = `Última actualización: ${new Date().toLocaleTimeString('es-AR')}`;
+        searchBtn.addEventListener('click', () => {
+          const query = searchInput.value.trim();
+          if (query) buscarLocalidad(query);
+        });
 
-    const badge = $('offline-badge');
-    const status = $('connection-status');
+        searchInput.addEventListener('keypress', (e) => {
+          if (e.key === 'Enter') {
+            const query = searchInput.value.trim();
+            if (query) buscarLocalidad(query);
+          }
+        });
 
-    if (isOffline) {
-      badge.classList.remove('hidden');
-      status.textContent = '● Offline (caché)';
-      status.className = 'status offline';
-    } else {
-      badge.classList.add('hidden');
-      status.textContent = '● En línea';
-      status.className = 'status online';
-    }
+        $('reload-map').addEventListener('click', () => {
+          mapRetryCount = 0;
+          loadWindyMap();
+        });
+      }
 
-    setTimeout(() => panel.classList.remove('updating'), 900);
-  }
-
-  // MAPA WINDY DINÁMICO
-  let mapRetryCount = 0;
-  const MAX_MAP_RETRIES = 3;
-
-  function buildWindyUrl() {
-    const params = new URLSearchParams({
-      lat: CONFIG.lat,
-      lon: CONFIG.lon,
-      detailLat: CONFIG.lat,
-      detailLon: CONFIG.lon,
-      zoom: 8,
-      level: 'surface',
-      overlay: 'satellite',
-      product: 'ecmwf',
-      menu: '',
-      message: 'true',
-      marker: 'true',
-      calendar: 'now',
-      type: 'map',
-      location: 'coordinates',
-      detail: 'true',
-      metricWind: 'km/h',
-      metricTemp: '°C'
-    });
-    return `${CONFIG.WINDY_BASE}?${params.toString()}`;
-  }
-
-  function loadWindyMap() {
-    const iframe = $('windy-iframe');
-    const loading = $('map-loading');
-    loading.classList.remove('hidden');
-
-    iframe.src = buildWindyUrl();
-
-    iframe.onload = () => {
-      loading.classList.add('hidden');
-      mapRetryCount = 0;
-    };
-
-    iframe.onerror = () => {
-      if (mapRetryCount < MAX_MAP_RETRIES) {
-        mapRetryCount++;
-        setTimeout(loadWindyMap, 1500 * mapRetryCount);
+      if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', init);
       } else {
-        loading.textContent = 'No se pudo cargar el mapa.';
+        init();
       }
-    };
-  }
-
-  async function updateWeather() {
-    try {
-      const data = await fetchWeatherData();
-      renderWeather(data, false);
-      saveCache(data);
-    } catch (err) {
-      const cached = loadCache();
-      if (cached && cached.data) {
-        renderWeather(cached.data, true);
-      } else {
-        renderWeather({ temp: '--', feelsLike: '--', humidity: '--', wind: '--', pressure: '--', precip: '--', clouds: '--' }, true);
-        $('connection-status').textContent = '● Error de conexión';
-        $('connection-status').className = 'status error';
-      }
-    }
-  }
-
-  function init() {
-    const cached = loadCache();
-    if (cached && cached.data) {
-      renderWeather(cached.data, true);
-    }
-
-    loadWindyMap();
-    updateWeather();
-    setInterval(updateWeather, CONFIG.POLL_INTERVAL);
-
-    // Eventos del Buscador
-    const searchBtn = $('search-btn');
-    const searchInput = $('search-input');
-
-    searchBtn.addEventListener('click', () => {
-      const query = searchInput.value.trim();
-      if (query) buscarLocalidad(query);
-    });
-
-    searchInput.addEventListener('keypress', (e) => {
-      if (e.key === 'Enter') {
-        const query = searchInput.value.trim();
-        if (query) buscarLocalidad(query);
-      }
-    });
-
-    $('reload-map').addEventListener('click', () => {
-      mapRetryCount = 0;
-      loadWindyMap();
-    });
-  }
-
-  if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', init);
-  } else {
-    init();
-  }
-})();
+    })();
+  </script>
+</body>
+</html>

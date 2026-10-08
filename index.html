@@ -1,48 +1,18 @@
-/* Configuración de Temas de Color - SIGA */
+// Script para alternar entre el Modo Dior (Manteca / Verde Bosque) y el Modo Tecnológico (Azul / Verde Flúor)
+document.addEventListener('DOMContentLoaded', () => {
+  const toggleBtn = document.getElementById('dior-mode-btn'); // Asegúrate de que este sea el ID de tu botón en el HTML
 
-:root {
-  /* Modo Dior / Bosque (Por defecto): Fondo claro color manteca para relajar la vista */
-  --bg-primary: #FDFBF7; /* Tono manteca claro */
-  --bg-secondary: #F4EEDB; /* Manteca un poco más profundo para tarjetas/pestañas */
-  --text-main: #1b3b22; /* Texto y detalles en verde bosque */
-  --accent-color: #2e6f40; /* Verde bosque para botones y bordes */
-  --border-color: #2e6f40;
-}
-
-/* Modo Tecnológico (Activado al hacer clic en el botón) */
-body.tech-mode {
-  --bg-primary: #0b1329; /* Azul tecnológico oscuro de fondo */
-  --bg-secondary: #050814;
-  --text-main: #ffffff; /* Blanco para lectura general */
-  --accent-color: #00f0ff;
-  --fluor-green: #39ff14; /* Verde flúor para resaltar */
-  --border-color: #00f0ff;
-}
-
-body {
-  background-color: var(--bg-primary);
-  color: var(--text-main);
-  font-family: sans-serif;
-  transition: background-color 0.3s ease, color 0.3s ease;
-}
-
-.container, .card, .tab {
-  background-color: var(--bg-secondary);
-  border: 2px solid var(--border-color);
-  padding: 20px;
-  border-radius: 8px;
-}
-
-/* Clases específicas para el modo tecnológico cuando esté activo */
-body.tech-mode .fluor-text {
-  color: var(--fluor-green);
-}
-
-.btn-mode {
-  background-color: var(--accent-color);
-  color: var(--text-main);
-  border: 2px solid var(--border-color);
-  padding: 10px 15px;
-  cursor: pointer;
-  font-weight: bold;
-}
+  if (toggleBtn) {
+    toggleBtn.addEventListener('click', (e) => {
+      e.preventDefault();
+      document.body.classList.toggle('tech-mode');
+      
+      // Opcional: Cambiar el texto del botón según el modo activo
+      if (document.body.classList.contains('tech-mode')) {
+        toggleBtn.textContent = "Cambiar a Modo Dior";
+      } else {
+        toggleBtn.textContent = "Cambiar a Modo Tecnológico";
+      }
+    });
+  }
+});

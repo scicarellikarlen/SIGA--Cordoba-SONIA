@@ -4,22 +4,22 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>SIGA - Sistema Integrado de Gestión Atmosférica</title>
-    <!-- Leaflet CSS para Mapas -->
-    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
     <style>
         :root {
             --bg-color: #0f172a;
             --text-color: #ffffff;
             --accent-color: #22c55e;
-            --card-bg: rgba(30, 41, 59, 0.75);
+            --card-bg: rgba(30, 41, 59, 0.85);
             --border-color: #334155;
+            --tab-bg: rgba(15, 23, 42, 0.95);
         }
         body.theme-dior {
             --bg-color: #f5f2eb;
             --text-color: #1c3b2b;
             --accent-color: #1c3b2b;
-            --card-bg: rgba(255, 255, 255, 0.9);
+            --card-bg: rgba(255, 255, 255, 0.92);
             --border-color: #d1c7bd;
+            --tab-bg: rgba(245, 242, 235, 0.98);
         }
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
@@ -72,12 +72,13 @@
             padding: 12px;
             border-radius: 8px;
             margin-bottom: 10px;
+            font-size: 0.9rem;
         }
         .alert-box.hail {
             background: rgba(245, 158, 11, 0.2);
             border: 1px solid #f59e0b;
         }
-        .emergency-list, .forecast-list { list-style: none; padding: 0; margin: 0; }
+        .emergency-list, .forecast-list, .seismic-list { list-style: none; padding: 0; margin: 0; }
         .emergency-list li {
             padding: 6px 0;
             border-bottom: 1px solid var(--border-color);
@@ -86,12 +87,18 @@
             justify-content: space-between;
         }
         .forecast-list li {
-            padding: 8px 0;
+            padding: 9px 0;
             border-bottom: 1px solid var(--border-color);
             display: flex;
             justify-content: space-between;
+            font-size: 0.95rem;
         }
-        input, select {
+        .seismic-list li {
+            padding: 8px 0;
+            border-bottom: 1px solid var(--border-color);
+            font-size: 0.88rem;
+        }
+        input {
             width: 100%;
             padding: 10px;
             margin: 8px 0;
@@ -112,9 +119,45 @@
             width: 100%;
             margin-top: 5px;
         }
-        .map-container { height: 300px; border-radius: 8px; margin-top: 10px; width: 100%; }
-        .rain-table { width: 100%; border-collapse: collapse; margin-top: 10px; font-size: 0.9rem; }
-        .rain-table th, .rain-table td { border: 1px solid var(--border-color); padding: 8px; text-align: left; }
+        .rain-table { width: 100%; border-collapse: collapse; margin-top: 10px; font-size: 0.88rem; }
+        .rain-table th, .rain-table td { border: 1px solid var(--border-color); padding: 7px; text-align: left; }
+
+        /* Lámina desplegable / Solapas para Mapas Dinámicos en Movimiento */
+        .drawer-container { margin-top: 12px; }
+        .drawer-tabs { display: flex; gap: 6px; margin-bottom: 10px; }
+        .tab-btn {
+            flex: 1;
+            background: rgba(255, 255, 255, 0.08);
+            border: 1px solid var(--border-color);
+            color: inherit;
+            padding: 8px 6px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.8rem;
+            font-weight: bold;
+            text-align: center;
+            transition: all 0.2s;
+        }
+        .tab-btn.active {
+            background: var(--accent-color);
+            color: var(--bg-color);
+            border-color: var(--accent-color);
+        }
+        .drawer-panel {
+            display: none;
+            background: var(--tab-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 10px;
+            backdrop-filter: blur(12px);
+        }
+        .drawer-panel.active { display: block; }
+        .map-frame {
+            width: 100%;
+            height: 360px;
+            border: none;
+            border-radius: 6px;
+        }
     </style>
 </head>
 <body>
@@ -133,7 +176,7 @@
     <div class="grid">
         <div class="card">
             <h3>Condiciones Actuales y GPS</h3>
-            <div id="gps-coords">Ubicación GPS: Detectando posición...</div>
+            <div id="gps-coords">Ubicación GPS: Ascochinga, Córdoba (Zona Activa)</div>
             <div style="font-size: 2.3rem; font-weight: bold; margin: 12px 0; color: var(--accent-color);">22°C - Nublado</div>
             <div style="font-size: 0.95rem; line-height: 1.6;">
                 Humedad: 58% | Viento: 14 km/h SE<br>
@@ -153,7 +196,7 @@
                 <span>Posibilidad de caída de granizo aislado en áreas de tormentas severas.</span>
             </div>
             <button class="action-btn" onclick="shareWhatsApp()">Compartir Alerta por WhatsApp</button>
-            <div style="margin-top: 12px;">
+            <div style="margin-top: 10px;">
                 <label style="font-size: 0.85rem;">Registrar celular para alertas de campo:</label>
                 <input type="tel" id="user-phone" placeholder="Ej: +549351...">
                 <button class="action-btn" onclick="savePhone()">Guardar Teléfono</button>
@@ -161,122 +204,115 @@
         </div>
     </div>
 
-    <!-- Fila 2: Pronóstico 7 Días (SMN + Weather Channel) y Mapa Satelital de Tormentas -->
+    <!-- Fila 2: Pronóstico 7 Días & Mapas Dinámicos en Movimiento (Windy) -->
     <div class="grid">
         <div class="card">
-            <h3>📅 Pronóstico Cruzado (SMN & Weather Channel)</h3>
+            <h3>📅 Pronóstico Cruzado a 7 Días (SMN & Weather Channel)</h3>
             <ul class="forecast-list">
-                <li><span>Jueves 8:</span> <b>24° / 12°</b> - Parcialmente nublado</li>
-                <li><span>Viernes 9:</span> <b>26° / 14°</b> - Soleado, Viento Norte</li>
-                <li><span>Sábado 10:</span> <b>21° / 10°</b> - Tormentas / <b>Riesgo Granizo</b></li>
-                <li><span>Domingo 11:</span> <b>19° / 8°</b> - Despejado / Estable</li>
-                <li><span>Lunes 12:</span> <b>23° / 11°</b> - Nubosidad variable</li>
-                <li><span>Martes 13:</span> <b>25° / 13°</b> - Ingreso frente húmedo</li>
-                <li><span>Miércoles 14:</span> <b>22° / 12°</b> - Inestable</li>
+                <li><span>Jueves 8 Oct:</span> <b>24° / 12°</b> - Parcialmente nublado</li>
+                <li><span>Viernes 9 Oct:</span> <b>26° / 14°</b> - Soleado, Viento Norte fuerte</li>
+                <li><span>Sábado 10 Oct:</span> <b>21° / 10°</b> - Tormentas / <b>Riesgo Granizo</b></li>
+                <li><span>Domingo 11 Oct:</span> <b>19° / 8°</b> - Despejado / Estable</li>
+                <li><span>Lunes 12 Oct:</span> <b>23° / 11°</b> - Nubosidad variable</li>
+                <li><span>Martes 13 Oct:</span> <b>25° / 13°</b> - Ingreso frente húmedo</li>
+                <li><span>Miércoles 14 Oct:</span> <b>22° / 12°</b> - Inestable / Lluvias aisladas</li>
             </ul>
         </div>
 
         <div class="card">
-            <h3>🌪️ Mapa Satelital de Tormentas & Vientos (Windy)</h3>
-            <div style="font-size: 0.85rem; opacity: 0.9; margin-bottom: 5px;">Seguimiento de frentes desde países limítrofes hacia Córdoba:</div>
-            <div id="map" class="map-container"></div>
+            <h3>🗺️ Monitoreo Satelital en Movimiento (Windy)</h3>
+            <div style="font-size: 0.85rem; opacity: 0.9; margin-bottom: 8px;">Seleccione la capa para ver el radar animado en tiempo real:</div>
+            
+            <!-- Solapas de la lámina transparente -->
+            <div class="drawer-container">
+                <div class="drawer-tabs">
+                    <button class="tab-btn active" onclick="switchTab(event, 'storm-panel')">⛈️ Tormentas & Lluvias</button>
+                    <button class="tab-btn" onclick="switchTab(event, 'wind-panel')">💨 Dirección de Vientos</button>
+                    <button class="tab-btn" onclick="switchTab(event, 'fire-panel')">🔥 Zonas Calientes</button>
+                </div>
+
+                <!-- Panel 1: Tormentas y Lluvias (Dinámico) -->
+                <div id="storm-panel" class="drawer-panel active">
+                    <iframe class="map-frame" src="https://embed.windy.com/embed2.html?lat=-31.060&lon=-64.290&zoom=7&level=surface&overlay=rain&menu=&message=&marker=&calendar=now&pressure=&type=map&location=coordinates&detail=&metricWind=km/h&metricTemp=%C2%B0C&radarRange=-1"></iframe>
+                </div>
+
+                <!-- Panel 2: Vientos y Ráfagas (Dinámico) -->
+                <div id="wind-panel" class="drawer-panel">
+                    <iframe class="map-frame" src="https://embed.windy.com/embed2.html?lat=-31.060&lon=-64.290&zoom=7&level=surface&overlay=wind&menu=&message=&marker=&calendar=now&pressure=&type=map&location=coordinates&detail=&metricWind=km/h&metricTemp=%C2%B0C&radarRange=-1"></iframe>
+                </div>
+
+                <!-- Panel 3: Focos de Calor / Zonas Calientes (Dinámico) -->
+                <div id="fire-panel" class="drawer-panel">
+                    <iframe class="map-frame" src="https://embed.windy.com/embed2.html?lat=-31.060&lon=-64.290&zoom=7&level=surface&overlay=cams&menu=&message=&marker=&calendar=now&pressure=&type=map&location=coordinates&detail=&metricWind=km/h&metricTemp=%C2%B0C&radarRange=-1"></iframe>
+                </div>
+            </div>
         </div>
     </div>
 
-    <!-- Fila 3: Lluvias y Puntos Calientes (Incendios) -->
+    <!-- Fila 3: Sismos, Lluvias por Localidad y Teléfonos de Emergencia Oficiales -->
     <div class="grid">
         <div class="card">
-            <h3>🌧️ Registro e Histórico de Lluvias (Campo)</h3>
-            <div style="margin-bottom: 8px;">Lluvia caída hoy: <b>4.5 mm</b> | Acumulado mes: <b>42.0 mm</b></div>
+            <h3>🌍 Registro Sísmico (INPRES / Zona Serrana)</h3>
+            <div style="font-size: 0.85rem; opacity: 0.9; margin-bottom: 8px;">Últimos eventos registrados en la región de sierras:</div>
+            <ul class="seismic-list">
+                <li>📍 <b>Afueras de La Falda (Noreste):</b> Mag 3.2 | Prof: 12 km</li>
+                <li>📍 <b>Zona de Montaña / La Cumbre:</b> Mag 2.8 | Prof: 10 km</li>
+                <li>📍 <b>Noreste de Ascochinga (Sierras Chicas):</b> Mag 3.0 | Prof: 15 km</li>
+                <li>📍 <b>Área Deán Funes / Norte:</b> Mag 4.0 | Prof: 11 km</li>
+            </ul>
+        </div>
+
+        <div class="card">
+            <h3>🌧️ Registro Pluviométrico por Localidad (Octubre)</h3>
+            <div style="font-size: 0.85rem; opacity: 0.9; margin-bottom: 4px;">Acumulado parcial del mes en curso:</div>
             <table class="rain-table">
-                <tr><th>Mes</th><th>Acumulado Zonal</th></tr>
-                <tr><td>Septiembre 2026</td><td>35.0 mm</td></tr>
-                <tr><td>Agosto 2026</td><td>12.5 mm</td></tr>
-                <tr><td>Julio 2026</td><td>5.0 mm</td></tr>
-                <tr><td>Junio 2026</td><td>18.0 mm</td></tr>
+                <tr><th>Localidad / Zona</th><th>Acumulado (Oct)</th></tr>
+                <tr><td>Ascochinga (Noreste / Estancia)</td><td><b>4.5 mm</b></td></tr>
+                <tr><td>La Cumbre</td><td><b>6.0 mm</b></td></tr>
+                <tr><td>La Falda (Afueras)</td><td><b>3.0 mm</b></td></tr>
+                <tr><td>Jesús María / Colonia Caroya</td><td><b>8.5 mm</b></td></tr>
+                <tr><td>Río Ceballos / Unquillo</td><td><b>5.2 mm</b></td></tr>
             </table>
         </div>
-
-        <div class="card">
-            <h3>🔥 Puntos Calientes & Amenaza de Incendios</h3>
-            <div style="font-size: 0.9rem; margin-bottom: 8px;">Monitoreo activo de focos de calor detectados por satélite en la región.</div>
-            <div id="fire-map" class="map-container"></div>
-        </div>
     </div>
 
-    <!-- Fila 4: Teléfonos de Emergencia Oficiales Córdoba -->
+    <!-- Fila 4: Teléfonos de Emergencia Oficiales -->
     <div class="card" style="margin-bottom: 20px;">
-        <h3>📞 Teléfonos de Emergencia & Servicios Oficiales (Córdoba)</h3>
-        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 15px;">
-            <ul class="emergency-list">
-                <li><span>Emergencias / Policial:</span> <b>911</b></li>
-                <li><span>Policía de Córdoba:</span> <b>101</b></li>
-                <li><span>Bomberos:</span> <b>100</b></li>
-                <li><span>Defensa Civil Provincial:</span> <b>103 / 105</b></li>
-                <li><span>Defensa Civil Municipal:</span> <b>103</b></li>
-            </ul>
-            <ul class="emergency-list">
-                <li><span>Manejo del Fuego:</span> <b>0800-888-3834</b></li>
-                <li><span>Denuncias Policía Ambiental:</span> <b>0800-777-0220</b></li>
-                <li><span>EPEC (Guardia Eléctrica):</span> <b>0800-777-0000</b></li>
-                <li><span>Emergencias Médicas:</span> <b>107</b></li>
-                <li><span>Maltrato Infantil:</span> <b>102</b></li>
-            </ul>
-            <ul class="emergency-list">
-                <li><span>Asistencia al Suicida:</span> <b>135</b></li>
-                <li><span>Violencia de Género:</span> <b>144</b></li>
-                <li><span>Trata de Personas:</span> <b>145</b></li>
-                <li><span>Anses:</span> <b>130</b></li>
-                <li><span>Primer Contacto:</span> <b>108</b></li>
-            </ul>
-        </div>
+        <h3>📞 Teléfonos de Emergencia Oficiales (Córdoba)</h3>
+        <ul class="emergency-list" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 10px; list-style: none; padding: 0;">
+            <li><span>Emergencias / Policial:</span> <b>911</b></li>
+            <li><span>Policía de Córdoba:</span> <b>101</b></li>
+            <li><span>Bomberos:</span> <b>100</b></li>
+            <li><span>Defensa Civil Provincial:</span> <b>103 / 105</b></li>
+            <li><span>Manejo del Fuego:</span> <b>0800-888-3834</b></li>
+            <li><span>Policía Ambiental:</span> <b>0800-777-0220</b></li>
+            <li><span>EPEC (Guardia Eléctrica):</span> <b>0800-777-0000</b></li>
+            <li><span>Emergencias Médicas:</span> <b>107</b></li>
+            <li><span>Violencia de Género:</span> <b>144</b></li>
+        </ul>
     </div>
 </div>
 
-<!-- Leaflet JS -->
-<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <script>
-    const cordobaCoords = [-31.06, -64.29];
-
-    if (navigator.geolocation) {
-        navigator.geolocation.getCurrentPosition(position => {
-            const lat = position.coords.latitude;
-            const lon = position.coords.longitude;
-            document.getElementById('gps-coords').innerText = `Ubicación GPS: Lat ${lat.toFixed(4)}, Lon ${lon.toFixed(4)}`;
-            initMaps(lat, lon);
-        }, () => {
-            document.getElementById('gps-coords').innerText = `Ubicación GPS: Ascochinga, Córdoba`;
-            initMaps(cordobaCoords[0], cordobaCoords[1]);
-        });
-    } else {
-        initMaps(cordobaCoords[0], cordobaCoords[1]);
-    }
-
-    function initMaps(lat, lon) {
-        const map = L.map('map').setView([lat, lon], 6);
-        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-            attribution: 'SIGA & OpenStreetMap'
-        }).addTo(map);
-        L.marker([lat, lon]).addTo(map).bindPopup('Tu posición (SIGA)');
-
-        const fireMap = L.map('fire-map').setView([lat, lon], 7);
-        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(fireMap);
-        L.circle([lat + 0.1, lon + 0.15], {
-            color: 'red',
-            fillColor: '#f03',
-            fillOpacity: 0.5,
-            radius: 8000
-        }).addTo(fireMap).bindPopup('Alerta: Foco térmico / Calor extremo detectado');
-    }
-
     function toggleTheme(event) {
         document.body.classList.toggle('theme-dior');
         const isDior = document.body.classList.contains('theme-dior');
         event.target.innerText = isDior ? "Cambiar a Estilo Azul Clásico" : "Cambiar a Estilo Dior";
     }
 
+    function switchTab(event, panelId) {
+        document.querySelectorAll('.drawer-panel').forEach(panel => {
+            panel.classList.remove('active');
+        });
+        document.querySelectorAll('.tab-btn').forEach(btn => {
+            btn.classList.remove('active');
+        });
+        document.getElementById(panelId).classList.add('active');
+        event.currentTarget.classList.add('active');
+    }
+
     function shareWhatsApp() {
-        const text = encodeURIComponent("🚨 ALERTA RURAL SIGA (Córdoba): Advertencia por tormentas severas, riesgo de granizo e incendios activos en la región. Máxima precaución.");
+        const text = encodeURIComponent("🚨 ALERTA RURAL SIGA (Córdoba): Advertencia por tormentas severas, riesgo de granizo, sismos e incendios activos en la región. Máxima precaución.");
         window.open(`https://api.whatsapp.com/send?text=${text}`, '_blank');
     }
 

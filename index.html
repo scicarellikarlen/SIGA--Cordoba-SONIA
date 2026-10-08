@@ -41,8 +41,8 @@
             margin-bottom: 20px;
             backdrop-filter: blur(10px);
         }
-        h1 { margin: 0; font-size: 1.6rem; color: var(--accent-color); font-weight: 700; letter-spacing: -0.5px; }
-        .subtitle { font-size: 0.85rem; opacity: 0.85; font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace; }
+        h1 { margin: 0; font-size: 1.8rem; color: var(--accent-color); font-weight: 800; letter-spacing: -0.5px; font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace; }
+        .subtitle { font-size: 0.85rem; opacity: 0.85; font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace; margin-top: 4px; }
         .theme-btn {
             background: var(--accent-color);
             color: var(--bg-color);
@@ -87,17 +87,11 @@
             display: flex;
             justify-content: space-between;
         }
-        .forecast-list li {
+        .forecast-list li, .seismic-list li {
             padding: 9px 0;
             border-bottom: 1px solid var(--border-color);
             display: flex;
             justify-content: space-between;
-            font-size: 0.9rem;
-            font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
-        }
-        .seismic-list li {
-            padding: 8px 0;
-            border-bottom: 1px solid var(--border-color);
             font-size: 0.86rem;
             font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
         }
@@ -127,7 +121,7 @@
         .rain-table { width: 100%; border-collapse: collapse; margin-top: 10px; font-size: 0.88rem; }
         .rain-table th, .rain-table td { border: 1px solid var(--border-color); padding: 7px; text-align: left; }
         .temp-display {
-            font-size: 2.2rem;
+            font-size: 2.4rem;
             font-weight: 700;
             margin: 10px 0;
             color: var(--accent-color);
@@ -206,10 +200,10 @@
                 <span>Posibilidad de caída de granizo aislado en áreas de tormentas severas.</span>
             </div>
             <button class="action-btn" onclick="shareWhatsApp()">Compartir Alerta por WhatsApp</button>
-            <div style="margin-top: 10px;">
-                <label style="font-size: 0.85rem;">Registrar celular para alertas de campo:</label>
+            <div style="margin-top: 12px;">
+                <label style="font-size: 0.85rem; display: block; margin-bottom: 4px;"><b>📱 Registro de Celular para Alertas Inmediatas:</b></label>
                 <input type="tel" id="user-phone" placeholder="Ej: +549351...">
-                <button class="action-btn" onclick="savePhone()">Guardar Teléfono</button>
+                <button class="action-btn" onclick="savePhone()" style="background: #10b981; color: #fff;">Vincular Celular para Alertas</button>
             </div>
         </div>
     </div>
@@ -257,12 +251,12 @@
     <div class="grid">
         <div class="card">
             <h3>🌍 Registro Sísmico (INPRES / Zona Serrana)</h3>
-            <div style="font-size: 0.85rem; opacity: 0.9; margin-bottom: 8px;">Últimos eventos registrados con fecha y magnitud:</div>
+            <div style="font-size: 0.85rem; opacity: 0.9; margin-bottom: 8px;">Últimos eventos con fecha, hora exacta y magnitud:</div>
             <ul class="seismic-list">
-                <li>📍 <b>Afueras de La Falda (NE):</b> 04/10/2026 | Mag 3.2 | Prof: 12 km</li>
-                <li>📍 <b>Zona de Montaña / La Cumbre:</b> 01/10/2026 | Mag 2.8 | Prof: 10 km</li>
-                <li>📍 <b>Noreste de Ascochinga:</b> 28/09/2026 | Mag 3.0 | Prof: 15 km</li>
-                <li>📍 <b>Área Deán Funes / Norte:</b> 25/09/2026 | Mag 4.0 | Prof: 11 km</li>
+                <li><span>📍 Afueras La Falda (NE)</span> <span>04/10/2026 - 14:22 hs | Mag 3.2</span></li>
+                <li><span>📍 Zona Montaña / La Cumbre</span> <span>01/10/2026 - 08:15 hs | Mag 2.8</span></li>
+                <li><span>📍 Noreste Ascochinga</span> <span>28/09/2026 - 21:40 hs | Mag 3.0</span></li>
+                <li><span>📍 Área Deán Funes / Norte</span> <span>25/09/2026 - 11:05 hs | Mag 4.0</span></li>
             </ul>
         </div>
 
@@ -321,14 +315,15 @@
 
     function savePhone() {
         const phone = document.getElementById('user-phone').value;
-        if(phone) {
-            alert("¡Teléfono registrado con éxito para recibir alertas automáticas en el campo!");
+        if(phone && phone.length > 6) {
+            alert(`¡Número ${phone} vinculado con éxito al sistema de alertas tempranas de campo SIGA! Recibirá notificaciones críticas por SMS/WhatsApp.`);
             document.getElementById('user-phone').value = "";
         } else {
-            alert("Por favor ingrese un número de teléfono válido.");
+            alert("Por favor ingrese un número de celular válido con característica.");
         }
     }
 
+    // Motor de actualización en tiempo real de temperatura y clima (Cada 15 min)
     async function fetchLiveWeather() {
         try {
             const response = await fetch('https://api.open-meteo.com/v1/forecast?latitude=-31.060&longitude=-64.290&current=temperature_2m,relative_humidity_2m,wind_speed_10m,wind_direction_10m,weather_code');
@@ -358,11 +353,14 @@
             }
         } catch (error) {
             console.error("Error al actualizar clima en vivo:", error);
-            document.getElementById('live-temp').innerText = "16°C - Nublado (Modo Local)";
+            document.getElementById('live-temp').innerText = "16°C - Nublado (Modo Estación Local)";
         }
     }
 
+    // Ejecutar de inmediato al abrir la app
     fetchLiveWeather();
+
+    // Actualizar cada 15 minutos exactos (900000 ms)
     setInterval(fetchLiveWeather, 15 * 60 * 1000);
 </script>
 

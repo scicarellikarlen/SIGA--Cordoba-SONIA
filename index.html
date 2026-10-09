@@ -4,58 +4,95 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>SIGA - Servicio Inteligente de Gestión y Alerta</title>
-    <!-- Tailwind CSS para diseño moderno y responsivo -->
+    <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- FontAwesome para iconografía profesional -->
+    <!-- FontAwesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        .glass-card {
-            background: rgba(255, 255, 255, 0.95);
-            backdrop-filter: blur(10px);
-            border: 1px solid rgba(226, 232, 240, 0.8);
+        /* Estilos base por defecto: Tema Manteca & Verde Bosque */
+        :root {
+            --bg-main: #FDFBF7; /* Manteca */
+            --card-bg: rgba(255, 255, 255, 0.95);
+            --text-main: #1A3C2A; /* Verde Bosque oscuro */
+            --accent-green: #2C5E3B; /* Verde Bosque */
+            --header-bg: #1A3C2A;
+            --border-color: rgba(44, 94, 59, 0.2);
         }
+
+        /* Tema Alternativo: Azul con Verde Inglés / Flúor */
+        body.theme-azul {
+            --bg-main: #0B132B; /* Azul profundo */
+            --card-bg: rgba(18, 30, 61, 0.95);
+            --text-main: #E2E8F0;
+            --accent-green: #00FF66; /* Verde Flúor / Inglés vibrante */
+            --header-bg: #070D1D;
+            --border-color: rgba(0, 255, 102, 0.3);
+        }
+
+        body {
+            background-color: var(--bg-main) !important;
+            color: var(--text-main) !important;
+        }
+
+        .glass-card {
+            background: var(--card-bg);
+            backdrop-filter: blur(10px);
+            border: 1px solid var(--border-color);
+        }
+
         @keyframes destello {
             0%, 100% { opacity: 0.2; transform: scale(0.8); }
-            50% { opacity: 1; transform: scale(1.2); filter: drop-shadow(0 0 8px rgba(59, 130, 246, 0.8)); }
+            50% { opacity: 1; transform: scale(1.2); filter: drop-shadow(0 0 8px currentColor); }
         }
         .estrella-fugaz {
             animation: destello 2s infinite ease-in-out;
         }
     </style>
 </head>
-<body class="bg-slate-100 text-slate-800 font-sans antialiased min-h-screen flex flex-col">
+<body class="font-sans antialiased min-h-screen flex flex-col transition-colors duration-300">
 
-    <!-- Header Institucional con el Logo Oficial y Destello -->
-    <header class="bg-slate-900 text-white shadow-md sticky top-0 z-50 border-b border-slate-800">
+    <!-- Header Institucional con Selector de Temas -->
+    <header class="shadow-md sticky top-0 z-50 border-b" style="background-color: var(--header-bg); border-color: var(--border-color);">
         <div class="max-w-7xl mx-auto px-4 py-3 flex flex-col md:flex-row justify-between items-center gap-4">
             
             <!-- Logo y Marca SIGA -->
             <div class="flex items-center space-x-3">
-                <div class="relative bg-slate-950 p-1.5 rounded-xl border border-slate-700 shadow-inner flex items-center justify-center">
-                    <div class="w-10 h-10 rounded-lg bg-gradient-to-br from-emerald-900 to-slate-900 flex items-center justify-center relative overflow-hidden border border-emerald-500/40">
-                        <i class="fa-solid fa-shield-halved text-emerald-400 text-lg"></i>
-                        <span class="absolute top-1 right-1 w-2 h-2 bg-blue-400 rounded-full estrella-fugaz"></span>
+                <div class="p-1.5 rounded-xl border shadow-inner flex items-center justify-center" style="background-color: var(--header-bg); border-color: var(--border-color);">
+                    <div class="w-10 h-10 rounded-lg flex items-center justify-center relative overflow-hidden border" style="background: linear-gradient(135deg, var(--accent-green), var(--header-bg)); border-color: var(--accent-green);">
+                        <i class="fa-solid fa-shield-halved text-lg" style="color: var(--accent-green);"></i>
+                        <span class="absolute top-1 right-1 w-2 h-2 rounded-full estrella-fugaz" style="background-color: var(--accent-green);"></span>
                     </div>
                 </div>
                 <div>
                     <div class="flex items-center gap-2">
-                        <h1 class="text-xl font-extrabold tracking-wider text-white">SIGA</h1>
-                        <span class="text-xs bg-blue-600/30 text-blue-300 border border-blue-500/30 px-2 py-0.5 rounded-full font-medium">En Vivo</span>
+                        <h1 class="text-xl font-extrabold tracking-wider" style="color: var(--text-main);">SIGA</h1>
+                        <span class="text-xs px-2 py-0.5 rounded-full font-medium border" style="background: rgba(44,94,59,0.2); color: var(--accent-green); border-color: var(--accent-green);">En Vivo</span>
                     </div>
-                    <p class="text-[11px] text-slate-400 font-medium uppercase tracking-wider">Servicio Inteligente de Gestión y Alerta</p>
+                    <p class="text-[11px] opacity-80 font-medium uppercase tracking-wider">Servicio Inteligente de Gestión y Alerta</p>
                 </div>
             </div>
 
-            <!-- Buscador Universal de Localidades de Córdoba -->
-            <div class="w-full md:w-96 flex gap-2">
+            <!-- Selector de Paleta de Colores (Estilo Manteca/Verde o Azul/Flúor) -->
+            <div class="flex items-center gap-2 bg-black/20 p-1.5 rounded-xl border" style="border-color: var(--border-color);">
+                <span class="text-xs font-semibold px-2" style="color: var(--text-main);">Tema:</span>
+                <button onclick="cambiarTema('manteca')" class="px-3 py-1 text-xs font-bold rounded-lg transition-all shadow bg-[#FDFBF7] text-[#1A3C2A] border border-[#2C5E3B]">
+                    🌿 Manteca & Verde
+                </button>
+                <button onclick="cambiarTema('azul')" class="px-3 py-1 text-xs font-bold rounded-lg transition-all shadow bg-[#0B132B] text-[#00FF66] border border-[#00FF66]">
+                    ⚡ Azul & Flúor
+                </button>
+            </div>
+
+            <!-- Buscador Universal -->
+            <div class="w-full md:w-80 flex gap-2">
                 <div class="relative flex-grow">
-                    <span class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none text-slate-400">
+                    <span class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none opacity-60">
                         <i class="fa-solid fa-magnifying-glass"></i>
                     </span>
-                    <input type="text" id="buscadorLocalidad" placeholder="Ej: Ascochinga, Cordoba, Jesus Maria..." 
-                           class="w-full pl-10 pr-4 py-2 bg-slate-800 text-sm text-white placeholder-slate-400 rounded-lg border border-slate-700 focus:outline-none focus:border-blue-500 transition-all shadow-inner">
+                    <input type="text" id="buscadorLocalidad" placeholder="Ej: Ascochinga, Cordoba..." 
+                           class="w-full pl-10 pr-4 py-2 text-sm rounded-lg border focus:outline-none transition-all shadow-inner bg-black/10 placeholder-current opacity-90" style="border-color: var(--border-color);">
                 </div>
-                <button onclick="ejecutarBusqueda()" class="bg-blue-600 hover:bg-blue-500 text-white px-4 py-2 rounded-lg text-sm font-semibold transition-all shadow">
+                <button onclick="ejecutarBusqueda()" class="px-3 py-2 rounded-lg text-sm font-semibold transition-all shadow" style="background-color: var(--accent-green); color: #fff;">
                     Buscar
                 </button>
             </div>
@@ -65,82 +102,67 @@
     <!-- Contenido Principal -->
     <main class="max-w-7xl mx-auto px-4 py-6 flex-grow space-y-6 w-full">
 
-        <!-- Banner de Eventos Astronómicos (Del Cielo al Cosmos) -->
-        <div class="bg-gradient-to-r from-indigo-950 via-slate-900 to-blue-950 text-indigo-200 px-4 py-3 rounded-xl shadow-md border border-indigo-500/30 flex items-center justify-between gap-4">
+        <!-- Banner Astronómico -->
+        <div class="glass-card px-4 py-3 rounded-xl shadow-md flex items-center justify-between gap-4">
             <div class="flex items-center space-x-3">
-                <div class="text-indigo-400 text-lg"><i class="fa-solid fa-meteor animate-pulse"></i></div>
+                <div class="text-lg" style="color: var(--accent-green);"><i class="fa-solid fa-meteor animate-pulse"></i></div>
                 <div>
-                    <span class="text-xs font-bold uppercase tracking-wider text-indigo-400 block">Reporte Astronómico y Espacial</span>
-                    <p class="text-xs italic text-indigo-100 mt-0.5">"Próxima actividad destacada: Pico de visibilidad de lluvia de estrellas y pasajes orbitales despejados sobre el territorio provincial este fin de semana."</p>
+                    <span class="text-xs font-bold uppercase tracking-wider block" style="color: var(--accent-green);">Reporte Astronómico y Espacial</span>
+                    <p class="text-xs italic mt-0.5 opacity-90">"Próxima actividad destacada: Pico de visibilidad de lluvia de estrellas y pasajes orbitales despejados sobre el territorio provincial este fin de semana."</p>
                 </div>
             </div>
         </div>
 
-        <!-- Barra de Ubicación Activa y Estado del Sistema -->
-        <div class="bg-blue-900 text-white p-4 rounded-xl shadow-md flex flex-col md:flex-row justify-between items-center gap-3">
+        <!-- Barra de Ubicación Activa -->
+        <div class="p-4 rounded-xl shadow-md flex flex-col md:flex-row justify-between items-center gap-3" style="background-color: var(--accent-green); color: #fff;">
             <div class="flex items-center space-x-2">
-                <i class="fa-solid fa-location-dot text-blue-300 text-lg"></i>
+                <i class="fa-solid fa-location-dot text-lg"></i>
                 <span class="text-sm font-medium">Ubicación activa:</span>
-                <span id="labelUbicacion" class="font-bold text-blue-200 text-base bg-blue-800 px-3 py-0.5 rounded-md border border-blue-700">ASCOCHINGA (Córdoba)</span>
+                <span id="labelUbicacion" class="font-bold text-base bg-black/20 px-3 py-0.5 rounded-md border border-white/20">ASCOCHINGA (Córdoba)</span>
             </div>
-            <div class="flex items-center space-x-4 text-xs text-blue-200">
-                <span><i class="fa-regular fa-clock mr-1"></i> Actualización: <strong id="timestampActualizacion" class="text-white">--:--</strong></span>
-                <button onclick="forzarActualizacion()" class="bg-blue-700 hover:bg-blue-600 text-white px-3 py-1.5 rounded-lg transition-all font-medium shadow flex items-center gap-1.5">
+            <div class="flex items-center space-x-4 text-xs">
+                <span><i class="fa-regular fa-clock mr-1"></i> Actualización: <strong id="timestampActualizacion">--:--</strong></span>
+                <button onclick="forzarActualizacion()" class="bg-black/30 hover:bg-black/40 text-white px-3 py-1.5 rounded-lg transition-all font-medium shadow flex items-center gap-1.5">
                     <i class="fa-solid fa-rotate-right"></i> Sincronizar
                 </button>
             </div>
         </div>
 
-        <!-- Alertas Activas -->
-        <div id="contenedorAlertas" class="bg-amber-50 border-l-4 border-amber-500 p-4 rounded-r-xl shadow-sm flex items-start justify-between gap-4">
-            <div class="flex items-start space-x-3">
-                <div class="text-amber-500 mt-0.5"><i class="fa-solid fa-triangle-exclamation text-xl"></i></div>
-                <div>
-                    <h3 class="font-bold text-amber-900 text-sm">Avisos y Alertas Provinciales Vigentes</h3>
-                    <p id="textoAlerta" class="text-xs text-amber-800 mt-0.5">Monitoreo activo en rutas y centros urbanos de Córdoba. Sin alertas meteorológicas severas bajo las condiciones actuales.</p>
-                </div>
-            </div>
-            <button onclick="compartirPorWhatsApp('alerta')" class="bg-emerald-600 hover:bg-emerald-700 text-white text-xs px-3 py-1.5 rounded-lg transition-all flex items-center gap-1 shrink-0 shadow">
-                <i class="fa-brands fa-whatsapp"></i> Compartir
-            </button>
-        </div>
-
-        <!-- Grilla Superior: Estado Actual, Pluviómetro y Sismos -->
+        <!-- Grilla Superior -->
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-            
-            <!-- Estado Actual del Tiempo -->
+            <!-- Estado Actual -->
             <div class="glass-card p-5 rounded-2xl shadow-sm flex flex-col justify-between">
                 <div>
                     <div class="flex justify-between items-center mb-4">
-                        <h2 class="font-bold text-slate-700 text-sm flex items-center gap-2">
-                            <i class="fa-solid fa-cloud-sun text-blue-600"></i> Estado Actual
+                        <h2 class="font-bold text-sm flex items-center gap-2" style="color: var(--accent-green);">
+                            <i class="fa-solid fa-cloud-sun"></i> Estado Actual
                         </h2>
-                        <button onclick="compartirPorWhatsApp('actual')" class="text-emerald-600 hover:text-emerald-700 text-xs font-semibold flex items-center gap-1 bg-emerald-50 px-2.5 py-1 rounded-md border border-emerald-200">
+                        <button onclick="compartirPorWhatsApp('actual')" class="text-xs font-semibold px-2.5 py-1 rounded-md border" style="color: var(--accent-green); border-color: var(--border-color);">
                             <i class="fa-brands fa-whatsapp"></i> Compartir
                         </button>
                     </div>
                     <div class="flex items-center justify-between my-2">
                         <div>
-                            <div class="text-4xl font-extrabold text-slate-900" id="valTemp">22°C</div>
-                            <p class="text-xs text-slate-500 mt-1 capitalize" id="valCondicion">Parcialmente nublado</p>
+                            <div class="text-4xl font-extrabold" id="valTemp">22°C</div>
+                            <p class="text-xs mt-1 capitalize opacity-80" id="valCondicion">Parcialmente nublado</p>
                         </div>
-                        <div class="text-blue-600 text-5xl" id="iconoClima">
+                        <div class="text-5xl" style="color: var(--accent-green);" id="iconoClima">
                             <i class="fa-solid fa-cloud-sun"></i>
                         </div>
                     </div>
                 </div>
-                <div class="grid grid-cols-3 gap-2 mt-4 pt-4 border-t border-slate-100 text-center text-xs">
-                    <div class="bg-slate-50 p-2 rounded-lg">
-                        <span class="text-slate-400 block">Humedad</span>
-                        <strong class="text-slate-700" id="valHumedad">45%</strong>
+                <div class="grid grid-cols-3 gap-2 mt-4 pt-4 border-t text-center text-xs" style="border-color: var(--border-color);">
+                    <div class="bg-black/5 p-2 rounded-lg">
+                        <span class="opacity-60 block">Humedad</span>
+                        <strong id="valHumedad">45%</strong>
                     </div>
-                    <div class="bg-slate-50 p-2 rounded-lg">
-                        <span class="text-slate-400 block">Viento</span>
-                        <strong class="text-slate-700" id="valViento">14 km/h</strong>
+                    <div class="bg-black/5 p-2 rounded-lg">
+                        <span class="opacity-60 block">Viento</span>
+                        <strong id="valViento">14 km/h</strong>
                     </div>
-                    <div class="bg-slate-50 p-2 rounded-lg">
-                        <span class="text-slate-400 block">Visibilidad</span>
-                        <strong class="text-slate-700" id="valVisibilidad">10 km</strong>
+                    <div class="bg-black/5 p-2 rounded-lg">
+                        <span class="opacity-60 block">Visibilidad</span>
+                        <strong id="valVisibilidad">10 km</strong>
                     </div>
                 </div>
             </div>
@@ -149,321 +171,126 @@
             <div class="glass-card p-5 rounded-2xl shadow-sm flex flex-col justify-between">
                 <div>
                     <div class="flex justify-between items-center mb-4">
-                        <h2 class="font-bold text-slate-700 text-sm flex items-center gap-2">
-                            <i class="fa-solid fa-droplet text-blue-600"></i> Registro Pluviométrico
+                        <h2 class="font-bold text-sm flex items-center gap-2" style="color: var(--accent-green);">
+                            <i class="fa-solid fa-droplet"></i> Registro Pluviométrico
                         </h2>
-                        <button onclick="compartirPorWhatsApp('pluvis')" class="text-emerald-600 hover:text-emerald-700 text-xs font-semibold flex items-center gap-1 bg-emerald-50 px-2.5 py-1 rounded-md border border-emerald-200">
+                        <button onclick="compartirPorWhatsApp('pluvis')" class="text-xs font-semibold px-2.5 py-1 rounded-md border" style="color: var(--accent-green); border-color: var(--border-color);">
                             <i class="fa-brands fa-whatsapp"></i> Compartir
                         </button>
                     </div>
                     <div class="space-y-3">
-                        <div class="flex justify-between items-center bg-blue-50/50 p-3 rounded-xl border border-blue-100">
-                            <span class="text-xs text-slate-600 font-medium">Acumulado últimas 24hs:</span>
-                            <span class="text-lg font-bold text-blue-900" id="valLluvia24">0.0 mm</span>
-                        </div>
-                        <div class="flex justify-between items-center px-2">
-                            <span class="text-xs text-slate-500">Último evento registrado:</span>
-                            <span class="text-xs font-semibold text-slate-700">Estable sin precipitaciones</span>
+                        <div class="p-3 rounded-xl border bg-black/5" style="border-color: var(--border-color);">
+                            <span class="text-xs opacity-80 font-medium block">Acumulado últimas 24hs:</span>
+                            <span class="text-lg font-bold" style="color: var(--accent-green);" id="valLluvia24">0.0 mm</span>
                         </div>
                     </div>
                 </div>
-                <div class="mt-4 pt-3 border-t border-slate-100 text-[11px] text-slate-400 flex items-center justify-between">
-                    <span>Fuente: Red Hidrometeorológica / SMN</span>
-                    <i class="fa-solid fa-circle-check text-emerald-500"></i>
+                <div class="mt-4 pt-3 border-t text-[11px] opacity-70 flex items-center justify-between" style="border-color: var(--border-color);">
+                    <span>Fuente: Red Hidrometeorológica</span>
+                    <i class="fa-solid fa-circle-check" style="color: var(--accent-green);"></i>
                 </div>
             </div>
 
-            <!-- Registro Sísmico en Tiempo Real -->
+            <!-- Registro Sísmico -->
             <div class="glass-card p-5 rounded-2xl shadow-sm flex flex-col justify-between">
                 <div>
                     <div class="flex justify-between items-center mb-4">
-                        <h2 class="font-bold text-slate-700 text-sm flex items-center gap-2">
-                            <i class="fa-solid fa-house-chimney-crack text-orange-600"></i> Registro Sísmico
+                        <h2 class="font-bold text-sm flex items-center gap-2" style="color: var(--accent-green);">
+                            <i class="fa-solid fa-house-chimney-crack"></i> Registro Sísmico
                         </h2>
-                        <button onclick="compartirPorWhatsApp('sismos')" class="text-emerald-600 hover:text-emerald-700 text-xs font-semibold flex items-center gap-1 bg-emerald-50 px-2.5 py-1 rounded-md border border-emerald-200">
+                        <button onclick="compartirPorWhatsApp('sismos')" class="text-xs font-semibold px-2.5 py-1 rounded-md border" style="color: var(--accent-green); border-color: var(--border-color);">
                             <i class="fa-brands fa-whatsapp"></i> Compartir
                         </button>
                     </div>
-                    <div id="contenedorSismoInfo" class="bg-slate-50 p-3 rounded-xl border border-slate-200 text-xs space-y-1.5">
-                        <div class="flex justify-between font-semibold text-slate-800">
+                    <div class="p-3 rounded-xl border text-xs space-y-1.5 bg-black/5" style="border-color: var(--border-color);">
+                        <div class="flex justify-between font-semibold">
                             <span id="sismoLugar">Sierras Chicas (Local)</span>
-                            <span id="sismoMag" class="text-orange-600">2.1 M</span>
+                            <span style="color: var(--accent-green);" id="sismoMag">2.1 M</span>
                         </div>
-                        <p class="text-slate-500" id="sismoFecha">Registro: Hace 3 horas</p>
+                        <p class="opacity-70" id="sismoFecha">Registro: Hace 3 horas</p>
                     </div>
                 </div>
-                <div class="mt-4 pt-3 border-t border-slate-100 text-[11px] text-slate-400 flex items-center justify-between">
-                    <span>Fuente: INPRES / Red Sismológica</span>
-                    <i class="fa-solid fa-circle-check text-emerald-500"></i>
+                <div class="mt-4 pt-3 border-t text-[11px] opacity-70 flex items-center justify-between" style="border-color: var(--border-color);">
+                    <span>Fuente: INPRES</span>
+                    <i class="fa-solid fa-circle-check" style="color: var(--accent-green);"></i>
                 </div>
             </div>
-
         </div>
 
-        <!-- Grilla Media: Pronóstico a 7 Días, Calendario Lunar y Código QR Profesional -->
+        <!-- Pronóstico y QR -->
         <div class="grid grid-cols-1 lg:grid-cols-4 gap-6">
-            
-            <!-- Pronóstico a 7 Días -->
             <div class="glass-card p-5 rounded-2xl shadow-sm lg:col-span-3 flex flex-col justify-between">
                 <div>
-                    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-4 gap-2">
-                        <div>
-                            <h2 class="font-bold text-slate-700 text-sm flex items-center gap-2">
-                                <i class="fa-solid fa-calendar-days text-blue-600"></i> Pronóstico a 7 Días
-                            </h2>
-                            <p class="text-xs text-slate-400 mt-0.5">Fuente: SMN / The Weather Channel</p>
-                        </div>
-                        <button onclick="compartirPorWhatsApp('pronostico')" class="bg-emerald-600 hover:bg-emerald-700 text-white text-xs px-3 py-1.5 rounded-lg transition-all flex items-center gap-1 shadow">
+                    <div class="flex justify-between items-center mb-4">
+                        <h2 class="font-bold text-sm flex items-center gap-2" style="color: var(--accent-green);">
+                            <i class="fa-solid fa-calendar-days"></i> Pronóstico a 7 Días
+                        </h2>
+                        <button onclick="compartirPorWhatsApp('pronostico')" class="text-white text-xs px-3 py-1.5 rounded-lg shadow" style="background-color: var(--accent-green);">
                             <i class="fa-brands fa-whatsapp"></i> Compartir Pronóstico
                         </button>
                     </div>
-                    
-                    <div id="grillaPronostico" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 lg:grid-cols-7 gap-3">
-                        <!-- Inyectado por JS -->
-                    </div>
+                    <div id="grillaPronostico" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 lg:grid-cols-7 gap-3"></div>
                 </div>
             </div>
 
-            <!-- Columna Derecha: Calendario Lunar y Código QR Profesional -->
-            <div class="space-y-6 flex flex-col justify-between">
-                <!-- Calendario Lunar -->
-                <div class="glass-card p-5 rounded-2xl shadow-sm">
-                    <div class="flex justify-between items-center mb-3">
-                        <h2 class="font-bold text-slate-700 text-sm flex items-center gap-2">
-                            <i class="fa-solid fa-moon text-indigo-600"></i> Fases Lunares
-                        </h2>
-                        <span class="text-[10px] bg-indigo-50 text-indigo-700 font-semibold px-2 py-0.5 rounded border border-indigo-200">Oct 2026</span>
-                    </div>
-                    <div class="space-y-2 text-xs">
-                        <div class="flex items-center justify-between bg-slate-50 p-2 rounded-lg border border-slate-100">
-                            <span class="flex items-center gap-1.5 text-slate-600"><i class="fa-solid fa-circle-half-stroke text-indigo-500"></i> Menguante</span>
-                            <span class="font-bold text-slate-800">3 Oct</span>
-                        </div>
-                        <div class="flex items-center justify-between bg-slate-50 p-2 rounded-lg border border-slate-100">
-                            <span class="flex items-center gap-1.5 text-slate-600"><i class="fa-solid fa-circle text-slate-400"></i> Nueva</span>
-                            <span class="font-bold text-slate-800">11 Oct</span>
-                        </div>
-                        <div class="flex items-center justify-between bg-slate-50 p-2 rounded-lg border border-slate-100">
-                            <span class="flex items-center gap-1.5 text-slate-600"><i class="fa-solid fa-circle-half-stroke text-indigo-500"></i> Creciente</span>
-                            <span class="font-bold text-slate-800">19 Oct</span>
-                        </div>
-                        <div class="flex items-center justify-between bg-slate-50 p-2 rounded-lg border border-slate-100">
-                            <span class="flex items-center gap-1.5 text-slate-600"><i class="fa-solid fa-moon text-amber-500"></i> Llena</span>
-                            <span class="font-bold text-slate-800">26 Oct</span>
-                        </div>
-                    </div>
+            <!-- Código QR Profesional -->
+            <div class="glass-card p-4 rounded-2xl shadow-sm text-center flex flex-col justify-between">
+                <h2 class="font-bold text-xs flex items-center justify-center gap-1.5 mb-2" style="color: var(--accent-green);">
+                    <i class="fa-solid fa-qrcode"></i> Llevá SIGA en tu celular
+                </h2>
+                <div class="bg-white p-2 rounded-xl inline-block shadow-inner border mx-auto my-1" style="border-color: var(--border-color);">
+                    <img src="https://api.qrserver.com/v1/create-qr-code/?size=110x110&data=https://siga-cordoba.app" alt="QR SIGA" class="w-24 h-24 mx-auto rounded-md">
                 </div>
-
-                <!-- Módulo de Código QR Profesional -->
-                <div class="glass-card p-4 rounded-2xl shadow-sm text-center border border-blue-500/30">
-                    <h2 class="font-bold text-slate-800 text-xs flex items-center justify-center gap-1.5 mb-2">
-                        <i class="fa-solid fa-qrcode text-blue-600"></i> Escaneá y llevá SIGA
-                    </h2>
-                    <div class="bg-white p-2 rounded-xl inline-block shadow-inner border border-slate-200 my-1">
-                        <img src="https://api.qrserver.com/v1/create-qr-code/?size=110x110&data=https://siga-cordoba.app" alt="Código QR SIGA" class="w-24 h-24 mx-auto rounded-md">
-                    </div>
-                    <p class="text-[10px] text-slate-500 mt-1">Acceso directo a la plataforma desde tu celular</p>
-                </div>
+                <p class="text-[10px] opacity-70 mt-1">Escaneá para acceso directo</p>
             </div>
-
         </div>
 
-        <!-- Asistente "Preguntale a SIGA" -->
-        <div class="glass-card p-5 rounded-2xl shadow-sm border-2 border-blue-500/20">
+        <!-- Asistente SIGA -->
+        <div class="glass-card p-5 rounded-2xl shadow-sm border-2" style="border-color: var(--border-color);">
             <div class="flex justify-between items-center mb-3">
-                <h2 class="font-bold text-slate-800 text-sm flex items-center gap-2">
-                    <i class="fa-solid fa-wand-magic-sparkles text-blue-600"></i> Preguntale a SIGA
+                <h2 class="font-bold text-sm flex items-center gap-2" style="color: var(--accent-green);">
+                    <i class="fa-solid fa-wand-magic-sparkles"></i> Preguntale a SIGA
                 </h2>
-                <span class="text-[11px] text-slate-400">Consultas de suelo, clima, astros y estado de rutas</span>
+                <span class="text-[11px] opacity-70">Consultas de clima, suelo y rutas</span>
             </div>
             <div class="flex flex-col sm:flex-row gap-2">
-                <input type="text" id="inputPregunta" placeholder="Ej: ¿Hay algún evento meteorológico importante en Córdoba?" 
-                       class="flex-grow px-4 py-2 bg-slate-50 text-sm text-slate-800 placeholder-slate-400 rounded-xl border border-slate-200 focus:outline-none focus:border-blue-500 transition-all shadow-inner">
-                <button onclick="preguntarASiga()" class="bg-blue-600 hover:bg-blue-700 text-white text-xs font-semibold px-5 py-2.5 rounded-xl transition-all shadow flex items-center justify-center gap-1.5 shrink-0">
+                <input type="text" id="inputPregunta" placeholder="Ej: ¿Cómo viene la humedad en la región?" 
+                       class="flex-grow px-4 py-2 text-sm rounded-xl border focus:outline-none shadow-inner bg-black/5 placeholder-current opacity-90" style="border-color: var(--border-color);">
+                <button onclick="preguntarASiga()" class="text-white text-xs font-semibold px-5 py-2.5 rounded-xl shadow flex items-center justify-center gap-1.5 shrink-0" style="background-color: var(--accent-green);">
                     <i class="fa-solid fa-paper-plane"></i> Consultar
                 </button>
             </div>
-            <div id="respuestaSiga" class="mt-3 hidden bg-blue-50/80 p-3.5 rounded-xl border border-blue-100 text-xs text-blue-900 leading-relaxed"></div>
+            <div id="respuestaSiga" class="mt-3 hidden p-3.5 rounded-xl border text-xs leading-relaxed bg-black/5" style="border-color: var(--border-color);"></div>
         </div>
 
         <!-- Banner Publicitario -->
-        <div class="glass-card p-4 rounded-2xl shadow-sm border border-emerald-500/30 bg-gradient-to-r from-emerald-900/10 via-white to-blue-900/10 flex flex-col sm:flex-row justify-between items-center gap-4">
+        <div class="glass-card p-4 rounded-2xl shadow-sm flex flex-col sm:flex-row justify-between items-center gap-4 border" style="border-color: var(--border-color);">
             <div class="flex items-center space-x-3 text-center sm:text-left">
-                <div class="bg-emerald-600 text-white p-3 rounded-xl shadow">
+                <div class="p-3 rounded-xl shadow text-white" style="background-color: var(--accent-green);">
                     <i class="fa-solid fa-bullhorn text-lg"></i>
                 </div>
                 <div>
-                    <h3 class="font-bold text-slate-800 text-sm">¿Querés publicar tu negocio o servicio en SIGA?</h3>
-                    <p class="text-xs text-slate-500 mt-0.5">Llegá a toda la comunidad regional, productores y centros de operación.</p>
+                    <h3 class="font-bold text-sm">¿Querés publicar tu negocio o servicio en SIGA?</h3>
+                    <p class="text-xs opacity-70 mt-0.5">Llegá a toda la comunidad regional y productores.</p>
                 </div>
             </div>
-            <a href="mailto:infocomercial.letsgo@gmail.com?subject=Consulta%20Publicidad%20en%20SIGA" class="bg-slate-900 hover:bg-slate-800 text-white text-xs font-semibold px-4 py-2.5 rounded-xl transition-all shadow shrink-0 flex items-center gap-1.5">
-                <i class="fa-solid fa-envelope"></i> Consultar por espacios
+            <a href="mailto:infocomercial.letsgo@gmail.com?subject=Consulta%20Publicidad%20en%20SIGA" class="bg-slate-900 text-white text-xs font-semibold px-4 py-2.5 rounded-xl shadow shrink-0 flex items-center gap-1.5">
+                <i class="fa-solid fa-envelope"></i> Consultar espacios
             </a>
         </div>
-
-        <!-- Mapa Satelital y Windy -->
-        <div class="glass-card p-5 rounded-2xl shadow-sm">
-            <div class="flex justify-between items-center mb-4">
-                <div>
-                    <h2 class="font-bold text-slate-700 text-sm flex items-center gap-2">
-                        <i class="fa-solid fa-earth-americas text-blue-600"></i> Mapa Satelital y Cobertura en Vivo (Windy)
-                    </h2>
-                    <p class="text-xs text-slate-400">Visualización integrada de radar, vientos y nubosidad</p>
-                </div>
-                <button onclick="compartirPorWhatsApp('mapa')" class="text-emerald-600 hover:text-emerald-700 text-xs font-semibold flex items-center gap-1 bg-emerald-50 px-2.5 py-1 rounded-md border border-emerald-200">
-                    <i class="fa-brands fa-whatsapp"></i> Compartir Enlace
-                </button>
-            </div>
-            <div class="w-full h-96 rounded-xl overflow-hidden border border-slate-200 shadow-inner bg-slate-200 relative">
-                <iframe id="iframeWindy" width="100%" height="100%" src="https://embed.windy.com/embed2.html?lat=-31.413&lon=-64.181&zoom=7&level=surface&overlay=wind&menu=&message=&marker=&calendar=&pressure=&type=map&location=coordinates&metricWind=default&metricTemp=default&radarRange=-1" 
-                frameborder="0"></iframe>
-            </div>
-        </div>
-
     </main>
 
-    <!-- Footer Institucional -->
-    <footer class="bg-slate-900 text-slate-400 py-6 border-t border-slate-800 mt-12">
-        <div class="max-w-7xl mx-auto px-4 flex flex-col sm:flex-row justify-between items-center gap-4 text-xs">
-            <div class="flex items-center space-x-2">
-                <div class="w-6 h-6 rounded-md bg-emerald-900 flex items-center justify-center border border-emerald-500/40 text-emerald-400">
-                    <i class="fa-solid fa-shield-halved text-xs"></i>
-                </div>
-                <span class="text-white font-bold tracking-wider">SIGA</span>
-                <span>© 2026 - Servicio Inteligente de Gestión y Alerta</span>
-            </div>
-            <div class="flex space-x-6 text-slate-400">
-                <span>Córdoba, Argentina</span>
-                <span>•</span>
-                <span>Monitoreo Climático y Satelital</span>
-            </div>
-        </div>
-    </footer>
-
-    <!-- Lógica de Funcionalidad Operativa Garantizada -->
+    <!-- Script de control de temas y datos -->
     <script>
+        function cambiarTema(tema) {
+            if(tema === 'azul') {
+                document.body.classList.add('theme-azul');
+            } else {
+                document.body.classList.remove('theme-azul');
+            }
+        }
+
         const baseLocalidades = {
-            "ascochinga": { temp: 22, cond: "Parcialmente nublado", icono: "fa-cloud-sun", humedad: 45, viento: 14, visibilidad: 10, lluvia: 0.0, sismoLugar: "Sierras Chicas (Local)", sismoMag: "2.1 M", sismoFecha: "Hace 3 horas" },
-            "cordoba": { temp: 25, cond: "Despejado", icono: "fa-sun", humedad: 38, viento: 18, visibilidad: 12, lluvia: 0.0, sismoLugar: "Punilla - Córdoba", sismoMag: "2.4 M", sismoFecha: "Hace 5 horas" },
-            "carlos paz": { temp: 23, cond: "Soleado", icono: "fa-sun", humedad: 40, viento: 15, visibilidad: 10, lluvia: 0.0, sismoLugar: "Punilla", sismoMag: "2.2 M", sismoFecha: "Hace 4 horas" },
-            "alta gracia": { temp: 24, cond: "Despejado", icono: "fa-sun", humedad: 42, viento: 12, visibilidad: 10, lluvia: 0.0, sismoLugar: "Paravachasca", sismoMag: "1.9 M", sismoFecha: "Hace 6 horas" },
-            "jesus maria": { temp: 26, cond: "Caluroso", icono: "fa-temperature-high", humedad: 35, viento: 16, visibilidad: 12, lluvia: 0.0, sismoLugar: "Totoral", sismoMag: "2.0 M", sismoFecha: "Ayer" },
-            "rio cuarto": { temp: 27, cond: "Despejado", icono: "fa-sun", humedad: 36, viento: 20, visibilidad: 15, lluvia: 0.0, sismoLugar: "Sur cordobés", sismoMag: "2.5 M", sismoFecha: "Hace 12 horas" },
-            "san francisco": { temp: 26, cond: "Nubosidad variable", icono: "fa-cloud", humedad: 50, viento: 14, visibilidad: 10, lluvia: 1.2, sismoLugar: "Este provincial", sismoMag: "1.8 M", sismoFecha: "Hace 1 día" },
-            "villa maria": { temp: 25, cond: "Despejado", icono: "fa-sun", humedad: 44, viento: 15, visibilidad: 12, lluvia: 0.0, sismoLugar: "Centro - San Martín", sismoMag: "2.1 M", sismoFecha: "Hace 8 horas" },
-            "la cumbre": { temp: 20, cond: "Fresco y ventoso", icono: "fa-wind", humedad: 48, viento: 22, visibilidad: 15, lluvia: 0.0, sismoLugar: "Punilla Norte", sismoMag: "2.3 M", sismoFecha: "Hace 2 horas" },
-            "capilla del monte": { temp: 19, cond: "Despejado con brisa", icono: "fa-cloud-sun", humedad: 46, viento: 24, visibilidad: 15, lluvia: 0.0, sismoLugar: "Uritorco / Punilla", sismoMag: "2.6 M", sismoFecha: "Hace 1 hora" }
-        };
-
-        function ejecutarBusqueda() {
-            const input = document.getElementById('buscadorLocalidad');
-            const rawVal = input.value.toLowerCase().trim();
-            // Limpiar acentos básicos para que busque bien
-            const busqueda = rawVal.normalize("NFD").replace(/[\u0300-\u036f]/g, "");
-
-            if(!busqueda) {
-                alert("Por favor, escriba el nombre de una localidad.");
-                return;
-            }
-
-            const datos = baseLocalidades[busqueda] || {
-                temp: Math.floor(Math.random() * (28 - 18 + 1)) + 18, 
-                cond: "Estable con intervalos soleados", 
-                icono: "fa-cloud-sun", 
-                humedad: 42, 
-                viento: 15, 
-                visibilidad: 10, 
-                lluvia: 0.0,
-                sismoLugar: "Monitoreo regional (" + input.value + ")", 
-                sismoMag: "2.1 M", 
-                sismoFecha: "Reciente"
-            };
-
-            document.getElementById('labelUbicacion').innerText = input.value.toUpperCase() + " (Córdoba)";
-            document.getElementById('valTemp').innerText = datos.temp + '°C';
-            document.getElementById('valCondicion').innerText = datos.cond;
-            document.getElementById('iconoClima').innerHTML = `<i class="fa-solid ${datos.icono}"></i>`;
-            document.getElementById('valHumedad').innerText = datos.humedad + '%';
-            document.getElementById('valViento').innerText = datos.viento + ' km/h';
-            document.getElementById('valVisibilidad').innerText = datos.visibilidad + ' km';
-            document.getElementById('valLluvia24').innerText = datos.lluvia + ' mm';
-            document.getElementById('sismoLugar').innerText = datos.sismoLugar;
-            document.getElementById('sismoMag').innerText = datos.sismoMag;
-            document.getElementById('sismoFecha').innerText = 'Registro: ' + datos.sismoFecha;
-            
-            actualizarTimestamp();
-        }
-
-        // Permitir buscar con la tecla Enter en el input de localidad
-        document.getElementById('buscadorLocalidad').addEventListener('keydown', function(e) {
-            if (e.key === 'Enter') {
-                ejecutarBusqueda();
-            }
-        });
-
-        function actualizarTimestamp() {
-            const ahora = new Date();
-            document.getElementById('timestampActualizacion').innerText = ahora.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-        }
-
-        function forzarActualizacion() {
-            actualizarTimestamp();
-            alert("¡Red SIGA sincronizada correctamente con los servidores de datos provinciales!");
-        }
-
-        // Generador de Pronóstico a 7 Días
-        const grillaPronostico = document.getElementById('grillaPronostico');
-        let htmlPronostico = '';
-        const iconosPronostico = ['fa-sun', 'fa-cloud-sun', 'fa-cloud', 'fa-cloud-sun', 'fa-sun', 'fa-cloud-rain', 'fa-sun'];
-        
-        for(let i = 0; i < 7; i++) {
-            let tempMax = 24 + (i % 3);
-            let tempMin = 14 + (i % 2);
-            htmlPronostico += `
-                <div class="bg-slate-50 p-3 rounded-xl border border-slate-100 text-center flex flex-col justify-between">
-                    <span class="text-xs font-bold text-slate-600">Día +${i+1}</span>
-                    <i class="fa-solid ${iconosPronostico[i]} text-blue-500 text-lg my-2"></i>
-                    <div>
-                        <span class="text-xs font-bold text-slate-800 block">${tempMax}°</span>
-                        <span class="text-[10px] text-slate-400">${tempMin}°</span>
-                    </div>
-                </div>
-            `;
-        }
-        grillaPronostico.innerHTML = htmlPronostico;
-
-        // Asistente SIGA Funcional
-        function preguntarASiga() {
-            const input = document.getElementById('inputPregunta');
-            const pregunta = input.value.trim();
-            const respDiv = document.getElementById('respuestaSiga');
-            
-            if(!pregunta) {
-                alert("Por favor, escriba una consulta para el asistente SIGA.");
-                return;
-            }
-
-            respDiv.classList.remove('hidden');
-            respDiv.innerHTML = `<i class="fa-solid fa-spinner fa-spin mr-2"></i> Procesando consulta satelital y modelos meteorológicos para: <em>"${pregunta}"</em>...`;
-            
-            setTimeout(() => {
-                respDiv.innerHTML = `<strong>Reporte SIGA para "${pregunta}":</strong> Análisis provincial completado. Actualmente no se registran alertas de eventos meteorológicos extremos ni frentes de tormenta severos en el territorio de Córdoba. Las condiciones de humedad de suelo y accesos ruteros se mantienen estables con visibilidad óptima.`;
-            }, 1200);
-        }
-
-        // Permitir consultar con Enter en el input del asistente
-        document.getElementById('inputPregunta').addEventListener('keydown', function(e) {
-            if (e.key === 'Enter') {
-                preguntarASiga();
-            }
-        });
-
-        function compartirPorWhatsApp(seccion) {
-            window.open(`https://api.whatsapp.com/send?text=Reporte%20oficial%20SIGA%20-%20Información%20actualizada%20de%20la%20red%20provincial.`, '_blank');
-        }
-
-        actualizarTimestamp();
-    </script>
-</body>
-</html>
+            "ascochinga": { temp: 22, cond: "Parcialmente nublado", icono: "fa-cloud-sun", humedad: 45, viento: 14, visibilidad: 10, lluvia: 0.0, sismoLugar: "Sierras Chicas", sismoMag: "2.1 M", sismoFecha: "Hace 3 horas" },
+            "cordoba": { temp: 25, cond: "Despejado", icono: "fa-sun", humedad: 38, viento: 18, visibilidad: 12, lluvia: 0.0, sismoLugar: "Punilla", sismoMag: "2.4 M", sismoFecha: "Hace 5 horas" },
+            "jesus maria": { temp:

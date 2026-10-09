@@ -9,24 +9,28 @@
     <!-- FontAwesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        /* Estilo base por defecto: Manteca & Verde Bosque (Estilo Dior) */
+        /* Estilo base por defecto: Manteca & Verde Bosque / Inglés */
         :root {
             --bg-main: #FDFBF7; 
-            --card-bg: rgba(255, 255, 255, 0.95);
+            --card-bg: #FFFFFF;
             --text-main: #1A3C2A; 
             --accent-green: #2C5E3B; 
             --header-bg: #1A3C2A;
-            --border-color: rgba(44, 94, 59, 0.25);
+            --header-text: #FDFBF7;
+            --border-color: rgba(44, 94, 59, 0.2);
+            --shadow-color: rgba(26, 60, 42, 0.08);
         }
 
-        /* Tema Alternativo: Azul con Verde Flúor */
+        /* Tema Alternativo: Azul con Verde Flúor / Vibrante */
         body.theme-azul {
             --bg-main: #0B132B; 
-            --card-bg: rgba(18, 30, 61, 0.95);
+            --card-bg: #121E3D;
             --text-main: #E2E8F0;
             --accent-green: #00FF66; 
             --header-bg: #070D1D;
+            --header-text: #00FF66;
             --border-color: rgba(0, 255, 102, 0.3);
+            --shadow-color: rgba(0, 0, 0, 0.3);
         }
 
         body {
@@ -34,10 +38,10 @@
             color: var(--text-main) !important;
         }
 
-        .glass-card {
-            background: var(--card-bg);
-            backdrop-filter: blur(10px);
+        .dior-card {
+            background-color: var(--card-bg);
             border: 1px solid var(--border-color);
+            box-shadow: 0 4px 20px var(--shadow-color);
         }
 
         @keyframes destello {
@@ -58,25 +62,25 @@
             <!-- Logo y Marca SIGA -->
             <div class="flex items-center space-x-3">
                 <div class="p-1.5 rounded-xl border shadow-inner flex items-center justify-center" style="background-color: var(--header-bg); border-color: var(--border-color);">
-                    <div class="w-10 h-10 rounded-lg flex items-center justify-center relative overflow-hidden border" style="background: linear-gradient(135deg, var(--accent-green), var(--header-bg)); border-color: var(--accent-green);">
+                    <div class="w-10 h-10 rounded-lg flex items-center justify-center relative overflow-hidden border" style="background: var(--header-bg); border-color: var(--accent-green);">
                         <i class="fa-solid fa-shield-halved text-lg" style="color: var(--accent-green);"></i>
                         <span class="absolute top-1 right-1 w-2 h-2 rounded-full estrella-fugaz" style="background-color: var(--accent-green);"></span>
                     </div>
                 </div>
                 <div>
                     <div class="flex items-center gap-2">
-                        <h1 class="text-xl font-extrabold tracking-wider text-white">SIGA</h1>
+                        <h1 class="text-xl font-extrabold tracking-wider" style="color: var(--header-text);">SIGA</h1>
                         <span class="text-xs px-2 py-0.5 rounded-full font-medium border" style="background: rgba(44,94,59,0.3); color: var(--accent-green); border-color: var(--accent-green);">En Vivo</span>
                     </div>
-                    <p class="text-[11px] text-slate-300 font-medium uppercase tracking-wider">Servicio Inteligente de Gestión y Alerta</p>
+                    <p class="text-[11px] opacity-80 font-medium uppercase tracking-wider" style="color: var(--header-text);">Servicio Inteligente de Gestión y Alerta</p>
                 </div>
             </div>
 
             <!-- Selector de Temas -->
             <div class="flex items-center gap-2 bg-black/20 p-1.5 rounded-xl border" style="border-color: var(--border-color);">
-                <span class="text-xs font-semibold text-white">Tema:</span>
+                <span class="text-xs font-semibold" style="color: var(--header-text);">Tema:</span>
                 <button onclick="cambiarTema('manteca')" class="px-3 py-1 text-xs font-bold rounded-lg transition-all shadow bg-[#FDFBF7] text-[#1A3C2A] border border-[#2C5E3B]">
-                    🌿 Manteca & Verde
+                    🌿 Manteca & Verde Inglés
                 </button>
                 <button onclick="cambiarTema('azul')" class="px-3 py-1 text-xs font-bold rounded-lg transition-all shadow bg-[#0B132B] text-[#00FF66] border border-[#00FF66]">
                     ⚡ Azul & Flúor
@@ -86,11 +90,11 @@
             <!-- Buscador Universal -->
             <div class="w-full md:w-80 flex gap-2">
                 <div class="relative flex-grow">
-                    <span class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none text-white/70">
+                    <span class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none opacity-70">
                         <i class="fa-solid fa-magnifying-glass"></i>
                     </span>
                     <input type="text" id="buscadorLocalidad" placeholder="Ej: Ascochinga, Cordoba..." 
-                           class="w-full pl-10 pr-4 py-2 text-sm text-white rounded-lg border focus:outline-none transition-all shadow-inner bg-black/30 placeholder-white/50" style="border-color: var(--border-color);">
+                           class="w-full pl-10 pr-4 py-2 text-sm rounded-lg border focus:outline-none transition-all shadow-inner bg-black/5 placeholder-current opacity-90" style="border-color: var(--border-color);">
                 </div>
                 <button onclick="ejecutarBusqueda()" class="px-3 py-2 rounded-lg text-sm font-semibold transition-all shadow text-white" style="background-color: var(--accent-green);">
                     Buscar
@@ -103,7 +107,7 @@
     <main class="max-w-7xl mx-auto px-4 py-6 flex-grow space-y-6 w-full">
 
         <!-- Barra de Ubicación Activa y Actualización Real -->
-        <div class="p-4 rounded-xl shadow-md flex flex-col md:flex-row justify-between items-center gap-3" style="background-color: var(--accent-green); color: #fff;">
+        <div class="p-4 rounded-xl shadow-md flex flex-col md:flex-row justify-between items-center gap-3" style="background-color: var(--accent-green); color: #FFF;">
             <div class="flex items-center space-x-2">
                 <i class="fa-solid fa-location-dot text-lg"></i>
                 <span class="text-sm font-medium">Ubicación activa:</span>
@@ -120,13 +124,13 @@
         <!-- Grilla Superior -->
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
             <!-- Estado Actual -->
-            <div class="glass-card p-5 rounded-2xl shadow-sm flex flex-col justify-between">
+            <div class="dior-card p-5 rounded-2xl flex flex-col justify-between">
                 <div>
                     <div class="flex justify-between items-center mb-4">
                         <h2 class="font-bold text-sm flex items-center gap-2" style="color: var(--accent-green);">
                             <i class="fa-solid fa-cloud-sun"></i> Estado Actual
                         </h2>
-                        <button onclick="forzarActualizacionReal()" class="text-xs font-semibold px-2.5 py-1 rounded-md border transition-all hover:bg-black/5" style="color: var(--accent-green); border-color: var(--border-color);">
+                        <button onclick="forzarActualizacionReal()" class="text-xs font-semibold px-2.5 py-1 rounded-md border transition-all hover:opacity-80" style="color: var(--accent-green); border-color: var(--border-color);">
                             <i class="fa-solid fa-rotate-right mr-1"></i> Actualizar
                         </button>
                     </div>
@@ -141,29 +145,29 @@
                     </div>
                 </div>
                 <div class="grid grid-cols-3 gap-2 mt-4 pt-4 border-t text-center text-xs" style="border-color: var(--border-color);">
-                    <div class="bg-black/5 p-2 rounded-lg">
-                        <span class="opacity-60 block">Humedad</span>
+                    <div class="p-2 rounded-lg bg-black/5">
+                        <span class="opacity-70 block">Humedad</span>
                         <strong id="valHumedad">45%</strong>
                     </div>
-                    <div class="bg-black/5 p-2 rounded-lg">
-                        <span class="opacity-60 block">Viento</span>
+                    <div class="p-2 rounded-lg bg-black/5">
+                        <span class="opacity-70 block">Viento</span>
                         <strong id="valViento">14 km/h</strong>
                     </div>
-                    <div class="bg-black/5 p-2 rounded-lg">
-                        <span class="opacity-60 block">Visibilidad</span>
+                    <div class="p-2 rounded-lg bg-black/5">
+                        <span class="opacity-70 block">Visibilidad</span>
                         <strong id="valVisibilidad">10 km</strong>
                     </div>
                 </div>
             </div>
 
             <!-- Registro Pluviométrico -->
-            <div class="glass-card p-5 rounded-2xl shadow-sm flex flex-col justify-between">
+            <div class="dior-card p-5 rounded-2xl flex flex-col justify-between">
                 <div>
                     <div class="flex justify-between items-center mb-4">
                         <h2 class="font-bold text-sm flex items-center gap-2" style="color: var(--accent-green);">
                             <i class="fa-solid fa-droplet"></i> Registro Pluviométrico
                         </h2>
-                        <span class="text-xs px-2 py-0.5 rounded font-bold bg-emerald-100 text-emerald-800">En Línea</span>
+                        <span class="text-xs px-2 py-0.5 rounded font-bold border" style="color: var(--accent-green); border-color: var(--border-color);">En Línea</span>
                     </div>
                     <div class="space-y-3">
                         <div class="p-3 rounded-xl border bg-black/5" style="border-color: var(--border-color);">
@@ -179,13 +183,13 @@
             </div>
 
             <!-- Registro Sísmico -->
-            <div class="glass-card p-5 rounded-2xl shadow-sm flex flex-col justify-between">
+            <div class="dior-card p-5 rounded-2xl flex flex-col justify-between">
                 <div>
                     <div class="flex justify-between items-center mb-4">
                         <h2 class="font-bold text-sm flex items-center gap-2" style="color: var(--accent-green);">
                             <i class="fa-solid fa-house-chimney-crack"></i> Registro Sísmico
                         </h2>
-                        <span class="text-xs px-2 py-0.5 rounded font-bold bg-orange-100 text-orange-800">INPRES</span>
+                        <span class="text-xs px-2 py-0.5 rounded font-bold border" style="color: var(--accent-green); border-color: var(--border-color);">INPRES</span>
                     </div>
                     <div class="p-3 rounded-xl border text-xs space-y-1.5 bg-black/5" style="border-color: var(--border-color);">
                         <div class="flex justify-between font-semibold">
@@ -204,7 +208,7 @@
 
         <!-- Pronóstico y QR -->
         <div class="grid grid-cols-1 lg:grid-cols-4 gap-6">
-            <div class="glass-card p-5 rounded-2xl shadow-sm lg:col-span-3 flex flex-col justify-between">
+            <div class="dior-card p-5 rounded-2xl lg:col-span-3 flex flex-col justify-between">
                 <div>
                     <div class="flex justify-between items-center mb-4">
                         <h2 class="font-bold text-sm flex items-center gap-2" style="color: var(--accent-green);">
@@ -217,11 +221,11 @@
             </div>
 
             <!-- Código QR Profesional -->
-            <div class="glass-card p-4 rounded-2xl shadow-sm text-center flex flex-col justify-between">
+            <div class="dior-card p-4 rounded-2xl text-center flex flex-col justify-between">
                 <h2 class="font-bold text-xs flex items-center justify-center gap-1.5 mb-2" style="color: var(--accent-green);">
                     <i class="fa-solid fa-qrcode"></i> Llevá SIGA en tu celular
                 </h2>
-                <div class="bg-white p-2 rounded-xl inline-block shadow-inner border mx-auto my-1" style="border-color: var(--border-color);">
+                <div class="p-2 rounded-xl inline-block shadow-inner border mx-auto my-1 bg-white" style="border-color: var(--border-color);">
                     <img src="https://api.qrserver.com/v1/create-qr-code/?size=110x110&data=https://siga-cordoba.app" alt="QR SIGA" class="w-24 h-24 mx-auto rounded-md">
                 </div>
                 <p class="text-[10px] opacity-70 mt-1">Acceso móvil directo</p>
@@ -229,7 +233,7 @@
         </div>
 
         <!-- Asistente SIGA -->
-        <div class="glass-card p-5 rounded-2xl shadow-sm border-2" style="border-color: var(--border-color);">
+        <div class="dior-card p-5 rounded-2xl border-2" style="border-color: var(--accent-green);">
             <div class="flex justify-between items-center mb-3">
                 <h2 class="font-bold text-sm flex items-center gap-2" style="color: var(--accent-green);">
                     <i class="fa-solid fa-wand-magic-sparkles"></i> Preguntale a SIGA
@@ -248,7 +252,7 @@
 
     </main>
 
-    <!-- Script con Actualización Real Operativa -->
+    <!-- Script de Funcionalidad -->
     <script>
         function cambiarTema(tema) {
             if(tema === 'azul') {
@@ -315,25 +319,20 @@
             document.getElementById('timestampActualizacion').innerText = ahora.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' });
         }
 
-        // FUNCIÓN REAL DE ACTUALIZACIÓN AL PRESIONAR EL BOTÓN
         function forzarActualizacionReal() {
             const icono = document.getElementById('iconoGira');
             icono.classList.add('fa-spin');
             
             setTimeout(() => {
                 icono.classList.remove('fa-spin');
-                // Tomar datos base actuales o generar una variación fresca basada en la hora del sistema
                 const horaActual = new Date().getHours();
                 let tempBase = baseLocalidades[localidadActual] ? baseLocalidades[localidadActual].temp : 23;
-                // Ajuste dinámico según hora del día
                 if (horaActual < 8) tempBase -= 4;
                 else if (horaActual > 18) tempBase -= 2;
 
                 document.getElementById('valTemp').innerText = (tempBase + Math.floor(Math.random() * 2)) + '°C';
                 document.getElementById('valHumedad').innerText = (40 + Math.floor(Math.random() * 10)) + '%';
                 actualizarTimestamp();
-                
-                // Generar aviso visual de éxito
                 alert("¡Red SIGA actualizada en tiempo real con los servidores provinciales!");
             }, 800);
         }
@@ -356,7 +355,6 @@
         }
         grillaPronostico.innerHTML = htmlPronostico;
 
-        // Asistente SIGA con respuesta real animada
         function preguntarASiga() {
             const input = document.getElementById('inputPregunta');
             const pregunta = input.value.trim();
@@ -375,8 +373,6 @@
         }
 
         document.getElementById('inputPregunta').addEventListener('keydown', e => { if (e.key === 'Enter') preguntarASiga(); });
-        
-        // Inicializar hora al cargar
         actualizarTimestamp();
     </script>
 </body>

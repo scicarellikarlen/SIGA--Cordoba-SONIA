@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SIGA - Sistema Integrado de Gestión y Alertas</title>
+    <title>SIGA - Servicio Inteligente de Gestión y Alerta</title>
     <!-- Tailwind CSS para diseño moderno y responsivo -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- FontAwesome para iconografía profesional -->
@@ -14,20 +14,37 @@
             backdrop-filter: blur(10px);
             border: 1px solid rgba(226, 232, 240, 0.8);
         }
+        /* Animación de destello / estrella fugaz para el logo */
+        @keyframes destello {
+            0%, 100% { opacity: 0.2; transform: scale(0.8); }
+            50% { opacity: 1; transform: scale(1.2); filter: drop-shadow(0 0 8px rgba(59, 130, 246, 0.8)); }
+        }
+        .estrella-fugaz {
+            animation: destello 2s infinite ease-in-out;
+        }
     </style>
 </head>
 <body class="bg-slate-100 text-slate-800 font-sans antialiased min-h-screen flex flex-col">
 
-    <!-- Header Institucional -->
-    <header class="bg-slate-900 text-white shadow-md sticky top-0 z-50">
+    <!-- Header Institucional con el Logo Oficial y Destello -->
+    <header class="bg-slate-900 text-white shadow-md sticky top-0 z-50 border-b border-slate-800">
         <div class="max-w-7xl mx-auto px-4 py-3 flex flex-col md:flex-row justify-between items-center gap-4">
+            
+            <!-- Logo y Marca SIGA -->
             <div class="flex items-center space-x-3">
-                <div class="bg-blue-600 p-2.5 rounded-lg text-white shadow-lg">
-                    <i class="fa-solid fa-shield-halved text-xl"></i>
+                <div class="relative bg-slate-950 p-1.5 rounded-xl border border-slate-700 shadow-inner flex items-center justify-center">
+                    <!-- Icono o representación digital del logo oficial proporcionado -->
+                    <div class="w-10 h-10 rounded-lg bg-gradient-to-br from-emerald-900 to-slate-900 flex items-center justify-center relative overflow-hidden border border-emerald-500/40">
+                        <i class="fa-solid fa-shield-halved text-emerald-400 text-lg"></i>
+                        <span class="absolute top-1 right-1 w-2 h-2 bg-blue-400 rounded-full estrella-fugaz"></span>
+                    </div>
                 </div>
                 <div>
-                    <h1 class="text-xl font-bold tracking-wide">SIGA <span class="text-blue-400 text-sm font-normal">Sistema Integrado de Gestión y Alertas</span></h1>
-                    <p class="text-xs text-slate-400">Monitoreo Meteorológico, Vial y Sísmico en Tiempo Real</p>
+                    <div class="flex items-center gap-2">
+                        <h1 class="text-xl font-extrabold tracking-wider text-white">SIGA</h1>
+                        <span class="text-xs bg-blue-600/30 text-blue-300 border border-blue-500/30 px-2 py-0.5 rounded-full font-medium">En Vivo</span>
+                    </div>
+                    <p class="text-[11px] text-slate-400 font-medium uppercase tracking-wider">Servicio Inteligente de Gestión y Alerta</p>
                 </div>
             </div>
 
@@ -76,7 +93,7 @@
             </button>
         </div>
 
-        <!-- Grilla Superior: Estado Actual y Pluviómetro -->
+        <!-- Grilla Superior: Estado Actual, Pluviómetro y Sismos -->
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
             
             <!-- Estado Actual del Tiempo -->
@@ -139,7 +156,7 @@
                     </div>
                 </div>
                 <div class="mt-4 pt-3 border-t border-slate-100 text-[11px] text-slate-400 flex items-center justify-between">
-                    <span>Fuente Oficial: Red Hidrometeorológica Local / SMN</span>
+                    <span>Fuente Oficial: Red Hidrometeorológica / SMN</span>
                     <i class="fa-solid fa-circle-check text-emerald-500"></i>
                 </div>
             </div>
@@ -171,164 +188,42 @@
 
         </div>
 
-        <!-- Pronóstico a 7 Días (Ventana Móvil y Fuentes Oficiales) -->
-        <div class="glass-card p-5 rounded-2xl shadow-sm">
-            <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-4 gap-2">
+        <!-- Grilla Media: Pronóstico a 7 Días y Calendario Lunar -->
+        <div class="grid grid-cols-1 lg:grid-cols-4 gap-6">
+            
+            <!-- Pronóstico a 7 Días (Ventana Móvil) -->
+            <div class="glass-card p-5 rounded-2xl shadow-sm lg:col-span-3 flex flex-col justify-between">
                 <div>
-                    <h2 class="font-bold text-slate-700 text-sm flex items-center gap-2">
-                        <i class="fa-solid fa-calendar-days text-blue-600"></i> Pronóstico a 7 Días
-                    </h2>
-                    <p class="text-xs text-slate-400 mt-0.5">Fuente: SMN / The Weather Channel</p>
+                    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-4 gap-2">
+                        <div>
+                            <h2 class="font-bold text-slate-700 text-sm flex items-center gap-2">
+                                <i class="fa-solid fa-calendar-days text-blue-600"></i> Pronóstico a 7 Días
+                            </h2>
+                            <p class="text-xs text-slate-400 mt-0.5">Fuente: SMN / The Weather Channel</p>
+                        </div>
+                        <button onclick="compartirPorWhatsApp('pronostico')" class="bg-emerald-600 hover:bg-emerald-700 text-white text-xs px-3 py-1.5 rounded-lg transition-all flex items-center gap-1 shadow">
+                            <i class="fa-brands fa-whatsapp"></i> Compartir Pronóstico
+                        </button>
+                    </div>
+                    
+                    <div id="grillaPronostico" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 lg:grid-cols-7 gap-3">
+                        <!-- Inyectado por JS -->
+                    </div>
                 </div>
-                <button onclick="compartirPorWhatsApp('pronostico')" class="bg-emerald-600 hover:bg-emerald-700 text-white text-xs px-3 py-1.5 rounded-lg transition-all flex items-center gap-1 shadow">
-                    <i class="fa-brands fa-whatsapp"></i> Compartir Pronóstico Completo
-                </button>
             </div>
-            
-            <div id="grillaPronostico" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 lg:grid-cols-7 gap-3">
-                <!-- Se inyecta dinámicamente con JS -->
-            </div>
-        </div>
 
-        <!-- Mapa Satelital y Windy (Actualizado) -->
-        <div class="glass-card p-5 rounded-2xl shadow-sm">
-            <div class="flex justify-between items-center mb-4">
+            <!-- Calendario Lunar (Octubre 2026) -->
+            <div class="glass-card p-5 rounded-2xl shadow-sm flex flex-col justify-between">
                 <div>
-                    <h2 class="font-bold text-slate-700 text-sm flex items-center gap-2">
-                        <i class="fa-solid fa-earth-americas text-blue-600"></i> Mapa Satelital y Cobertura en Vivo (Windy)
-                    </h2>
-                    <p class="text-xs text-slate-400">Visualización integrada de radar, vientos y nubosidad</p>
-                </div>
-                <button onclick="compartirPorWhatsApp('mapa')" class="text-emerald-600 hover:text-emerald-700 text-xs font-semibold flex items-center gap-1 bg-emerald-50 px-2.5 py-1 rounded-md border border-emerald-200">
-                    <i class="fa-brands fa-whatsapp"></i> Compartir Enlace de Mapa
-                </button>
-            </div>
-            <div class="w-full h-96 rounded-xl overflow-hidden border border-slate-200 shadow-inner bg-slate-200 relative">
-                <iframe id="iframeWindy" width="100%" height="100%" src="https://embed.windy.com/embed2.html?lat=-31.06&lon=-64.33&zoom=9&level=surface&overlay=radar&menu=&message=&marker=&calendar=now&pressure=&type=map&location=coordinates&detail=&metricWind=default&metricTemp=default&radarRange=-1" frameborder="0"></iframe>
-            </div>
-        </div>
-
-    </main>
-
-    <!-- Footer -->
-    <footer class="bg-slate-900 text-slate-400 py-4 mt-auto text-center text-xs">
-        <p>SIGA - Sistema Integrado de Gestión y Alertas &copy; 2026 | Operativo para Ascochinga y toda la Provincia de Córdoba</p>
-    </footer>
-
-    <!-- Script de Lógica y Actualización Dinámica -->
-    <script>
-        // Datos simulados dinámicos por localidad
-        const baseDeDatosLocalidades = {
-            "ascochinga": { nombre: "Ascochinga, Córdoba", temp: 11, condicion: "Llovizna persistente", humedad: 92, viento: 14, visibilidad: "1.5 km (Reducida)", lluvia24: "18.5 mm", sismo: { lugar: "Sierras Chicas (Local)", mag: "2.3 M", fecha: "Hoy, 06:14 hs" } },
-            "rio cuarto": { nombre: "Río Cuarto, Córdoba", temp: 14, condicion: "Cielo nublado", humedad: 78, viento: 22, visibilidad: "8 km (Buena)", lluvia24: "6.2 mm", sismo: { lugar: "Sur de Córdoba", mag: "3.1 M", fecha: "Ayer, 21:40 hs" } },
-            "cordoba": { nombre: "Córdoba Capital", temp: 15, condicion: "Parcialmente nublado", humedad: 70, viento: 18, visibilidad: "10 km (Muy buena)", lluvia24: "4.0 mm", sismo: { lugar: "Punilla", mag: "2.5 M", fecha: "Hace 2 días" } },
-            "achiras": { nombre: "Achiras, Córdoba", temp: 10, condicion: "Neblina matinal", humedad: 95, viento: 10, visibilidad: "800 mts (Muy reducida)", lluvia24: "24.0 mm", sismo: { lugar: "Sierras del Sur", mag: "2.8 M", fecha: "Hoy, 02:30 hs" } },
-            "jesus maria": { nombre: "Jesús María, Córdoba", temp: 12, condicion: "Llovizna leve", humedad: 89, viento: 12, visibilidad: "3 km (Moderada)", lluvia24: "15.0 mm", sismo: { lugar: "Sierras Chicas", mag: "2.1 M", fecha: "Ayer" } }
-        };
-
-        let localidadActual = "ascochinga";
-
-        // Función para actualizar toda la interfaz según la localidad y el tiempo real
-        function actualizarInterfaz(locKey) {
-            const data = baseDeDatosLocalidades[locKey] || baseDeDatosLocalidades["ascochinga"];
-            document.getElementById("labelUbicacion").innerText = data.nombre;
-            document.getElementById("valTemp").innerText = data.temp + "°C";
-            document.getElementById("valCondicion").innerText = data.condicion;
-            document.getElementById("valHumedad").innerText = data.humedad + "%";
-            document.getElementById("valViento").innerText = data.viento + " km/h";
-            document.getElementById("valVisibilidad").innerText = data.visibilidad;
-            document.getElementById("valLluvia24").innerText = data.luvia24 || "12.0 mm";
-            
-            // Sismos
-            document.getElementById("sismoLugar").innerText = data.sismo.lugar;
-            document.getElementById("sismoMag").innerText = data.sismo.mag;
-            document.getElementById("sismoFecha").innerText = "Fecha y hora: " + data.sismo.fecha;
-
-            // Timestamp actual
-            const ahora = new Date();
-            document.getElementById("timestampActualizacion").innerText = ahora.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-
-            // Generar Pronóstico a 7 Días Móvil (Calculando desde hoy hacia adelante)
-            generarPronostico7Dias();
-        }
-
-        function generarPronostico7Dias() {
-            const contenedor = document.getElementById("grillaPronostico");
-            contenedor.innerHTML = "";
-            
-            const diasSemana = ['Dom', 'Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb'];
-            const iconos = ['fa-cloud-rain', 'fa-cloud', 'fa-cloud-sun', 'fa-sun', 'fa-cloud-showers-heavy', 'fa-cloud-sun', 'fa-sun'];
-            const tempsMax = [16, 19, 22, 24, 21, 23, 25];
-            const tempsMin = [9, 10, 12, 14, 11, 13, 14];
-
-            const hoy = new Date();
-            for (let i = 0; i < 7; i++) {
-                const fechaDia = new Date(hoy);
-                fechaDia.setDate(hoy.getDate() + i);
-                const nombreDia = i === 0 ? 'Hoy' : diasSemana[fechaDia.getDay()];
-                const fechaStr = `${fechaDia.getDate()}/${fechaDia.getMonth() + 1}`;
-
-                const card = document.createElement('div');
-                card.className = "bg-slate-50 p-3 rounded-xl border border-slate-200 text-center flex flex-col justify-between";
-                card.innerHTML = `
-                    <div>
-                        <span class="text-xs font-bold text-slate-700 block">${nombreDia}</span>
-                        <span class="text-[10px] text-slate-400 block mb-2">${fechaStr}</span>
-                        <i class="fa-solid ${iconos[i % iconos.length]} text-blue-600 text-xl my-2"></i>
+                    <div class="flex justify-between items-center mb-3">
+                        <h2 class="font-bold text-slate-700 text-sm flex items-center gap-2">
+                            <i class="fa-solid fa-moon text-indigo-600"></i> Fases Lunares
+                        </h2>
+                        <span class="text-[10px] bg-indigo-50 text-indigo-700 font-semibold px-2 py-0.5 rounded border border-indigo-200">Oct 2026</span>
                     </div>
-                    <div class="text-xs mt-2 pt-2 border-t border-slate-200">
-                        <span class="font-bold text-slate-800 block">${tempsMax[i]}°</span>
-                        <span class="text-slate-400">${tempsMin[i]}°</span>
-                    </div>
-                `;
-                contenedor.appendChild(card);
-            }
-        }
-
-        // Buscador interactivo
-        document.getElementById("buscadorLocalidad").addEventListener("input", function(e) {
-            const valor = e.target.value.toLowerCase().trim();
-            for (let key in baseDeDatosLocalidades) {
-                if (key.includes(valor) || baseDeDatosLocalidades[key].nombre.toLowerCase().includes(valor)) {
-                    localidadActual = key;
-                    actualizarInterfaz(key);
-                    break;
-                }
-            }
-        });
-
-        function forzarActualizacion() {
-            // Simula un refresco inmediato de sensores y API
-            actualizarInterfaz(localidadActual);
-        }
-
-        // Función de compartir por WhatsApp por bloque
-        function compartirPorWhatsApp(seccion) {
-            let texto = "";
-            const data = baseDeDatosLocalidades[localidadActual];
-            
-            if (seccion === 'alerta') {
-                texto = `🚨 *SIGA - ALERTA VIAL Y METEOROLÓGICA*\n📍 Ubicación: ${data.nombre}\n⚠️ Estado: Precaución por visibilidad reducida y calzada húmeda.`;
-            } else if (seccion === 'actual') {
-                texto = `🌤️ *SIGA - ESTADO ACTUAL*\n📍 ${data.nombre}\n🌡️ Temperatura: ${data.temp}°C\n💧 Humedad: ${data.humedad}%\n💨 Viento: ${data.viento} km/h\n👁️ Visibilidad: ${data.visibilidad}`;
-            } else if (seccion === 'pluvis') {
-                texto = `🌧️ *SIGA - REGISTRO PLUVIOMÉTRICO*\n📍 ${data.nombre}\n📊 Acumulado 24hs: ${data.luvia24}\n🕒 Estado: Actualizado post-precipitación.`;
-            } else if (seccion === 'sismos') {
-                texto = `📉 *SIGA - REGISTRO SÍSMICO*\n📍 Zona: ${data.sismo.lugar}\n⚡ Magnitud: ${data.sismo.mag}\n🕒 Fecha: ${data.sismo.fecha}`;
-            } else if (seccion === 'pronostico') {
-                texto = `📅 *SIGA - PRONÓSTICO A 7 DÍAS*\n📍 ${data.nombre}\n(Datos sincronizados de SMN / The Weather Channel).`;
-            } else if (seccion === 'mapa') {
-                texto = `🌍 *SIGA - MAPA SATELITAL EN VIVO*\n📍 Acceso a radar y vientos en tiempo real para ${data.nombre}.`;
-            }
-
-            const urlWap = `https://api.whatsapp.com/send?text=${encodeURIComponent(texto)}`;
-            window.open(urlWap, '_blank');
-        }
-
-        // Inicializar al cargar
-        window.onload = function() {
-            actualizarInterfaz("ascochinga");
-        };
-    </script>
-</body>
-</html>
+                    <div class="space-y-2 text-xs">
+                        <div class="flex items-center justify-between bg-slate-50 p-2 rounded-lg border border-slate-100">
+                            <span class="flex items-center gap-1.5 text-slate-600"><i class="fa-solid fa-circle-half-stroke text-indigo-500"></i> Cuarto Menguante</span>
+                            <span class="font-bold text-slate-800">3 Oct</span>
+                        </div>
+                        <div class="flex items-center justify-between bg-slate-50 p-2 rounded-lg border border-slate-10

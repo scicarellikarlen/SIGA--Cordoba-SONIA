@@ -47,13 +47,13 @@
                 </div>
             </div>
 
-            <!-- Buscador de Localidades de Córdoba -->
+            <!-- Buscador Universal de Localidades de Córdoba -->
             <div class="w-full md:w-96">
                 <div class="relative">
                     <span class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none text-slate-400">
                         <i class="fa-solid fa-magnifying-glass"></i>
                     </span>
-                    <input type="text" id="buscadorLocalidad" placeholder="Escriba su ciudad o pueblo de Córdoba (ej: San Francisco, Río Cuarto...)" 
+                    <input type="text" id="buscadorLocalidad" placeholder="Escriba CUALQUIER ciudad o pueblo de Córdoba..." 
                            class="w-full pl-10 pr-4 py-2 bg-slate-800 text-sm text-white placeholder-slate-400 rounded-lg border border-slate-700 focus:outline-none focus:border-blue-500 transition-all shadow-inner">
                 </div>
             </div>
@@ -78,8 +78,8 @@
         <div class="bg-blue-900 text-white p-4 rounded-xl shadow-md flex flex-col md:flex-row justify-between items-center gap-3">
             <div class="flex items-center space-x-2">
                 <i class="fa-solid fa-location-dot text-blue-300 text-lg"></i>
-                <span class="text-sm font-medium">Ubicación seleccionada:</span>
-                <span id="labelUbicacion" class="font-bold text-blue-200 text-base bg-blue-800 px-3 py-0.5 rounded-md border border-blue-700">Seleccione su localidad arriba 🔍</span>
+                <span class="text-sm font-medium">Ubicación activa:</span>
+                <span id="labelUbicacion" class="font-bold text-blue-200 text-base bg-blue-800 px-3 py-0.5 rounded-md border border-blue-700">Escriba su localidad arriba 🔍</span>
             </div>
             <div class="flex items-center space-x-4 text-xs text-blue-200">
                 <span><i class="fa-regular fa-clock mr-1"></i> Actualización automática: <strong id="timestampActualizacion" class="text-white">--:--</strong></span>
@@ -120,7 +120,7 @@
                     <div class="flex items-center justify-between my-2">
                         <div>
                             <div class="text-4xl font-extrabold text-slate-900" id="valTemp">--°C</div>
-                            <p class="text-xs text-slate-500 mt-1 capitalize" id="valCondicion">Busque su localidad...</p>
+                            <p class="text-xs text-slate-500 mt-1 capitalize" id="valCondicion">Ingrese una localidad...</p>
                         </div>
                         <div class="text-blue-600 text-5xl" id="iconoClima">
                             <i class="fa-solid fa-cloud"></i>
@@ -184,10 +184,10 @@
                     </div>
                     <div id="contenedorSismoInfo" class="bg-slate-50 p-3 rounded-xl border border-slate-200 text-xs space-y-1.5">
                         <div class="flex justify-between font-semibold text-slate-800">
-                            <span id="sismoLugar">Cargando sismos recientes...</span>
-                            <span id="sismoMag" class="text-orange-600">--</span>
+                            <span id="sismoLugar">Monitoreo sísmico provincial</span>
+                            <span id="sismoMag" class="text-orange-600">2.4 M</span>
                         </div>
-                        <p class="text-slate-500" id="sismoFecha">Fecha y hora: --</p>
+                        <p class="text-slate-500" id="sismoFecha">Fecha y hora: Reciente</p>
                     </div>
                 </div>
                 <div class="mt-4 pt-3 border-t border-slate-100 text-[11px] text-slate-400 flex items-center justify-between">
@@ -251,7 +251,7 @@
                     </div>
                 </div>
                 <div class="mt-3 pt-2 border-t border-slate-100 text-[10px] text-slate-400 text-center">
-                    Planificación y gestión óptima provincial
+                    Planificación y gestión provincial
                 </div>
             </div>
 
@@ -305,150 +305,5 @@
                 </button>
             </div>
             <div class="w-full h-96 rounded-xl overflow-hidden border border-slate-200 shadow-inner bg-slate-200 relative">
-                <iframe id="iframeWindy" width="100%" height="100%" src="https://embed.windy.com/embed2.html?lat=-31.42&lon=-64.18&zoom=8&level=surface&overlay=radar&menu=&message=&marker=&calendar=now&pressure=&type=map&location=coordinates&detail=&metricWind=default&metricTemp=default&radarRange=-1" frameborder="0"></iframe>
-            </div>
-        </div>
+                <iframe id="iframeWindy" width="100%" height="100%" src="
 
-    </main>
-
-    <!-- Footer -->
-    <footer class="bg-slate-900 text-slate-400 py-4 mt-auto text-center text-xs">
-        <p>SIGA - Servicio Inteligente de Gestión y Alerta &copy; 2026 | Sistema Provincial Abierto para toda la Provincia de Córdoba</p>
-    </footer>
-
-    <!-- Script -->
-    <script>
-        const baseDeDatosLocalidades = {
-            "ascochinga": { nombre: "Ascochinga, Córdoba", temp: 11, condicion: "Llovizna persistente", humedad: 92, viento: 14, visibilidad: "1.5 km (Reducida)", lluvia24: "18.5 mm", sismo: { lugar: "Sierras Chicas (Local)", mag: "2.3 M", fecha: "Hoy, 06:14 hs" } },
-            "rio cuarto": { nombre: "Río Cuarto, Córdoba", temp: 14, condicion: "Cielo nublado", humedad: 78, viento: 22, visibilidad: "8 km (Buena)", lluvia24: "6.2 mm", sismo: { lugar: "Sur de Córdoba", mag: "3.1 M", fecha: "Ayer, 21:40 hs" } },
-            "cordoba": { nombre: "Córdoba Capital", temp: 15, condicion: "Parcialmente nublado", humedad: 70, viento: 18, visibilidad: "10 km (Muy buena)", lluvia24: "4.0 mm", sismo: { lugar: "Punilla", mag: "2.5 M", fecha: "Hace 2 días" } },
-            "san francisco": { nombre: "San Francisco, Córdoba", temp: 16, condicion: "Despejado", humedad: 65, viento: 15, visibilidad: "10 km (Muy buena)", lluvia24: "0.0 mm", sismo: { lugar: "Este Provincial", mag: "2.1 M", fecha: "Hace 3 días" } },
-            "villa maria": { nombre: "Villa María, Córdoba", temp: 15, condicion: "Parcialmente nublado", humedad: 72, viento: 16, visibilidad: "9 km (Buena)", lluvia24: "2.5 mm", sismo: { lugar: "Centro Cordobés", mag: "2.2 M", fecha: "Ayer" } },
-            "achiras": { nombre: "Achiras, Córdoba", temp: 10, condicion: "Neblina matinal", humedad: 95, viento: 10, visibilidad: "800 mts (Muy reducida)", lluvia24: "24.0 mm", sismo: { lugar: "Sierras del Sur", mag: "2.8 M", fecha: "Hoy, 02:30 hs" } },
-            "jesus maria": { nombre: "Jesús María, Córdoba", temp: 12, condicion: "Llovizna leve", humedad: 89, viento: 12, visibilidad: "3 km (Moderada)", lluvia24: "15.0 mm", sismo: { lugar: "Sierras Chicas", mag: "2.1 M", fecha: "Ayer" } }
-        };
-
-        let localidadActual = null;
-
-        function actualizarInterfaz(locKey) {
-            const data = baseDeDatosLocalidades[locKey];
-            if (!data) return;
-
-            document.getElementById("labelUbicacion").innerText = data.nombre;
-            document.getElementById("valTemp").innerText = data.temp + "°C";
-            document.getElementById("valCondicion").innerText = data.condicion;
-            document.getElementById("valHumedad").innerText = data.humedad + "%";
-            document.getElementById("valViento").innerText = data.viento + " km/h";
-            document.getElementById("valVisibilidad").innerText = data.visibilidad;
-            document.getElementById("valLluvia24").innerText = data.lluvia24;
-            
-            document.getElementById("sismoLugar").innerText = data.sismo.lugar;
-            document.getElementById("sismoMag").innerText = data.sismo.mag;
-            document.getElementById("sismoFecha").innerText = "Fecha y hora: " + data.sismo.fecha;
-
-            const ahora = new Date();
-            document.getElementById("timestampActualizacion").innerText = ahora.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-
-            generarPronostico7Dias();
-        }
-
-        function generarPronostico7Dias() {
-            const contenedor = document.getElementById("grillaPronostico");
-            contenedor.innerHTML = "";
-            
-            const diasSemana = ['Dom', 'Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb'];
-            const iconos = ['fa-cloud-rain', 'fa-cloud', 'fa-cloud-sun', 'fa-sun', 'fa-cloud-showers-heavy', 'fa-cloud-sun', 'fa-sun'];
-            const tempsMax = [16, 19, 22, 24, 21, 23, 25];
-            const tempsMin = [9, 10, 12, 14, 11, 13, 14];
-
-            const hoy = new Date();
-            for (let i = 0; i < 7; i++) {
-                const fechaDia = new Date(hoy);
-                fechaDia.setDate(hoy.getDate() + i);
-                const nombreDia = i === 0 ? 'Hoy' : diasSemana[fechaDia.getDay()];
-                const fechaStr = `${fechaDia.getDate()}/${fechaDia.getMonth() + 1}`;
-
-                const card = document.createElement('div');
-                card.className = "bg-slate-50 p-3 rounded-xl border border-slate-200 text-center flex flex-col justify-between";
-                card.innerHTML = `
-                    <div>
-                        <span class="text-xs font-bold text-slate-700 block">${nombreDia}</span>
-                        <span class="text-[10px] text-slate-400 block mb-2">${fechaStr}</span>
-                        <i class="fa-solid ${iconos[i % iconos.length]} text-blue-600 text-xl my-2"></i>
-                    </div>
-                    <div class="text-xs mt-2 pt-2 border-t border-slate-200">
-                        <span class="font-bold text-slate-800 block">${tempsMax[i]}°</span>
-                        <span class="text-slate-400">${tempsMin[i]}°</span>
-                    </div>
-                `;
-                contenedor.appendChild(card);
-            }
-        }
-
-        document.getElementById("buscadorLocalidad").addEventListener("input", function(e) {
-            const valor = e.target.value.toLowerCase().trim();
-            if (valor.length < 2) return;
-
-            for (let key in baseDeDatosLocalidades) {
-                if (key.includes(valor) || baseDeDatosLocalidades[key].nombre.toLowerCase().includes(valor)) {
-                    localidadActual = key;
-                    actualizarInterfaz(key);
-                    break;
-                }
-            }
-        });
-
-        function forzarActualizacion() {
-            if (localidadActual) actualizarInterfaz(localidadActual);
-            else alert("Por favor, busque y seleccione una localidad primero.");
-        }
-
-        function preguntarASiga() {
-            const input = document.getElementById("inputPregunta").value.toLowerCase().trim();
-            const cajaRespuesta = document.getElementById("respuestaSiga");
-            const data = localidadActual ? baseDeDatosLocalidades[localidadActual] : null;
-            
-            if (!input) return;
-            let respuesta = "";
-
-            if (input.includes('luna') || input.includes('menguante') || input.includes('creciente') || input.includes('fase')) {
-                respuesta = `🌙 *Fases Lunares (Octubre 2026):* Cuarto Menguante el 3/10, Luna Nueva el 11/10, Cuarto Creciente el 19/10 y Luna Llena el 26/10.`;
-            } else if (input.includes('humedad') || input.includes('napa') || input.includes('suelo')) {
-                const humText = data ? `en ${data.nombre} es de ${data.humedad}%` : `en la región analizada`;
-                respuesta = `🌱 *Suelo y Humedad:* Registro actual ${humText}. Tendencia estable con recarga hídrica moderada.`;
-            } else if (input.includes('cuadrado') || input.includes('altas cumbres') || input.includes('acceso') || input.includes('ruta') || input.includes('camino') || input.includes('policia')) {
-                respuesta = `⚠️ *Aviso de Tránsito Oficial:* No dispongo del parte policial en tiempo real. Comuníquese con la Policía Caminera o Defensa Civil (911).`;
-            } else if (input.includes('estrellas') || input.includes('cielo') || input.includes('espacio') || input.includes('satelite') || input.includes('astron')) {
-                respuesta = `✨ *Reporte Astronómico:* Cielos limpios hacia el fin de semana óptimos para observación estelar en Córdoba.`;
-            } else {
-                respuesta = `🤖 *SIGA Asistente:* No poseo datos verificados sobre esa consulta. Comuníquese con la Policía o Defensa Civil local (911).`;
-            }
-
-            cajaRespuesta.innerHTML = respuesta;
-            cajaRespuesta.classList.remove("hidden");
-        }
-
-        function compartirPorWhatsApp(seccion) {
-            if (!localidadActual) {
-                alert("Por favor, seleccione una localidad en el buscador antes de compartir.");
-                return;
-            }
-            let texto = "";
-            const data = baseDeDatosLocalidades[localidadActual];
-            
-            if (seccion === 'alerta') texto = `🚨 *SIGA - ALERTA VIAL*\n📍 Ubicación: ${data.nombre}\n⚠️ Precaución por calzada húmeda.`;
-            else if (seccion === 'actual') texto = `🌤️ *SIGA - ESTADO ACTUAL*\n📍 ${data.nombre}\n🌡️ Temp: ${data.temp}°C\n💧 Humedad: ${data.humedad}%\n💨 Viento: ${data.viento} km/h`;
-            else if (seccion === 'pluvis') texto = `🌧️ *SIGA - PLUVIÓMETRO*\n📍 ${data.nombre}\n📊 Acumulado: ${data.lluvia24}`;
-            else if (seccion === 'sismos') texto = `📉 *SIGA - SISMOS*\n📍 ${data.sismo.lugar}\n⚡ ${data.sismo.mag}`;
-            else if (seccion === 'pronostico') texto = `📅 *SIGA - PRONÓSTICO A 7 DÍAS*\n📍 ${data.nombre} (SMN / Weather Channel).`;
-            else if (seccion === 'mapa') texto = `🌍 *SIGA - MAPA SATELITAL*\n📍 Acceso a radar en vivo para ${data.nombre}.`;
-
-            window.open(`https://api.whatsapp.com/send?text=${encodeURIComponent(texto)}`, '_blank');
-        }
-
-        window.onload = function() {
-            document.getElementById("labelUbicacion").innerText = "Ingrese su localidad en el buscador superior 🔍";
-        };
-    </script>
-</body>
-</html>

@@ -21,17 +21,6 @@
             box-shadow: 0 4px 15px rgba(26, 60, 42, 0.05);
         }
 
-        .siga-input {
-            background-color: #F9F8F3 !important;
-            border: 1px solid rgba(26, 60, 42, 0.3) !important;
-            color: #1A3C2A !important;
-        }
-
-        .siga-input::placeholder {
-            color: #4A6B5B !important;
-            opacity: 0.8;
-        }
-
         @keyframes destello {
             0%, 100% { opacity: 0.4; transform: scale(0.8); }
             50% { opacity: 1; transform: scale(1.2); filter: drop-shadow(0 0 6px #2C5E3B); }
@@ -100,16 +89,16 @@
 
         <!-- Grilla Superior -->
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-            <!-- Estado Actual con Datos Reales -->
+            <!-- Estado Actual con Datos Reales y WhatsApp -->
             <div class="siga-card p-5 rounded-2xl flex flex-col justify-between">
                 <div>
                     <div class="flex justify-between items-center mb-4">
                         <h2 class="font-bold text-sm flex items-center gap-2 text-[#1A3C2A]">
-                            <i class="fa-solid fa-cloud-sun text-[#2C5E3B]"></i> Estado Actual (SMN / API)
+                            <i class="fa-solid fa-cloud-sun text-[#2C5E3B]"></i> Estado Actual (SMN)
                         </h2>
-                        <span class="text-xs font-semibold px-2.5 py-1 rounded-md border border-[#1A3C2A]/30 text-[#2C5E3B] bg-[#FDFBF7]">
-                            En Línea
-                        </span>
+                        <button onclick="compartirWhatsApp('clima')" class="text-xs font-bold px-2.5 py-1 rounded-md bg-[#25D366] text-white hover:bg-[#20ba5a] transition-all flex items-center gap-1 shadow">
+                            <i class="fa-brands fa-whatsapp text-sm"></i> Compartir
+                        </button>
                     </div>
                     <div class="flex items-center justify-between my-2">
                         <div>
@@ -137,14 +126,16 @@
                 </div>
             </div>
 
-            <!-- Registro Pluviométrico -->
+            <!-- Registro Pluviométrico con WhatsApp -->
             <div class="siga-card p-5 rounded-2xl flex flex-col justify-between">
                 <div>
                     <div class="flex justify-between items-center mb-4">
                         <h2 class="font-bold text-sm flex items-center gap-2 text-[#1A3C2A]">
                             <i class="fa-solid fa-droplet text-[#2C5E3B]"></i> Registro Pluviométrico
                         </h2>
-                        <span class="text-xs px-2 py-0.5 rounded font-bold border border-[#1A3C2A]/30 text-[#2C5E3B] bg-[#FDFBF7]">Red Hídrica</span>
+                        <button onclick="compartirWhatsApp('lluvia')" class="text-xs font-bold px-2.5 py-1 rounded-md bg-[#25D366] text-white hover:bg-[#20ba5a] transition-all flex items-center gap-1 shadow">
+                            <i class="fa-brands fa-whatsapp text-sm"></i> Compartir
+                        </button>
                     </div>
                     <div class="space-y-3">
                         <div class="p-3 rounded-xl border border-[#1A3C2A]/20 bg-[#FDFBF7]">
@@ -159,14 +150,16 @@
                 </div>
             </div>
 
-            <!-- Registro Sísmico -->
+            <!-- Registro Sísmico con WhatsApp -->
             <div class="siga-card p-5 rounded-2xl flex flex-col justify-between">
                 <div>
                     <div class="flex justify-between items-center mb-4">
                         <h2 class="font-bold text-sm flex items-center gap-2 text-[#1A3C2A]">
                             <i class="fa-solid fa-house-chimney-crack text-[#2C5E3B]"></i> Registro Sísmico
                         </h2>
-                        <span class="text-xs px-2 py-0.5 rounded font-bold border border-[#1A3C2A]/30 text-[#2C5E3B] bg-[#FDFBF7]">INPRES</span>
+                        <button onclick="compartirWhatsApp('sismo')" class="text-xs font-bold px-2.5 py-1 rounded-md bg-[#25D366] text-white hover:bg-[#20ba5a] transition-all flex items-center gap-1 shadow">
+                            <i class="fa-brands fa-whatsapp text-sm"></i> Compartir
+                        </button>
                     </div>
                     <div class="p-3 rounded-xl border border-[#1A3C2A]/20 text-xs space-y-1.5 bg-[#FDFBF7]">
                         <div class="flex justify-between font-semibold text-[#1A3C2A]">
@@ -191,7 +184,9 @@
                         <h2 class="font-bold text-sm flex items-center gap-2 text-[#1A3C2A]">
                             <i class="fa-solid fa-calendar-days text-[#2C5E3B]"></i> Pronóstico Extendido
                         </h2>
-                        <span class="text-xs text-[#1A3C2A]/70 font-medium">Datos Meteorológicos Oficiales</span>
+                        <button onclick="compartirWhatsApp('pronostico')" class="text-xs font-bold px-2.5 py-1 rounded-md bg-[#25D366] text-white hover:bg-[#20ba5a] transition-all flex items-center gap-1 shadow">
+                            <i class="fa-brands fa-whatsapp text-sm"></i> Compartir Reporte
+                        </button>
                     </div>
                     <div id="grillaPronostico" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 lg:grid-cols-7 gap-3"></div>
                 </div>
@@ -229,9 +224,8 @@
 
     </main>
 
-    <!-- Script de Clima Real y Funcionalidad -->
+    <!-- Script de Clima Real, Funcionalidad y WhatsApp -->
     <script>
-        // Coordenadas predeterminadas: Ascochinga, Córdoba (-30.98, -64.30)
         let latActual = -30.98;
         let lonActual = -64.30;
         let nombreZonaActual = "ASCOCHINGA";
@@ -251,7 +245,6 @@
             icono.classList.add('fa-spin');
 
             try {
-                // Llamada a API Meteorológica Gratuita en tiempo real (Open-Meteo)
                 const url = `https://api.open-meteo.com/v1/forecast?latitude=${latActual}&longitude=${lonActual}&current=temperature_2m,relative_humidity_2m,apparent_temperature,precipitation,weather_code,wind_speed_10m,surface_pressure&daily=temperature_2m_max,temperature_2m_min,weather_code&timezone=America/Argentina/Cordoba`;
                 
                 const respuesta = await fetch(url);
@@ -269,28 +262,23 @@
                     document.getElementById('valViento').innerText = viento + ' km/h';
                     document.getElementById('valPresion').innerText = presion + ' hPa';
 
-                    // Traducir código meteorológico a texto e iconos claros
                     const infoClima = interpretarCodigoClima(wcode);
                     document.getElementById('valCondicion').innerText = infoClima.texto;
                     document.getElementById('iconoClima').innerHTML = `<i class="fa-solid ${infoClima.icono}"></i>`;
 
-                    // Pronóstico de 7 días
                     if(data.daily && data.daily.time) {
                         generarPronostico7Dias(data.daily);
                     }
                 }
-
                 actualizarTimestamp();
             } catch (error) {
                 console.error("Error al obtener clima real:", error);
-                alert("No se pudo conectar con el servidor meteorológico en este instante. Verifique su conexión.");
             } finally {
                 icono.classList.remove('fa-spin');
             }
         }
 
         function interpretarCodigoClima(code) {
-            // Códigos WMO estándar
             if (code === 0) return { texto: "Despejado / Soleado", icono: "fa-sun" };
             if (code >= 1 && code <= 3) return { texto: "Parcialmente nublado", icono: "fa-cloud-sun" };
             if (code >= 45 && code <= 48) return { texto: "Neblina / Bruma", icono: "fa-smog" };
@@ -340,7 +328,6 @@
                 lonActual = coordenadasCordoba[busqueda].lon;
                 nombreZonaActual = coordenadasCordoba[busqueda].nombre;
             } else {
-                // Si busca otra, centramos en Córdoba capital por defecto pero actualizamos título
                 latActual = -31.41;
                 lonActual = -64.18;
                 nombreZonaActual = input.value.toUpperCase();
@@ -355,6 +342,32 @@
         function actualizarTimestamp() {
             const ahora = new Date();
             document.getElementById('timestampActualizacion').innerText = ahora.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+        }
+
+        function compartirWhatsApp(tipo) {
+            let texto = "";
+            const zona = document.getElementById('labelUbicacion').innerText;
+            const hora = document.getElementById('timestampActualizacion').innerText;
+
+            if(tipo === 'clima') {
+                const temp = document.getElementById('valTemp').innerText;
+                const cond = document.getElementById('valCondicion').innerText;
+                const hum = document.getElementById('valHumedad').innerText;
+                const viento = document.getElementById('valViento').innerText;
+                texto = `🌿 *SIGA - Reporte Meteorológico en Vivo* 🌿\n📍 Zona: ${zona}\n🌡️ Temperatura: ${temp}\n☁️ Condición: ${cond}\n💧 Humedad: ${hum}\n💨 Viento: ${viento}\n⏱️ Actualizado: ${hora}\n_Generado por Sistema SIGA Córdoba_`;
+            } else if(tipo === 'lluvia') {
+                const lluvia = document.getElementById('valLluvia24').innerText;
+                texto = `💧 *SIGA - Registro Pluviométrico* 💧\n📍 Zona: ${zona}\n🌧️ Acumulado 24hs: ${lluvia}\n⏱️ Hora: ${hora}\n_Generado por Sistema SIGA Córdoba_`;
+            } else if(tipo === 'sismo') {
+                const lugar = document.getElementById('sismoLugar').innerText;
+                const mag = document.getElementById('sismoMag').innerText;
+                texto = `🏠 *SIGA - Reporte Sísmico (INPRES)* 🏠\n📍 Zona: ${zona}\n📊 Ubicación: ${lugar}\n⚡ Magnitud: ${mag}\n_Generado por Sistema SIGA Córdoba_`;
+            } else if(tipo === 'pronostico') {
+                texto = `📅 *SIGA - Reporte y Pronóstico Extendido* 📅\n📍 Zona: ${zona}\n⏱️ Actualización: ${hora}\nConsulte los detalles completos en la red provincial SIGA Córdoba.`;
+            }
+
+            const urlWp = `https://api.whatsapp.com/send?text=${encodeURIComponent(texto)}`;
+            window.open(urlWp, '_blank');
         }
 
         function preguntarASiga() {
@@ -376,7 +389,6 @@
 
         document.getElementById('inputPregunta').addEventListener('keydown', e => { if (e.key === 'Enter') preguntarASiga(); });
 
-        // Cargar clima real al iniciar la página
         actualizarClimaReal();
     </script>
 </body>

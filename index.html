@@ -53,7 +53,7 @@
                 </div>
             </div>
 
-            <!-- Buscador Universal con contraste óptimo -->
+            <!-- Buscador Universal -->
             <div class="w-full md:w-80 flex gap-2">
                 <div class="relative flex-grow">
                     <span class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none text-[#1A3C2A] opacity-70">
@@ -87,14 +87,15 @@
             </div>
         </div>
 
-        <!-- Grilla Superior -->
+        <!-- Grilla Principal: Clima, Lluvias e Histórico -->
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-            <!-- Estado Actual con Datos Reales y WhatsApp -->
+            
+            <!-- 1. Estado Actual -->
             <div class="siga-card p-5 rounded-2xl flex flex-col justify-between">
                 <div>
                     <div class="flex justify-between items-center mb-4">
                         <h2 class="font-bold text-sm flex items-center gap-2 text-[#1A3C2A]">
-                            <i class="fa-solid fa-cloud-sun text-[#2C5E3B]"></i> Estado Actual (SMN)
+                            <i class="fa-solid fa-cloud-sun text-[#2C5E3B]"></i> Clima Actual
                         </h2>
                         <button onclick="compartirWhatsApp('clima')" class="text-xs font-bold px-2.5 py-1 rounded-md bg-[#25D366] text-white hover:bg-[#20ba5a] transition-all flex items-center gap-1 shadow">
                             <i class="fa-brands fa-whatsapp text-sm"></i> Compartir
@@ -126,57 +127,79 @@
                 </div>
             </div>
 
-            <!-- Registro Pluviométrico con WhatsApp -->
+            <!-- 2. Histórico de Lluvias y Acumulado Mensual -->
             <div class="siga-card p-5 rounded-2xl flex flex-col justify-between">
                 <div>
                     <div class="flex justify-between items-center mb-4">
                         <h2 class="font-bold text-sm flex items-center gap-2 text-[#1A3C2A]">
-                            <i class="fa-solid fa-droplet text-[#2C5E3B]"></i> Registro Pluviométrico
+                            <i class="fa-solid fa-cloud-showers-heavy text-[#2C5E3B]"></i> Registro e Histórico de Lluvias
                         </h2>
                         <button onclick="compartirWhatsApp('lluvia')" class="text-xs font-bold px-2.5 py-1 rounded-md bg-[#25D366] text-white hover:bg-[#20ba5a] transition-all flex items-center gap-1 shadow">
                             <i class="fa-brands fa-whatsapp text-sm"></i> Compartir
                         </button>
                     </div>
                     <div class="space-y-3">
-                        <div class="p-3 rounded-xl border border-[#1A3C2A]/20 bg-[#FDFBF7]">
-                            <span class="text-xs text-[#1A3C2A]/80 font-medium block">Acumulado últimas 24hs:</span>
-                            <span class="text-lg font-bold text-[#2C5E3B]" id="valLluvia24">0.0 mm (Sin precipitaciones)</span>
+                        <div class="p-3 rounded-xl border border-[#1A3C2A]/20 bg-[#FDFBF7] flex justify-between items-center">
+                            <div>
+                                <span class="text-xs text-[#1A3C2A]/80 font-medium block">Últimas 24 hs:</span>
+                                <span class="text-lg font-bold text-[#2C5E3B]" id="valLluvia24">-- mm</span>
+                            </div>
+                            <i class="fa-solid fa-droplet text-2xl text-[#2C5E3B]/40"></i>
+                        </div>
+                        <div class="p-3 rounded-xl border border-[#1A3C2A]/20 bg-[#FDFBF7] flex justify-between items-center">
+                            <div>
+                                <span class="text-xs text-[#1A3C2A]/80 font-medium block">Acumulado Mensual:</span>
+                                <span class="text-lg font-bold text-[#1A3C2A]" id="valLluviaMes">-- mm</span>
+                            </div>
+                            <i class="fa-solid fa-bucket text-2xl text-[#2C5E3B]/40"></i>
                         </div>
                     </div>
                 </div>
                 <div class="mt-4 pt-3 border-t border-[#1A3C2A]/15 text-[11px] text-[#1A3C2A]/70 flex items-center justify-between">
-                    <span>Estación Ascochinga / Sierras Chicas</span>
+                    <span>Estación Local / Red Pluviométrica</span>
                     <i class="fa-solid fa-circle-check text-[#2C5E3B]"></i>
                 </div>
             </div>
 
-            <!-- Registro Sísmico con WhatsApp -->
-            <div class="siga-card p-5 rounded-2xl flex flex-col justify-between">
+            <!-- 3. Alarmas de Incendios y Granizo -->
+            <div class="siga-card p-5 rounded-2xl flex flex-col justify-between border-2 border-amber-600/30">
                 <div>
                     <div class="flex justify-between items-center mb-4">
-                        <h2 class="font-bold text-sm flex items-center gap-2 text-[#1A3C2A]">
-                            <i class="fa-solid fa-house-chimney-crack text-[#2C5E3B]"></i> Registro Sísmico
+                        <h2 class="font-bold text-sm flex items-center gap-2 text-amber-900">
+                            <i class="fa-solid fa-triangle-exclamation text-amber-600"></i> Alarmas de Prevención
                         </h2>
-                        <button onclick="compartirWhatsApp('sismo')" class="text-xs font-bold px-2.5 py-1 rounded-md bg-[#25D366] text-white hover:bg-[#20ba5a] transition-all flex items-center gap-1 shadow">
+                        <button onclick="compartirWhatsApp('alarmas')" class="text-xs font-bold px-2.5 py-1 rounded-md bg-[#25D366] text-white hover:bg-[#20ba5a] transition-all flex items-center gap-1 shadow">
                             <i class="fa-brands fa-whatsapp text-sm"></i> Compartir
                         </button>
                     </div>
-                    <div class="p-3 rounded-xl border border-[#1A3C2A]/20 text-xs space-y-1.5 bg-[#FDFBF7]">
-                        <div class="flex justify-between font-semibold text-[#1A3C2A]">
-                            <span id="sismoLugar">Sierras Chicas (Local)</span>
-                            <span class="text-[#2C5E3B]" id="sismoMag">2.1 M</span>
+                    <div class="space-y-2.5 text-xs">
+                        <!-- Alarma Incendios -->
+                        <div class="p-2.5 rounded-xl border border-amber-600/30 bg-amber-50">
+                            <div class="flex justify-between font-bold text-amber-900 mb-1">
+                                <span><i class="fa-solid fa-fire-flame-curved text-amber-600 mr-1"></i> Riesgo de Incendios:</span>
+                                <span id="nivelRiesgoFuego" class="px-2 py-0.5 rounded bg-amber-200 text-amber-900">EVALUANDO...</span>
+                            </div>
+                            <p class="text-amber-900/80 text-[11px]" id="detalleRiesgoFuego">Calculando según humedad y viento actual.</p>
                         </div>
-                        <p class="text-[#1A3C2A]/70" id="sismoFecha">Monitoreo activo sin alertas</p>
+                        <!-- Alarma Granizo -->
+                        <div class="p-2.5 rounded-xl border border-blue-600/30 bg-blue-50">
+                            <div class="flex justify-between font-bold text-blue-900 mb-1">
+                                <span><i class="fa-solid fa-cloud-hailtext text-blue-600 mr-1"></i> Alerta de Granizo:</span>
+                                <span id="nivelRiesgoGranizo" class="px-2 py-0.5 rounded bg-blue-200 text-blue-900">SIN ALERTA</span>
+                            </div>
+                            <p class="text-blue-900/80 text-[11px]" id="detalleRiesgoGranizo">No se detectan núcleos de inestabilidad severa en la zona.</p>
+                        </div>
                     </div>
                 </div>
                 <div class="mt-4 pt-3 border-t border-[#1A3C2A]/15 text-[11px] text-[#1A3C2A]/70 flex items-center justify-between">
-                    <span>Red Nacional de Sismología</span>
-                    <i class="fa-solid fa-circle-check text-[#2C5E3B]"></i>
+                    <span>Sistema Integrado de Alerta Temprana</span>
+                    <i class="fa-solid fa-[#2C5E3B] fa-shield"></i>
                 </div>
             </div>
+
         </div>
 
-        <!-- Pronóstico y QR -->
+        <!-- Pronóstico Extendido y QR -->
         <div class="grid grid-cols-1 lg:grid-cols-4 gap-6">
             <div class="siga-card p-5 rounded-2xl lg:col-span-3 flex flex-col justify-between">
                 <div>
@@ -204,27 +227,9 @@
             </div>
         </div>
 
-        <!-- Asistente SIGA -->
-        <div class="siga-card p-5 rounded-2xl border-2 border-[#2C5E3B]">
-            <div class="flex justify-between items-center mb-3">
-                <h2 class="font-bold text-sm flex items-center gap-2 text-[#1A3C2A]">
-                    <i class="fa-solid fa-wand-magic-sparkles text-[#2C5E3B]"></i> Preguntale a SIGA
-                </h2>
-                <span class="text-[11px] text-[#1A3C2A]/70 font-medium">Asistente operativo provincial</span>
-            </div>
-            <div class="flex flex-col sm:flex-row gap-2">
-                <input type="text" id="inputPregunta" placeholder="Ej: ¿Cómo está la situación meteorológica hoy en la zona?" 
-                       class="flex-grow px-4 py-2 text-sm rounded-xl border focus:outline-none shadow-inner bg-white text-[#1A3C2A] border-[#1A3C2A]/30 placeholder-[#1A3C2A]/60 font-medium">
-                <button onclick="preguntarASiga()" class="text-[#FDFBF7] text-xs font-semibold px-5 py-2.5 rounded-xl shadow flex items-center justify-center gap-1.5 shrink-0 bg-[#2C5E3B] hover:bg-[#1A3C2A]">
-                    <i class="fa-solid fa-paper-plane"></i> Consultar
-                </button>
-            </div>
-            <div id="respuestaSiga" class="mt-3 hidden p-3.5 rounded-xl border border-[#1A3C2A]/20 text-xs leading-relaxed bg-[#FDFBF7] text-[#1A3C2A]"></div>
-        </div>
-
     </main>
 
-    <!-- Script de Clima Real, Funcionalidad y WhatsApp -->
+    <!-- Script de Clima Real, Histórico y Alarmas -->
     <script>
         let latActual = -30.98;
         let lonActual = -64.30;
@@ -245,7 +250,7 @@
             icono.classList.add('fa-spin');
 
             try {
-                const url = `https://api.open-meteo.com/v1/forecast?latitude=${latActual}&longitude=${lonActual}&current=temperature_2m,relative_humidity_2m,apparent_temperature,precipitation,weather_code,wind_speed_10m,surface_pressure&daily=temperature_2m_max,temperature_2m_min,weather_code&timezone=America/Argentina/Cordoba`;
+                const url = `https://api.open-meteo.com/v1/forecast?latitude=${latActual}&longitude=${lonActual}&current=temperature_2m,relative_humidity_2m,apparent_temperature,precipitation,weather_code,wind_speed_10m,surface_pressure&daily=temperature_2m_max,temperature_2m_min,precipitation_sum,weather_code&past_days=14&timezone=America/Argentina/Cordoba`;
                 
                 const respuesta = await fetch(url);
                 const data = await respuesta.json();
@@ -261,6 +266,19 @@
                     document.getElementById('valHumedad').innerText = humedad + '%';
                     document.getElementById('valViento').innerText = viento + ' km/h';
                     document.getElementById('valPresion').innerText = presion + ' hPa';
+
+                    // Lluvia 24hs y Acumulado Mensual desde los datos pasados
+                    if(data.daily && data.daily.precipitation_sum) {
+                        const precipitaciones = data.daily.precipitation_sum;
+                        const lluviaHoy = precipitaciones[precipitaciones.length - 1] || 0;
+                        const acumuladoTotal = precipitaciones.reduce((a, b) => a + b, 0);
+
+                        document.getElementById('valLluvia24').innerText = lluviaHoy.toFixed(1) + ' mm';
+                        document.getElementById('valLluviaMes').innerText = acumuladoTotal.toFixed(1) + ' mm';
+                    }
+
+                    // Evaluación de Alarmas (Incendios y Granizo)
+                    evaluarAlarmas(humedad, viento, wcode);
 
                     const infoClima = interpretarCodigoClima(wcode);
                     document.getElementById('valCondicion').innerText = infoClima.texto;
@@ -278,6 +296,42 @@
             }
         }
 
+        function evaluarAlarmas(humedad, viento, wcode) {
+            // 1. Incendios
+            const lblFuego = document.getElementById('nivelRiesgoFuego');
+            const detFuego = document.getElementById('detalleRiesgoFuego');
+            if (humedad < 30 || viento > 25) {
+                lblFuego.innerText = "ALTO / EXTREMO";
+                lblFuego.className = "px-2 py-0.5 rounded bg-red-200 text-red-900 font-bold";
+                detFuego.innerText = `Baja humedad (${humedad}%) y vientos de ${viento} km/h. Alto riesgo de propagación.`;
+            } else if (humedad < 50) {
+                lblFuego.innerText = "MODERADO";
+                lblFuego.className = "px-2 py-0.5 rounded bg-amber-200 text-amber-900 font-bold";
+                detFuego.innerText = `Humedad moderada (${humedad}%). Precaución en zonas de monte serrano.`;
+            } else {
+                lblFuego.innerText = "BAJO";
+                lblFuego.className = "px-2 py-0.5 rounded bg-green-200 text-green-900 font-bold";
+                detFuego.innerText = `Buena humedad ambiental (${humedad}%). Riesgo forestal controlado.`;
+            }
+
+            // 2. Granizo (basado en códigos de tormenta severa 80-99)
+            const lblGranizo = document.getElementById('nivelRiesgoGranizo');
+            const detGranizo = document.getElementById('detalleRiesgoGranizo');
+            if (wcode >= 95) {
+                lblGranizo.innerText = "ALERTA ROJA";
+                lblGranizo.className = "px-2 py-0.5 rounded bg-red-200 text-red-900 font-bold";
+                detGranizo.innerText = "Tormentas eléctricas fuertes con alta probabilidad de caída de granizo.";
+            } else if (wcode >= 80 || wcode === 29) {
+                lblGranizo.innerText = "PRECAUCIÓN";
+                lblGranizo.className = "px-2 py-0.5 rounded bg-amber-200 text-amber-900 font-bold";
+                detGranizo.innerText = "Desarrollo de tormentas aisladas. Monitorear evolución en el sector.";
+            } else {
+                lblGranizo.innerText = "SIN ALERTA";
+                lblGranizo.className = "px-2 py-0.5 rounded bg-blue-200 text-blue-900 font-bold";
+                detGranizo.innerText = "Condiciones estables. Sin probabilidad de granizo para las próximas horas.";
+            }
+        }
+
         function interpretarCodigoClima(code) {
             if (code === 0) return { texto: "Despejado / Soleado", icono: "fa-sun" };
             if (code >= 1 && code <= 3) return { texto: "Parcialmente nublado", icono: "fa-cloud-sun" };
@@ -292,10 +346,11 @@
             const grilla = document.getElementById('grillaPronostico');
             let html = '';
             const diasSemana = ['Dom', 'Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb'];
+            const inicio = daily.time.length - 7; // Tomar los últimos 7 días de la lista de pronóstico
 
-            for(let i = 0; i < 7; i++) {
+            for(let i = inicio; i < daily.time.length; i++) {
                 const fechaObj = new Date(daily.time[i]);
-                const nombreDia = i === 0 ? 'Hoy' : diasSemana[fechaObj.getDay()];
+                const nombreDia = i === daily.time.length - 7 ? 'Hoy' : diasSemana[fechaObj.getDay()];
                 const tMax = Math.round(daily.temperature_2m_max[i]);
                 const tMin = Math.round(daily.temperature_2m_min[i]);
                 const iconoDia = interpretarCodigoClima(daily.weather_code[i]).icono;
@@ -352,42 +407,22 @@
             if(tipo === 'clima') {
                 const temp = document.getElementById('valTemp').innerText;
                 const cond = document.getElementById('valCondicion').innerText;
-                const hum = document.getElementById('valHumedad').innerText;
-                const viento = document.getElementById('valViento').innerText;
-                texto = `🌿 *SIGA - Reporte Meteorológico en Vivo* 🌿\n📍 Zona: ${zona}\n🌡️ Temperatura: ${temp}\n☁️ Condición: ${cond}\n💧 Humedad: ${hum}\n💨 Viento: ${viento}\n⏱️ Actualizado: ${hora}\n_Generado por Sistema SIGA Córdoba_`;
+                texto = `🌿 *SIGA - Clima en Vivo* 🌿\n📍 Zona: ${zona}\n🌡️ Temp: ${temp}\n☁️ Condición: ${cond}\n⏱️ Hora: ${hora}\n_Red SIGA Córdoba_`;
             } else if(tipo === 'lluvia') {
-                const lluvia = document.getElementById('valLluvia24').innerText;
-                texto = `💧 *SIGA - Registro Pluviométrico* 💧\n📍 Zona: ${zona}\n🌧️ Acumulado 24hs: ${lluvia}\n⏱️ Hora: ${hora}\n_Generado por Sistema SIGA Córdoba_`;
-            } else if(tipo === 'sismo') {
-                const lugar = document.getElementById('sismoLugar').innerText;
-                const mag = document.getElementById('sismoMag').innerText;
-                texto = `🏠 *SIGA - Reporte Sísmico (INPRES)* 🏠\n📍 Zona: ${zona}\n📊 Ubicación: ${lugar}\n⚡ Magnitud: ${mag}\n_Generado por Sistema SIGA Córdoba_`;
+                const lluvia24 = document.getElementById('valLluvia24').innerText;
+                const lluviaMes = document.getElementById('valLluviaMes').innerText;
+                texto = `💧 *SIGA - Reporte e Histórico de Lluvias* 💧\n📍 Zona: ${zona}\n🌧️ Últimas 24 hs: ${lluvia24}\n🪣 Acumulado Mensual: ${lluviaMes}\n⏱️ Hora: ${hora}\n_Red SIGA Córdoba_`;
+            } else if(tipo === 'alarmas') {
+                const fuego = document.getElementById('nivelRiesgoFuego').innerText;
+                const granizo = document.getElementById('nivelRiesgoGranizo').innerText;
+                texto = `⚠️ *SIGA - Alarmas de Prevención* ⚠️\n📍 Zona: ${zona}\n🔥 Riesgo Incendio: ${fuego}\n🧊 Alerta Granizo: ${granizo}\n⏱️ Hora: ${hora}\n_Red SIGA Córdoba_`;
             } else if(tipo === 'pronostico') {
-                texto = `📅 *SIGA - Reporte y Pronóstico Extendido* 📅\n📍 Zona: ${zona}\n⏱️ Actualización: ${hora}\nConsulte los detalles completos en la red provincial SIGA Córdoba.`;
+                texto = `📅 *SIGA - Pronóstico Extendido* 📅\n📍 Zona: ${zona}\n⏱️ Hora: ${hora}\nConsulte los detalles en la red provincial SIGA Córdoba.`;
             }
 
             const urlWp = `https://api.whatsapp.com/send?text=${encodeURIComponent(texto)}`;
             window.open(urlWp, '_blank');
         }
-
-        function preguntarASiga() {
-            const input = document.getElementById('inputPregunta');
-            const pregunta = input.value.trim();
-            const respDiv = document.getElementById('respuestaSiga');
-            if(!pregunta) {
-                alert("Por favor, escriba una consulta.");
-                return;
-            }
-
-            respDiv.classList.remove('hidden');
-            respDiv.innerHTML = `<i class="fa-solid fa-spinner fa-spin mr-2"></i> Analizando datos oficiales del Servicio Meteorológico para: <em>"${pregunta}"</em>...`;
-            
-            setTimeout(() => {
-                respDiv.innerHTML = `<strong>Reporte SIGA en vivo:</strong> Consulta procesada para la zona de <strong>${nombreZonaActual}</strong>. Los registros actuales de temperatura reflejan con exactitud los valores de estación meteorológica oficial, operando sin alertas de contingencia en la red provincial.`;
-            }, 1000);
-        }
-
-        document.getElementById('inputPregunta').addEventListener('keydown', e => { if (e.key === 'Enter') preguntarASiga(); });
 
         actualizarClimaReal();
     </script>

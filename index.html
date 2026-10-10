@@ -1,54 +1,42 @@
-# Módulo de Interfaz y Lógica SIGA - Actualización de Componentes y Validación Espacial
-import requests
-
-def calcular_acumulado_espacial(sensores_vecinos):
-    """
-    Filtra valores atípicos espaciales comparando con estaciones aledañas (ej. radio de 2-5 km).
-    Si un sensor diverge drásticamente del promedio local, se recalcula o se aplica el valor de referencia zonal.
-    """
-    if not sensores_vecinos:
-        return None
-        
-    # Descartar valores extremos (outliers espaciales) usando la mediana o promedio local
-    promedio_local = sum(sensores_vecinos) / len(sensores_vecinos)
-    return promedio_local
-
-# ---------------------------------------------------------
-# COMPONENTES DE UI Y CSS: Optimización de espacio (Pronóstico a 4 líneas)
-# ---------------------------------------------------------
-CSS_OPTIMIZADO = """
-/* Reducción del widget de pronóstico a 7 días en formato compacto de 4 líneas */
-.siga-forecast-compact {
-    display: grid;
-    grid-template-columns: repeat(7, 1fr);
-    gap: 4px;
-    padding: 6px;
-    font-size: 0.85rem;
-    background: var(--siga-bg-card, #1e293b);
-    border-radius: 8px;
-    max-height: 95px;
-    overflow: hidden;
+/* ==========================================
+   PALETA DE COLORES - APP SIGA
+   ========================================== */
+:root {
+    --siga-verde-noche: #1B3A2B;  /* Verde inglés principal */
+    --siga-beige: #E2D0BB;        /* Beige cálido seleccionado */
+    --siga-texto-oscuro: #1A2E26; /* Texto oscuro para fondos claros */
+    --siga-texto-claro: #F4EDE2;  /* Texto claro para fondos oscuros */
 }
-.forecast-day-row {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: space-between;
-}
-/* Reintegración y acople del buscador 'Pregúntale a SIGA' con cláusulas de restricción estricta */
-.siga-chat-box {
-    margin-top: 8px;
-    border: 1px solid var(--siga-primary, #3b82f6);
-}
-"""
 
-def motor_respuesta_siga(pregunta_usuario, contexto_meteorologico):
-    """
-    Motor de consulta con cláusulas operativas estrictas: 
-    Si la información no está en los parámetros o fuentes validadas, no se inventa.
-    """
-    if not contexto_meteorologico or "error" in contexto_meteorologico:
-        return "No dispongo de información verificada en los sistemas locales para responder a esto en este momento."
-        
-    # Procesamiento acotado a los datos reales provistos por los sensores/APIs validadas
-    return f"Respuesta basada estrictamente en datos operativos SIGA para la zona."
+/* Fondo general y contenedores base */
+body {
+    background-color: var(--siga-verde-noche);
+    color: var(--siga-texto-oscuro);
+    font-family: system-ui, -apple-system, sans-serif;
+}
+
+/* ==========================================
+   TARJETAS DE PRONÓSTICO (Diseño Compacto)
+   ========================================== */
+.siga-card {
+    background-color: var(--siga-beige);
+    color: var(--siga-texto-oscuro);
+    border-radius: 12px;
+    padding: 12px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+    transition: transform 0.2s ease;
+}
+
+/* Tarjeta especial para Domingo o Feriados (Estilo Almanaque) */
+.siga-card.card-especial,
+.siga-card.domingo {
+    background-color: var(--siga-verde-noche);
+    color: var(--siga-texto-claro);
+    border: 1px solid var(--siga-beige);
+}
+
+/* Ajuste de iconos y textos dentro de la tarjeta especial */
+.siga-card.domingo svg,
+.siga-card.domingo .weather-icon {
+    filter: brightness(0) invert(1); /* Pone los íconos claros sobre fondo oscuro */
+}
